@@ -3,7 +3,8 @@ LIFNEX FLASK APPLICATION FACTORY
 Initializes Blueprints, CORS, Error Handlers, and static file routers
 """
 
-from flask import Flask, jsonify
+import os
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from backend.app.config import Config
 from backend.app.routes.health import health_bp
@@ -16,7 +17,17 @@ from backend.app.routes.notifications import notifications_bp
 from backend.app.api.v1.matching import matching_bp
 
 def create_app(config_class=Config) -> Flask:
-    app = Flask(__name__)
+    # Resolve frontend paths
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    frontend_dir = os.path.join(base_dir, "frontend")
+    dist_dir = os.path.join(frontend_dir, "dist")
+    static_dir = os.path.join(frontend_dir, "static")
+
+    app = Flask(
+        __name__,
+        static_folder=static_dir,
+        static_url_path="/static"
+    )
     app.config.from_object(config_class)
 
     # Enable CORS
@@ -42,12 +53,7 @@ def create_app(config_class=Config) -> Flask:
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(self)"
         return response
 
-    # Frontend Static & HTML Routes
-    import os
-    from flask import send_from_directory
-
-    frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
-
+    # Frontend Static, Built Assets & HTML Routes
     @app.route("/", defaults={"filename": "index.html"})
     @app.route("/<path:filename>")
     def serve_frontend(filename):
@@ -58,18 +64,36 @@ def create_app(config_class=Config) -> Flask:
         # Serve static assets from frontend/static
         if filename.startswith("static/"):
             subpath = filename[len("static/"):]
-            return send_from_directory(os.path.join(frontend_dir, "static"), subpath)
+            return send_from_directory(static_dir, subpath)
 
-        # Serve HTML files from frontend/
+        # Serve compiled Vite assets if requesting /assets/
+        if filename.startswith("assets/"):
+            subpath = filename[len("assets/"):]
+            if os.path.exists(os.path.join(dist_dir, "assets", subpath)):
+                return send_from_directory(os.path.join(dist_dir, "assets"), subpath)
+            if os.path.exists(os.path.join(frontend_dir, "src", "assets", subpath)):
+                return send_from_directory(os.path.join(frontend_dir, "src", "assets"), subpath)
+            if os.path.exists(os.path.join(static_dir, "assets", subpath)):
+                return send_from_directory(os.path.join(static_dir, "assets"), subpath)
+
+        # Priority 1: Serve built production files from dist if present
+        if os.path.exists(dist_dir):
+            dist_file = os.path.join(dist_dir, filename)
+            if os.path.exists(dist_file) and os.path.isfile(dist_file):
+                return send_from_directory(dist_dir, filename)
+            if os.path.exists(dist_file + ".html") and os.path.isfile(dist_file + ".html"):
+                return send_from_directory(dist_dir, filename + ".html")
+
+        # Priority 2: Serve source HTML files from frontend
         file_path = os.path.join(frontend_dir, filename)
         if os.path.exists(file_path) and os.path.isfile(file_path):
             return send_from_directory(frontend_dir, filename)
-        
-        # If HTML file without extension
-        if os.path.exists(file_path + ".html"):
+        if os.path.exists(file_path + ".html") and os.path.isfile(file_path + ".html"):
             return send_from_directory(frontend_dir, filename + ".html")
 
-        # Default fallback to index.html for single-page navigations
+        # Default fallback for SPA navigations
+        if os.path.exists(os.path.join(dist_dir, "index.html")):
+            return send_from_directory(dist_dir, "index.html")
         return send_from_directory(frontend_dir, "index.html")
 
     # Global Error Handlers

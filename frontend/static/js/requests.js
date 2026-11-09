@@ -92,5 +92,27 @@ const LifnexRequests = {
 document.addEventListener("DOMContentLoaded", () => {
   LifnexRequests.renderFeed();
   LifnexRequests.initFilters();
+
+  const confirmBtn = document.getElementById("confirmDonorAcceptBtn");
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", () => {
+      const reqId = document.getElementById("modalReqId")?.textContent || "REQ-701";
+      const eta = document.getElementById("donorEtaInput")?.value || "30";
+      if (typeof LifnexDemoStore !== "undefined" && LifnexDemoStore.saveDonorResponse) {
+        LifnexDemoStore.saveDonorResponse({
+          id: "RESP-" + Math.floor(100 + Math.random() * 900),
+          requestId: reqId,
+          donorName: "Alex Rivera (Demo Donor)",
+          bloodGroup: "Compatible",
+          eta: eta + " mins",
+          status: "accepted"
+        });
+      }
+      Modal.close("donorResponseModal");
+      if (typeof Toast !== "undefined" && Toast.show) {
+        Toast.show("Emergency Response Confirmed", `Your arrival in ~${eta} mins has been dispatched to the hospital triage desk.`, "success");
+      }
+    });
+  }
 });
 

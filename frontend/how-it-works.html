@@ -6,10 +6,17 @@
   <title>How Lifnex Works — Step-by-Step Coordination Workflow</title>
   <meta name="description" content="Detailed walkthrough of how Lifnex coordinates emergency blood requests between patients, nearby voluntary donors, and hospital transfusion centers.">
 
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -28,7 +35,7 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand-link">
-        <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
+        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
         <div class="brand-title">
           <span class="brand-name">Lifnex</span>
           <span class="brand-tagline-sub">Emergency Donor Network</span>
@@ -165,7 +172,7 @@
     </div>
   </section>
 
-  <!-- Infographic Visual Section (From demo-assests e3d4322b0d6ecf157920a83176916cef.jpg) -->
+  <!-- Infographic Visual Section (From demo-assests clinical-verification.jpg) -->
   <section class="section section-alt">
     <div class="container">
       <div class="grid-2 items-center">
@@ -190,11 +197,25 @@
         </div>
 
         <div class="card p-3" style="max-width: 440px; margin: 0 auto; background: var(--slate-900);">
-          <img src="static/assets/images/e3d4322b0d6ecf157920a83176916cef.jpg" alt="Clinical Verification Timeline" style="border-radius: var(--radius-sm); width: 100%; height: auto;">
+          <img src="/static/assets/images/clinical-verification.jpg" alt="Clinical Verification Timeline" style="border-radius: var(--radius-sm); width: 100%; height: auto;">
           <div class="text-center text-xs text-slate-400 mt-2">
             Clinical Safety Protocol Illustration (Preserved Reference)
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Interface Preview -->
+  <section class="section">
+    <div class="container text-center">
+      <span class="section-subtitle">Real-Time Interface Experience</span>
+      <h2 class="section-title">Designed for Calm, Decisive Emergency Coordination</h2>
+      <p class="section-desc" style="max-width: 680px; margin: 0 auto 2rem;">
+        Engineered with intuitive ergonomics, high contrast alerts, and instantaneous status transitions to minimize cognitive fatigue during critical events.
+      </p>
+      <div class="card p-3" style="max-width: 900px; margin: 0 auto; box-shadow: var(--shadow-xl); overflow: hidden; border-radius: var(--radius-lg);">
+        <img src="/static/assets/images/platform-preview-1.png" alt="Lifnex Platform Interface Preview" style="width: 100%; height: auto; border-radius: var(--radius-sm); display: block;">
       </div>
     </div>
   </section>
@@ -205,7 +226,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="flex items-center gap-2 mb-2">
-            <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
             <span class="text-white font-bold text-lg">Lifnex</span>
           </div>
           <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
@@ -249,7 +270,12 @@
     </div>
   </footer>
 
-  <script src="static/js/main.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

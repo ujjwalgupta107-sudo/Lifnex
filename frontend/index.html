@@ -7,10 +7,17 @@
   <meta name="description" content="AI-powered emergency blood donor coordination platform connecting patients requiring blood with verified voluntary donors, hospitals, and blood banks.">
 
   <!-- Core Design System CSS -->
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -29,7 +36,7 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand-link">
-        <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
+        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
         <div class="brand-title">
           <span class="brand-name">Lifnex</span>
           <span class="brand-tagline-sub">Emergency Donor Network</span>
@@ -100,7 +107,7 @@
 
         <!-- Hero Visual (Using demo-assests hero image) -->
         <div class="hero-visual-card">
-          <img src="static/assets/images/63880284821092a1499a052d23a92755.jpg" alt="Blood Donation Care by Medical Team" class="hero-image">
+          <img src="/static/assets/images/hero-medical-team.jpg" alt="Blood Donation Care by Medical Team" class="hero-image">
           <div class="hero-floating-badge">
             <div class="user-avatar-circle" style="background:#e11d48;">
               <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
@@ -280,7 +287,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="flex items-center gap-2 mb-2">
-            <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
             <span class="text-white font-bold text-lg">Lifnex</span>
           </div>
           <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
@@ -326,9 +333,47 @@
     </div>
   </footer>
 
+  <!-- Donor Response Modal -->
+  <div class="modal-backdrop" id="donorResponseModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="font-bold text-base text-slate-900">Confirm Emergency Blood Dispatch</h3>
+        <button class="btn-ghost btn-icon" data-modal-close="donorResponseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-slate-600 mb-3">
+          You are volunteering to respond to emergency request <strong id="modalReqId" class="text-crimson-600">REQ-701</strong>. The hospital transfusion desk will be alerted to expect your arrival.
+        </p>
+
+        <div class="form-group">
+          <label for="donorEtaInput" class="form-label text-xs">Estimated Arrival Time <span class="required">*</span></label>
+          <select id="donorEtaInput" class="form-select text-xs">
+            <option value="15">Within 15 minutes (Immediate Transit)</option>
+            <option value="30" selected>Within 30 minutes</option>
+            <option value="45">Within 45 minutes</option>
+            <option value="60">Within 1 hour</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-amber-50 rounded border border-amber-200 text-xs text-amber-800">
+          <strong>Clinical Reminder:</strong> Ensure you are well hydrated and meet the standard voluntary donor eligibility criteria before transit.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-modal-close="donorResponseModal">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="confirmDonorAcceptBtn">Confirm Response & Notify Hospital</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="static/js/main.js"></script>
-  <script src="static/js/requests.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/requests.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

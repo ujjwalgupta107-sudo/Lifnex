@@ -1,23 +1,30 @@
 /* ==========================================================================
-   LIFNEX DESIGN SYSTEM - ENHANCED TOKENS (UI/UX 2.0)
-   Derived from UI_DESIGN_SYSTEM.md & demo-assests reference concepts
+   LIFNEX DESIGN SYSTEM — DESIGN TOKENS v3.0
+   Premium Healthcare SaaS — Complete Custom Property System
    ========================================================================== */
 
 :root {
-  /* Brand Crimson Palette (Emergency & Clinical Distinction) */
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     BRAND CRIMSON PALETTE
+     Core identity color — emergency, clinical distinction, CTAs
+     ────────────────────────────────────────────────────────────────────────── */
   --crimson-50:  #fff1f2;
   --crimson-100: #ffe4e6;
   --crimson-200: #fecdd3;
   --crimson-300: #fda4af;
   --crimson-400: #fb7185;
   --crimson-500: #f43f5e;
-  --crimson-600: #e11d48;  /* Primary Brand Action */
+  --crimson-600: #e11d48;   /* ← Primary Brand Action */
   --crimson-700: #be123c;
   --crimson-800: #9f1239;
   --crimson-900: #881337;
   --crimson-950: #4c0519;
 
-  /* Neutral Medical Slates (Clean, Sterile, Tech-Forward) */
+  /* ──────────────────────────────────────────────────────────────────────────
+     NEUTRAL SLATE PALETTE
+     Clean, sterile, tech-forward medical neutrals
+     ────────────────────────────────────────────────────────────────────────── */
   --slate-50:  #f8fafc;
   --slate-100: #f1f5f9;
   --slate-200: #e2e8f0;
@@ -30,93 +37,269 @@
   --slate-900: #0f172a;
   --slate-950: #020617;
 
-  /* Pure Accents & Gradients */
+  /* ──────────────────────────────────────────────────────────────────────────
+     PURE COLORS
+     ────────────────────────────────────────────────────────────────────────── */
   --white: #ffffff;
   --black: #000000;
-  --gradient-brand: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
-  --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  --gradient-subtle: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  --gradient-mesh: radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.08) 0px, transparent 50%),
-                    radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%);
 
-  /* Healthcare Status Indicators */
-  --status-critical: #ef4444; /* Emergency / Critical */
-  --status-critical-bg: #fef2f2;
+  /* ──────────────────────────────────────────────────────────────────────────
+     GRADIENT DEFINITIONS
+     ────────────────────────────────────────────────────────────────────────── */
+  --gradient-brand:    linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  --gradient-brand-hover: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
+  --gradient-dark:     linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --gradient-dark-deep: linear-gradient(160deg, #070c18 0%, #101828 50%, #182230 100%);
+  --gradient-subtle:   linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --gradient-glass:    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.9) 100%);
+  --gradient-mesh:     radial-gradient(ellipse at 0% 0%, rgba(225, 29, 72, 0.07) 0px, transparent 50%),
+                       radial-gradient(ellipse at 100% 0%, rgba(14, 165, 233, 0.06) 0px, transparent 50%),
+                       radial-gradient(ellipse at 50% 100%, rgba(139, 92, 246, 0.04) 0px, transparent 50%);
+  --gradient-radial-crimson: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(225, 29, 72, 0.06), transparent 40%);
+  --gradient-cta:      linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #182230 100%);
+  --gradient-shimmer:  linear-gradient(90deg, var(--slate-100) 25%, var(--slate-200) 50%, var(--slate-100) 75%);
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     HEALTHCARE STATUS INDICATORS
+     Semantic colors with bg + border variants for badges & alerts
+     ────────────────────────────────────────────────────────────────────────── */
+  --status-critical:        #ef4444;
+  --status-critical-bg:     #fef2f2;
   --status-critical-border: #fecaca;
-  --status-urgent:   #f59e0b; /* Urgent Attention */
-  --status-urgent-bg: #fffbeb;
-  --status-urgent-border: #fde68a;
-  --status-normal:   #3b82f6; /* Standard Priority */
-  --status-normal-bg: #eff6ff;
-  --status-normal-border: #bfdbfe;
-  --status-success:  #10b981; /* Confirmed / Fulfilled / Available */
-  --status-success-bg: #ecfdf5;
-  --status-success-border: #a7f3d0;
-  --status-cooldown: #8b5cf6; /* Cooldown Period (90 days) */
-  --status-demo:     #06b6d4; /* Fictional Synthetic Demo Badge */
+  --status-critical-text:   #991b1b;
 
-  /* Surface & Background Roles */
-  --bg-body: #f8fafc;
-  --bg-surface: #ffffff;
+  --status-urgent:          #f59e0b;
+  --status-urgent-bg:       #fffbeb;
+  --status-urgent-border:   #fde68a;
+  --status-urgent-text:     #92400e;
+
+  --status-normal:          #3b82f6;
+  --status-normal-bg:       #eff6ff;
+  --status-normal-border:   #bfdbfe;
+  --status-normal-text:     #1e40af;
+
+  --status-success:         #10b981;
+  --status-success-bg:      #ecfdf5;
+  --status-success-border:  #a7f3d0;
+  --status-success-text:    #065f46;
+
+  --status-cooldown:        #8b5cf6;
+  --status-cooldown-bg:     #f5f3ff;
+  --status-cooldown-border: #ddd6fe;
+
+  --status-demo:            #06b6d4;
+  --status-demo-bg:         #ecfeff;
+  --status-demo-border:     #a5f3fc;
+
+  /* Teal success (alternate for healthcare contexts) */
+  --teal-500: #0f9d8a;
+  --teal-600: #0d8b7a;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     SURFACE & BACKGROUND ROLES
+     ────────────────────────────────────────────────────────────────────────── */
+  --bg-body:             #f8fafc;
+  --bg-surface:          #ffffff;
   --bg-surface-elevated: #ffffff;
-  --bg-surface-glass: rgba(255, 255, 255, 0.85);
-  --bg-sidebar: #0b1120;
-  --bg-sidebar-hover: #1e293b;
+  --bg-surface-hover:    #f8fafc;
+  --bg-surface-glass:    rgba(255, 255, 255, 0.88);
+  --bg-sidebar:          #0b1120;
+  --bg-sidebar-brand:    #070c18;
+  --bg-sidebar-hover:    rgba(255, 255, 255, 0.06);
+  --bg-sidebar-active:   var(--gradient-brand);
+  --bg-overlay:          rgba(15, 23, 42, 0.6);
 
-  /* Text Roles */
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  --text-inverted: #ffffff;
+  /* ──────────────────────────────────────────────────────────────────────────
+     TEXT COLOR ROLES
+     ────────────────────────────────────────────────────────────────────────── */
+  --text-heading:   #101828;
+  --text-main:      #0f172a;
+  --text-secondary: #334155;
+  --text-muted:     #64748b;
+  --text-light:     #94a3b8;
+  --text-inverted:  #ffffff;
+  --text-link:      #e11d48;
+  --text-link-hover:#be123c;
 
-  /* Borders & Dividers */
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --border-focus: #e11d48;
-  --border-dark: #334155;
+  /* ──────────────────────────────────────────────────────────────────────────
+     BORDER TOKENS
+     ────────────────────────────────────────────────────────────────────────── */
+  --border-light:    #e2e8f0;
+  --border-medium:   #cbd5e1;
+  --border-strong:   #94a3b8;
+  --border-focus:    #e11d48;
+  --border-dark:     #334155;
+  --border-sidebar:  rgba(255, 255, 255, 0.08);
 
-  /* Elevation Shadows (Tailored Soft Glow) */
-  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  --shadow-sm: 0 2px 4px 0 rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
-  --shadow-lg: 0 12px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-  --shadow-xl: 0 20px 35px -6px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
-  --shadow-crimson: 0 8px 24px -4px rgba(225, 29, 72, 0.3);
-  --shadow-hover: 0 14px 30px -4px rgba(15, 23, 42, 0.12);
+  /* ──────────────────────────────────────────────────────────────────────────
+     SHADOW SCALE
+     Refined, soft medical aesthetic with layered depth
+     ────────────────────────────────────────────────────────────────────────── */
+  --shadow-xs:     0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm:     0 1px 3px 0 rgba(15, 23, 42, 0.06),
+                   0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md:     0 4px 6px -1px rgba(15, 23, 42, 0.06),
+                   0 2px 4px -2px rgba(15, 23, 42, 0.04),
+                   0 0 0 1px rgba(15, 23, 42, 0.02);
+  --shadow-lg:     0 10px 15px -3px rgba(15, 23, 42, 0.07),
+                   0 4px 6px -4px rgba(15, 23, 42, 0.04),
+                   0 0 0 1px rgba(15, 23, 42, 0.02);
+  --shadow-xl:     0 20px 25px -5px rgba(15, 23, 42, 0.08),
+                   0 8px 10px -6px rgba(15, 23, 42, 0.04),
+                   0 0 0 1px rgba(15, 23, 42, 0.02);
+  --shadow-2xl:    0 25px 50px -12px rgba(15, 23, 42, 0.18);
+  --shadow-crimson:0 8px 24px -4px rgba(225, 29, 72, 0.28),
+                   0 4px 8px -2px rgba(225, 29, 72, 0.12);
+  --shadow-hover:  0 14px 30px -4px rgba(15, 23, 42, 0.10),
+                   0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --shadow-card:   0 1px 3px 0 rgba(15, 23, 42, 0.04),
+                   0 0 0 1px rgba(15, 23, 42, 0.02);
+  --shadow-card-hover: 0 8px 24px -4px rgba(15, 23, 42, 0.08),
+                       0 4px 8px -2px rgba(15, 23, 42, 0.03),
+                       0 0 0 1px rgba(15, 23, 42, 0.04);
+  --shadow-input-focus: 0 0 0 3px rgba(225, 29, 72, 0.12);
+  --shadow-sidebar: 4px 0 24px -2px rgba(0, 0, 0, 0.3);
 
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* ──────────────────────────────────────────────────────────────────────────
+     TYPOGRAPHY TOKENS
+     ────────────────────────────────────────────────────────────────────────── */
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
+                'Segoe UI Emoji';
+  --font-mono:  'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono',
+                Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 
-  /* Border Radii */
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  /* Font weights */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+  --fw-extrabold:800;
+  --fw-black:    900;
+
+  /* Font sizes */
+  --fs-xs:   0.75rem;    /* 12px */
+  --fs-sm:   0.8125rem;  /* 13px */
+  --fs-base: 0.9375rem;  /* 15px */
+  --fs-md:   1rem;       /* 16px */
+  --fs-lg:   1.125rem;   /* 18px */
+  --fs-xl:   1.25rem;    /* 20px */
+  --fs-2xl:  1.5rem;     /* 24px */
+  --fs-3xl:  2.25rem;    /* 36px */
+  --fs-4xl:  3.25rem;    /* 52px */
+
+  /* Line heights */
+  --lh-tight:    1.15;
+  --lh-heading:  1.25;
+  --lh-body:     1.6;
+  --lh-relaxed:  1.75;
+
+  /* Letter spacing */
+  --ls-tight:   -0.04em;
+  --ls-snug:    -0.02em;
+  --ls-normal:   0;
+  --ls-wide:     0.02em;
+  --ls-wider:    0.06em;
+  --ls-widest:   0.08em;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     SPACING SYSTEM (8px grid)
+     ────────────────────────────────────────────────────────────────────────── */
+  --space-0:   0;
+  --space-px:  1px;
+  --space-0-5: 2px;
+  --space-1:   4px;     /* xs */
+  --space-2:   8px;     /* sm */
+  --space-3:   12px;    /* md */
+  --space-4:   16px;    /* lg */
+  --space-5:   20px;
+  --space-6:   24px;    /* xl */
+  --space-8:   32px;    /* 2xl */
+  --space-10:  40px;
+  --space-12:  48px;    /* 3xl */
+  --space-16:  64px;    /* 4xl */
+  --space-20:  80px;
+  --space-24:  96px;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     BORDER RADIUS SCALE
+     ────────────────────────────────────────────────────────────────────────── */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-2xl:  32px;
   --radius-pill: 9999px;
 
-  /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* ──────────────────────────────────────────────────────────────────────────
+     TRANSITION CURVES
+     ────────────────────────────────────────────────────────────────────────── */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in:      cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:     cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce:  cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Layout Constants */
-  --header-height: 72px;
-  --sidebar-width: 270px;
-  --container-max: 1280px;
+  --transition-fast:    150ms var(--ease-default);
+  --transition-normal:  250ms var(--ease-default);
+  --transition-smooth:  350ms var(--ease-spring);
+  --transition-slow:    500ms var(--ease-spring);
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     LAYOUT CONSTANTS
+     ────────────────────────────────────────────────────────────────────────── */
+  --header-height:  72px;
+  --sidebar-width:  270px;
+  --container-max:  1280px;
+  --container-narrow: 860px;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     Z-INDEX SCALE
+     ────────────────────────────────────────────────────────────────────────── */
+  --z-base:       1;
+  --z-dropdown:   40;
+  --z-sticky:     50;
+  --z-sidebar:    100;
+  --z-modal:      1000;
+  --z-toast:      9999;
 }
 
-/* Dark Surface Theme tokens */
+
+/* ==========================================================================
+   DARK THEME OVERRIDES
+   Applied via [data-theme="dark"] on <html> or <body>
+   ========================================================================== */
+
 [data-theme="dark"] {
-  --bg-body: #020617;
-  --bg-surface: #0f172a;
+  --bg-body:             #020617;
+  --bg-surface:          #0f172a;
   --bg-surface-elevated: #1e293b;
-  --bg-surface-glass: rgba(15, 23, 42, 0.85);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-light: #64748b;
-  --border-light: #1e293b;
+  --bg-surface-hover:    #1e293b;
+  --bg-surface-glass:    rgba(15, 23, 42, 0.88);
+
+  --text-heading:  #f8fafc;
+  --text-main:     #f1f5f9;
+  --text-secondary:#cbd5e1;
+  --text-muted:    #94a3b8;
+  --text-light:    #64748b;
+
+  --border-light:  #1e293b;
   --border-medium: #334155;
-  --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.5);
+
+  --shadow-xs:  0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm:  0 1px 3px 0 rgba(0, 0, 0, 0.4),
+                0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.4),
+                0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg:  0 10px 15px -3px rgba(0, 0, 0, 0.4),
+                0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl:  0 20px 25px -5px rgba(0, 0, 0, 0.5),
+                0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-card:      0 1px 3px 0 rgba(0, 0, 0, 0.3),
+                      0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-card-hover:0 8px 24px -4px rgba(0, 0, 0, 0.4),
+                      0 0 0 1px rgba(255, 255, 255, 0.06);
+
+  --gradient-subtle: linear-gradient(180deg, #0f172a 0%, #020617 100%);
 }

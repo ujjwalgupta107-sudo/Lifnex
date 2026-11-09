@@ -285,5 +285,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Modals and Compatibility Matrix
   Modal.initListeners();
   BloodCompatibility.init();
+
+  // Initialize Lucide Icons if available
+  if (typeof lucide !== "undefined" && lucide.createIcons) {
+    lucide.createIcons();
+  }
 });
 

@@ -6,10 +6,17 @@
   <title>About Lifnex — Mission, Vision & Healthcare Coordination</title>
   <meta name="description" content="Discover the mission of Lifnex: modernizing emergency blood donation through intelligent coordination, clinical safety checkpoints, and ethical community service.">
 
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -28,7 +35,7 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand-link">
-        <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
+        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
         <div class="brand-title">
           <span class="brand-name">Lifnex</span>
           <span class="brand-tagline-sub">Emergency Donor Network</span>
@@ -82,7 +89,7 @@
         </div>
 
         <div class="card p-4" style="background:var(--slate-900); border-color:var(--slate-800);">
-          <img src="static/assets/images/85416b7ff61fad517b30461eb0580d96.jpg" alt="Blood Compatibility Care Graphic" style="border-radius: var(--radius-sm); width: 100%; object-fit: cover;">
+          <img src="/static/assets/images/compatibility-lab.jpg" alt="Blood Compatibility Care Graphic" style="border-radius: var(--radius-sm); width: 100%; object-fit: cover;">
           <div class="p-3 text-white text-xs mt-2">
             <span class="font-bold text-rose-400">Clinical Safety Rule:</span> Lifnex never collects or stores blood. We coordinate communication; healthcare professionals verify every biological compatibility.
           </div>
@@ -154,7 +161,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="flex items-center gap-2 mb-2">
-            <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
             <span class="text-white font-bold text-lg">Lifnex</span>
           </div>
           <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
@@ -198,7 +205,12 @@
     </div>
   </footer>
 
-  <script src="static/js/main.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In — Lifnex Platform</title>
 
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body style="background: radial-gradient(circle at top right, rgba(254, 205, 211, 0.3), transparent 60%), var(--slate-100); min-height: 100vh; display: flex; flex-direction: column;">
 
@@ -27,7 +34,7 @@
     <div class="card p-8" style="max-width: 440px; width: 100%; box-shadow: var(--shadow-xl);">
       <div class="text-center mb-6">
         <a href="index.html" class="inline-flex items-center gap-2 mb-3">
-          <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 38px; width: auto; margin: 0 auto;">
+          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 38px; width: auto; margin: 0 auto;">
         </a>
         <h2 class="text-xl font-bold text-slate-900">Sign In to Lifnex</h2>
         <p class="text-xs text-slate-500 mt-1">Access your patient, donor, or hospital coordination portal</p>
@@ -80,8 +87,13 @@
   </main>
 
   <!-- Scripts -->
-  <script src="static/js/main.js"></script>
-  <script src="static/js/auth.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

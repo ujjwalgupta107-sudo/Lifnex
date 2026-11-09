@@ -1,0 +1,89 @@
+/* ==========================================================================
+   LIFNEX DESIGN SYSTEM - TOKENS & SYSTEM VARIABLES
+   Modern Healthcare SaaS & Emergency Response Design Language
+   ========================================================================== */
+
+:root {
+  /* Brand Palette */
+  --crimson-50:  #fff1f2;
+  --crimson-100: #ffe4e6;
+  --crimson-200: #fecdd3;
+  --crimson-300: #fda4af;
+  --crimson-400: #fb7185;
+  --crimson-500: #f43f5e;
+  --crimson-600: #e11d48;  /* Primary emergency crimson */
+  --crimson-700: #be123c;
+  --crimson-800: #9f1239;
+  --crimson-900: #881337;
+
+  /* Deep Navy Hierarchy */
+  --navy-50:  #f0f4f8;
+  --navy-100: #d9e2ec;
+  --navy-200: #bcccdc;
+  --navy-300: #9fb3c8;
+  --navy-400: #829ab1;
+  --navy-500: #627d98;
+  --navy-600: #486581;
+  --navy-700: #334e68;
+  --navy-800: #243b53;
+  --navy-900: #182230;     /* Secondary navy */
+  --navy-950: #101828;     /* Deep navy */
+
+  /* Neutrals & Surfaces */
+  --white: #ffffff;
+  --bg-body: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-subtle: #f1f5f9;
+  --bg-surface-card: #ffffff;
+  --border-subtle: #e2e8f0;
+  --border-focus: #e11d48;
+
+  /* Typography Colors */
+  --text-main: #101828;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverted: #ffffff;
+
+  /* Clinical Status Colors */
+  --teal-success: #0f9d8a;
+  --teal-success-bg: #ecfdf5;
+  --teal-success-border: #a7f3d0;
+
+  --amber-warning: #f59e0b;
+  --amber-warning-bg: #fffbeb;
+  --amber-warning-border: #fde68a;
+
+  --red-critical: #e11d48;
+  --red-critical-bg: #fff1f2;
+  --red-critical-border: #fecdd3;
+
+  --blue-info: #0284c7;
+  --blue-info-bg: #f0f9ff;
+  --blue-info-border: #bae6fd;
+
+  /* Radius Scale */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+  --shadow-crimson-glow: 0 8px 24px -4px rgba(225, 29, 72, 0.25);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+

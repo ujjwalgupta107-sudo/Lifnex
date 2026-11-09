@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Patient & Emergency Request Portal — Lifnex</title>
 
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
-  <link rel="stylesheet" href="static/css/dashboards.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/dashboards.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -29,7 +36,7 @@
     <aside class="dashboard-sidebar">
       <div class="sidebar-brand">
         <a href="index.html" class="flex items-center gap-2">
-          <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
           <span class="brand-name font-bold text-lg">Lifnex</span>
         </a>
       </div>
@@ -361,9 +368,14 @@
   </div>
 
   <!-- Scripts -->
-  <script src="static/js/main.js"></script>
-  <script src="static/js/realtime.js"></script>
-  <script src="static/js/dashboards.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/realtime.js"></script>
+  <script src="/static/js/dashboards.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

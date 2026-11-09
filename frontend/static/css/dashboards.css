@@ -390,7 +390,8 @@ input:checked + .slider:before {
   overflow: hidden;
 }
 
-.notifications-dropdown.open {
+.notifications-dropdown.open,
+.notifications-dropdown.active {
   display: block;
   animation: toastSlideIn 0.25s ease;
 }
@@ -414,7 +415,8 @@ input:checked + .slider:before {
   .dashboard-sidebar {
     transform: translateX(-100%);
   }
-  .dashboard-sidebar.open {
+  .dashboard-sidebar.open,
+  .dashboard-sidebar.sidebar-open {
     transform: translateX(0);
   }
   .dashboard-main {

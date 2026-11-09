@@ -6,13 +6,20 @@
   <title>Hospitals & Blood Banks Directory — Lifnex Platform</title>
   <meta name="description" content="Explore verified hospitals, trauma centers, and accredited blood banks connected to the Lifnex emergency coordination network.">
 
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
   
   <!-- Leaflet CSS for OpenStreetMap -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -31,7 +38,7 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand-link">
-        <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
+        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
         <div class="brand-title">
           <span class="brand-name">Lifnex</span>
           <span class="brand-tagline-sub">Emergency Donor Network</span>
@@ -77,6 +84,25 @@
     <div class="container">
       <div class="card p-2 mb-6">
         <div id="hospitalsMap" style="width: 100%; height: 500px; border-radius: var(--radius-sm); z-index: 10;"></div>
+      </div>
+
+      <!-- Spotlight Facility Showcase -->
+      <div class="card p-4 mb-6" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-color: rgba(255,255,255,0.08); color: white;">
+        <div class="grid-2 gap-4 items-center">
+          <div>
+            <span class="badge badge-blood mb-2">Accredited Trauma Wing</span>
+            <h3 class="text-white text-lg font-bold mb-1">Central Blood Storage & Apheresis Facility</h3>
+            <p class="text-xs text-slate-300 mb-3">All connected network hospitals maintain certified -30°C plasma and +4°C packed red cell cold-chain storage with on-site biological compatibility cross-matching.</p>
+            <div class="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
+              <span>✓ Certified Laboratory Standards</span>
+              <span>•</span>
+              <span>✓ 24/7 Transfusion Readiness</span>
+            </div>
+          </div>
+          <div style="max-height: 160px; overflow: hidden; border-radius: var(--radius-sm);">
+            <img src="/static/assets/images/hospital-facility.jpg" alt="Accredited Hospital Facility" style="width: 100%; height: 160px; object-fit: cover;">
+          </div>
+        </div>
       </div>
 
       <!-- Hospital Cards Grid -->
@@ -181,7 +207,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="flex items-center gap-2 mb-2">
-            <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
             <span class="text-white font-bold text-lg">Lifnex</span>
           </div>
           <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
@@ -227,8 +253,13 @@
 
   <!-- Leaflet & JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="static/js/main.js"></script>
-  <script src="static/js/maps.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/maps.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

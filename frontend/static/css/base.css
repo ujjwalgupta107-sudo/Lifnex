@@ -1,8 +1,16 @@
 /* ==========================================================================
-   LIFNEX BASE & RESET STYLES
+   LIFNEX BASE & RESET STYLES v3.0
+   Modern CSS Reset · Typography · Utilities · Accessibility
    ========================================================================== */
 
-*, *::before, *::after {
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1. MODERN CSS RESET
+   ────────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -12,51 +20,201 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  tab-size: 4;
 }
 
 body {
   font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
   background-color: var(--bg-body);
   color: var(--text-main);
-  line-height: 1.6;
+  line-height: var(--lh-body);
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
 }
 
-/* Typography Defaults */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-main);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+/* Remove default styling for interactive elements */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  appearance: button;
+  cursor: pointer;
 }
 
-h1 { font-size: clamp(2rem, 4vw, 3rem); }
-h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); }
-h3 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
-h4 { font-size: 1.125rem; font-weight: 600; }
-h5 { font-size: 1rem; font-weight: 600; }
+/* Remove inner border and padding in Firefox */
+::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/* Remove the additional :invalid styles in Firefox */
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/* Prevent resizing textareas horizontally */
+textarea {
+  resize: vertical;
+}
+
+/* Remove default table spacing */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Correct the odd `em` font sizing */
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 1em;
+}
+
+/* Remove the default list styling */
+ul, ol {
+  list-style: none;
+}
+
+/* Ensure hidden elements stay hidden */
+[hidden] {
+  display: none !important;
+}
+
+/* Remove default dialog styles */
+dialog {
+  padding: 0;
+}
+
+/* Summary cursor */
+summary {
+  cursor: pointer;
+}
+
+/* Horizontal rule styling */
+hr {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--border-light);
+  margin: var(--space-6) 0;
+  color: inherit;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   2. TYPOGRAPHY HIERARCHY
+   Responsive headings with clamp() · Tight tracking · Strong hierarchy
+   ────────────────────────────────────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-heading);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-snug);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw + 0.5rem, 3.25rem);
+  font-weight: var(--fw-black);
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-tight);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3.5vw + 0.25rem, 2.25rem);
+  font-weight: var(--fw-extrabold);
+  letter-spacing: -0.03em;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: var(--fw-bold);
+}
+
+h4 {
+  font-size: 1.125rem;
+  font-weight: var(--fw-semibold);
+}
+
+h5 {
+  font-size: 1rem;
+  font-weight: var(--fw-semibold);
+}
+
+h6 {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-widest);
+  color: var(--text-muted);
+}
 
 p {
   margin-bottom: 1rem;
   color: var(--text-muted);
+  line-height: var(--lh-body);
 }
 
 p:last-child {
   margin-bottom: 0;
 }
 
+/* Lead paragraph */
+.lead {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-relaxed);
+  color: var(--text-secondary);
+}
+
+small,
+.text-sm {
+  font-size: var(--fs-sm);
+}
+
+strong, b {
+  font-weight: var(--fw-semibold);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3. LINKS
+   ────────────────────────────────────────────────────────────────────────── */
+
 a {
-  color: var(--crimson-600);
+  color: var(--text-link);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--crimson-700);
+  color: var(--text-link-hover);
 }
+
+/* Subtle underline links (for body text) */
+a.link-underline {
+  text-decoration: underline;
+  text-decoration-color: var(--crimson-200);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+a.link-underline:hover {
+  text-decoration-color: var(--crimson-600);
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   4. IMAGES & MEDIA
+   ────────────────────────────────────────────────────────────────────────── */
 
 img, svg {
   display: block;
@@ -64,49 +222,224 @@ img, svg {
   height: auto;
 }
 
-button, input, select, textarea {
+img {
+  font-style: italic; /* Style alt text */
+}
+
+picture {
+  display: contents;
+}
+
+video, canvas {
+  max-width: 100%;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   5. FORM ELEMENT INHERITANCE
+   ────────────────────────────────────────────────────────────────────────── */
+
+button,
+input,
+select,
+textarea {
   font: inherit;
   color: inherit;
+  letter-spacing: inherit;
 }
 
-ul, ol {
-  list-style: none;
+input::placeholder,
+textarea::placeholder {
+  color: var(--slate-400);
+  opacity: 1;
 }
 
-/* Selection */
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   6. SELECTION STYLING
+   ────────────────────────────────────────────────────────────────────────── */
+
 ::selection {
   background-color: var(--crimson-100);
   color: var(--crimson-900);
 }
 
-/* Accessibility Focus Ring */
+::-moz-selection {
+  background-color: var(--crimson-100);
+  color: var(--crimson-900);
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   7. ACCESSIBILITY — FOCUS RING
+   ────────────────────────────────────────────────────────────────────────── */
+
 :focus-visible {
   outline: 2px solid var(--crimson-600);
   outline-offset: 2px;
+  border-radius: var(--radius-xs);
 }
 
-/* Utilities */
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-crimson { color: var(--crimson-600); }
-.text-muted { color: var(--text-muted); }
-.font-bold { font-weight: 700; }
-.font-semibold { font-weight: 600; }
-.font-mono { font-family: var(--font-mono); }
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
 
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
+/* Skip-to-content link (if used) */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--crimson-600);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  font-weight: var(--fw-semibold);
+  z-index: 10000;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   8. SCROLLBAR STYLING (Webkit)
+   ────────────────────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--slate-300);
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--slate-400);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   9. UTILITY CLASSES
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Text alignment */
+.text-center  { text-align: center; }
+.text-right   { text-align: right; }
+.text-left    { text-align: left; }
+
+/* Text colors */
+.text-crimson  { color: var(--crimson-600); }
+.text-muted    { color: var(--text-muted); }
+.text-light    { color: var(--text-light); }
+.text-success  { color: var(--status-success); }
+.text-danger   { color: var(--status-critical); }
+.text-warning  { color: var(--status-urgent); }
+.text-inverted { color: var(--text-inverted); }
+.text-heading  { color: var(--text-heading); }
+
+/* Font weights */
+.font-regular  { font-weight: var(--fw-regular); }
+.font-medium   { font-weight: var(--fw-medium); }
+.font-semibold { font-weight: var(--fw-semibold); }
+.font-bold     { font-weight: var(--fw-bold); }
+.font-extrabold{ font-weight: var(--fw-extrabold); }
+.font-mono     { font-family: var(--font-mono); }
+
+/* Flexbox */
+.flex            { display: flex; }
+.inline-flex     { display: inline-flex; }
+.flex-col        { flex-direction: column; }
+.flex-wrap       { flex-wrap: wrap; }
+.items-center    { align-items: center; }
+.items-start     { align-items: flex-start; }
+.items-end       { align-items: flex-end; }
 .justify-between { justify-content: space-between; }
-.justify-center { justify-content: center; }
-.gap-1 { gap: 0.25rem; }
-.gap-2 { gap: 0.5rem; }
-.gap-3 { gap: 0.75rem; }
-.gap-4 { gap: 1rem; }
-.gap-6 { gap: 1.5rem; }
-.gap-8 { gap: 2rem; }
+.justify-center  { justify-content: center; }
+.justify-end     { justify-content: flex-end; }
+.flex-1          { flex: 1; }
+.flex-shrink-0   { flex-shrink: 0; }
 
+/* Gap */
+.gap-1  { gap: 0.25rem; }
+.gap-2  { gap: 0.5rem; }
+.gap-3  { gap: 0.75rem; }
+.gap-4  { gap: 1rem; }
+.gap-5  { gap: 1.25rem; }
+.gap-6  { gap: 1.5rem; }
+.gap-8  { gap: 2rem; }
+.gap-10 { gap: 2.5rem; }
+.gap-12 { gap: 3rem; }
+
+/* Width */
 .w-full { width: 100%; }
+.w-auto { width: auto; }
+
+/* Margin utilities */
+.mt-0 { margin-top: 0; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Display */
+.block        { display: block; }
+.inline-block { display: inline-block; }
+.hidden       { display: none; }
+.visible      { visibility: visible; }
+.invisible    { visibility: hidden; }
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto   { overflow: auto; }
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Position */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.sticky   { position: sticky; }
+
+/* Cursor */
+.cursor-pointer  { cursor: pointer; }
+.cursor-default  { cursor: default; }
+
+/* Screen reader only — accessible hide */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -115,7 +448,23 @@ ul, ol {
   margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
 
+
+/* ──────────────────────────────────────────────────────────────────────────
+   10. REDUCED MOTION PREFERENCES
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

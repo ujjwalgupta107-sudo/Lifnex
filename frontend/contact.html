@@ -6,10 +6,17 @@
   <title>Contact Lifnex — Support & Technical Inquiry Desk</title>
   <meta name="description" content="Get in touch with the Lifnex coordination team, report platform feedback, or request hospital onboarding.">
 
-  <link rel="stylesheet" href="static/css/variables.css">
-  <link rel="stylesheet" href="static/css/base.css">
-  <link rel="stylesheet" href="static/css/components.css">
-  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -28,7 +35,7 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand-link">
-        <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
+        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
         <div class="brand-title">
           <span class="brand-name">Lifnex</span>
           <span class="brand-tagline-sub">Emergency Donor Network</span>
@@ -127,9 +134,9 @@
             </div>
           </div>
 
-          <!-- Existing Asset Card (Avatar / Emblem a85d36a49b94b9f1882397279955e05b.jpg) -->
+          <!-- Existing Asset Card (Avatar / Emblem voluntary-donor.jpg) -->
           <div class="card p-4 flex items-center gap-4" style="background:var(--slate-900); border-color:var(--slate-800);">
-            <img src="static/assets/images/a85d36a49b94b9f1882397279955e05b.jpg" alt="Donor Emblem" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--crimson-500);">
+            <img src="/static/assets/images/voluntary-donor.jpg" alt="Donor Emblem" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--crimson-500);">
             <div>
               <div class="text-white font-bold text-sm">Voluntary Donor Network</div>
               <div class="text-slate-400 text-xs mt-1">Our certified donor community responds 24/7 to hospital broadcasts across Metropolis.</div>
@@ -147,7 +154,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="flex items-center gap-2 mb-2">
-            <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
             <span class="text-white font-bold text-lg">Lifnex</span>
           </div>
           <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
@@ -191,7 +198,12 @@
     </div>
   </footer>
 
-  <script src="static/js/main.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 
