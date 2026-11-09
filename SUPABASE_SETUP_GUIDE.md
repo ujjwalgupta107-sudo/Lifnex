@@ -2,7 +2,7 @@
 
 **Project:** Lifnex — Connecting Lives When Every Second Matters  
 **Document Stage:** Phase 1 — Complete Project Planning & System Design  
-**Target Project:** LifnexDB (`https://paxkftydmvibrjtroinn.supabase.co`)  
+**Target Project:** LifnexDB (`https://ygbprigcrooveopipkcl.supabase.co`)  
 **Strict Restriction:** 100% Supabase-Centric. No Azure services permitted.
 
 ---
@@ -14,7 +14,7 @@ The Lifnex platform connects to the existing Supabase project using environment 
 ### Required Environment Variables Template (`.env.example`):
 ```env
 # Supabase Project Configuration
-SUPABASE_URL=https://paxkftydmvibrjtroinn.supabase.co
+SUPABASE_URL=https://ygbprigcrooveopipkcl.supabase.co
 SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_anon_key_here
 SUPABASE_SECRET_KEY=your_supabase_service_role_secret_key_here
 

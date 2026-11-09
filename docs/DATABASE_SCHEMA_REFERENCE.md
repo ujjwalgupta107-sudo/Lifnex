@@ -1,7 +1,7 @@
 # LIFNEX — DATABASE SCHEMA REFERENCE
 
 **Database Engine:** Supabase PostgreSQL 15  
-**Project Reference:** LifnexDB (`https://paxkftydmvibrjtroinn.supabase.co`)  
+**Project Reference:** LifnexDB (`https://ygbprigcrooveopipkcl.supabase.co`)  
 **Architecture:** Third Normal Form (3NF) Relational Model with Row Level Security (RLS)  
 
 ---

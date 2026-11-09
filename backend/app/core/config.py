@@ -16,7 +16,7 @@ class Config:
     DEBUG = os.getenv("FLASK_DEBUG", "1") == "1"
 
     # Supabase Configuration
-    SUPABASE_URL = os.getenv("SUPABASE_URL", "https://paxkftydmvibrjtroinn.supabase.co")
+    SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ygbprigcrooveopipkcl.supabase.co")
     SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY", "")
     SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "")
     SUPABASE_JWKS_URL = os.getenv("SUPABASE_JWKS_URL", "")

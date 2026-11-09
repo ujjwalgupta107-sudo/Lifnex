@@ -3,7 +3,7 @@
 **Project:** Lifnex — Connecting Lives When Every Second Matters  
 **Stage:** Phase 3 — Flask Backend & Supabase PostgreSQL Integration  
 **Database Engine:** Supabase PostgreSQL 15 (Project: LifnexDB)  
-**Target URL:** `https://paxkftydmvibrjtroinn.supabase.co`  
+**Target URL:** `https://ygbprigcrooveopipkcl.supabase.co`  
 
 ---
 
@@ -29,7 +29,7 @@ The complete SQL schema with table definitions, check constraints, foreign keys,
 📁 `backend/migrations/001_initial_schema.sql`
 
 ### Steps to Apply via Supabase Dashboard:
-1. Log in to your Supabase Dashboard: `https://supabase.com/dashboard/project/paxkftydmvibrjtroinn`.
+1. Log in to your Supabase Dashboard: `https://supabase.com/dashboard/project/ygbprigcrooveopipkcl`.
 2. Navigate to the **SQL Editor** tab from the left navigation pane.
 3. Click **+ New Query**.
 4. Open [001_initial_schema.sql](file:///c:/Users/Ujjwal/Desktop/Lifnex/backend/migrations/001_initial_schema.sql) and paste its complete contents into the editor.
@@ -47,7 +47,7 @@ cp .env.example .env
 ```
 
 Populate the `.env` variables from your Supabase Project Settings:
-- `SUPABASE_URL`: `https://paxkftydmvibrjtroinn.supabase.co`
+- `SUPABASE_URL`: `https://ygbprigcrooveopipkcl.supabase.co`
 - `SUPABASE_PUBLISHABLE_KEY`: Found under **Project Settings -> API -> Project API keys (anon / public)**.
 - `SUPABASE_SECRET_KEY`: Found under **Project Settings -> API -> Project API keys (service_role / secret)**.
 

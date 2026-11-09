@@ -25,7 +25,7 @@ def create_test_jwt(user_id="test-uid", role="patient", expired=False):
         "aud": "authenticated",
         "exp": int(exp.timestamp())
     }
-    return jwt.encode(payload, "test-secret-key", algorithm="HS256")
+    return jwt.encode(payload, "test-secret-key-that-is-at-least-32-bytes-long", algorithm="HS256")
 
 # 1. Registration Tests
 def test_valid_patient_registration(client):

@@ -131,7 +131,7 @@ The `demo-assests/` folder was inspected and fully cataloged in `ASSET_INVENTORY
    *Mitigation*: Implement client-side debouncing, server-side response caching, and clear fallback messages if quota is reached.
 2. **Risk: Browser Geolocation Denial by User**  
    *Mitigation*: Provide manual postal code or hospital dropdown selection if GPS permission is denied.
-3. **Assumption**: The Supabase project `LifnexDB` at `https://paxkftydmvibrjtroinn.supabase.co` will provide the required PostgreSQL and Auth services upon credential input in Phase 3.
+3. **Assumption**: The Supabase project `LifnexDB` at `https://ygbprigcrooveopipkcl.supabase.co` will provide the required PostgreSQL and Auth services upon credential input in Phase 3.
 
 ---
 

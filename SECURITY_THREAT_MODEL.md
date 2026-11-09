@@ -88,7 +88,7 @@ CREATE POLICY "No public deletions from audit logs" ON audit_logs
 ```mermaid
 graph TD
     subgraph EnvConfig[".env Configuration (Never committed to Git)"]
-        K1["SUPABASE_URL = https://paxkftydmvibrjtroinn.supabase.co"]
+        K1["SUPABASE_URL = https://ygbprigcrooveopipkcl.supabase.co"]
         K2["SUPABASE_PUBLISHABLE_KEY = sb_publishable_..."]
         K3["SUPABASE_SECRET_KEY = sb_secret_..."]
         K4["GEMINI_API_KEY = AIzaSy..."]

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     phone_number VARCHAR(30),
     role VARCHAR(30) NOT NULL DEFAULT 'patient',
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    is_demo BOOLEAN NOT NULL DEFAULT TRUE,
+    is_demo BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_user_role CHECK (role IN ('patient', 'donor', 'hospital', 'admin'))
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.donor_profiles (
     user_id UUID NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
     blood_group VARCHAR(5) NOT NULL,
     date_of_birth DATE NOT NULL,
-    gender VARCHAR(20) DEFAULT 'undisclosed',
+    gender VARCHAR(20) NOT NULL DEFAULT 'undisclosed',
     latitude DECIMAL(10, 7) NOT NULL,
     longitude DECIMAL(10, 7) NOT NULL,
     city VARCHAR(100) NOT NULL,
@@ -69,11 +69,12 @@ CREATE TABLE IF NOT EXISTS public.hospitals (
     contact_person VARCHAR(100) NOT NULL,
     is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     has_blood_bank BOOLEAN NOT NULL DEFAULT TRUE,
-    current_inventory_status JSONB DEFAULT '{}'::JSONB,
+    current_inventory_status JSONB NOT NULL DEFAULT '{}'::JSONB,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_hosp_latitude CHECK (latitude BETWEEN -90.0 AND 90.0),
-    CONSTRAINT chk_hosp_longitude CHECK (longitude BETWEEN -180.0 AND 180.0)
+    CONSTRAINT chk_hosp_longitude CHECK (longitude BETWEEN -180.0 AND 180.0),
+    CONSTRAINT chk_hosp_inventory_object CHECK (jsonb_typeof(current_inventory_status) = 'object')
 );
 
 -- ==============================================================================
@@ -94,12 +95,13 @@ CREATE TABLE IF NOT EXISTS public.blood_requests (
     latitude DECIMAL(10, 7) NOT NULL,
     longitude DECIMAL(10, 7) NOT NULL,
     required_by TIMESTAMPTZ NOT NULL,
-    is_demo BOOLEAN NOT NULL DEFAULT TRUE,
+    is_demo BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_req_blood_group CHECK (blood_group IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')),
     CONSTRAINT chk_req_units_required CHECK (units_required BETWEEN 1 AND 20),
     CONSTRAINT chk_req_units_fulfilled CHECK (units_fulfilled >= 0),
+    CONSTRAINT chk_req_units_fulfilled_not_over_required CHECK (units_fulfilled <= units_required),
     CONSTRAINT chk_req_urgency CHECK (urgency_level IN ('normal', 'urgent', 'critical')),
     CONSTRAINT chk_req_status CHECK (status IN ('open', 'in_progress', 'fulfilled', 'cancelled', 'expired')),
     CONSTRAINT chk_req_verification CHECK (verification_status IN ('pending_verification', 'verified', 'rejected')),
@@ -189,27 +191,42 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
 -- ==============================================================================
 -- PERFORMANCE INDEXES
 -- ==============================================================================
-CREATE INDEX IF NOT EXISTS idx_users_email ON public.users (email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON public.users (role);
 
 CREATE INDEX IF NOT EXISTS idx_donors_matching ON public.donor_profiles (blood_group, availability_status, last_donation_date);
 CREATE INDEX IF NOT EXISTS idx_donors_coords ON public.donor_profiles (latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_donors_city_blood_availability ON public.donor_profiles (city, blood_group, availability_status);
 
 CREATE INDEX IF NOT EXISTS idx_hospitals_coords ON public.hospitals (latitude, longitude);
-CREATE INDEX IF NOT EXISTS idx_hospitals_license ON public.hospitals (license_number);
+CREATE INDEX IF NOT EXISTS idx_hospitals_city_verified ON public.hospitals (city, is_verified);
 
 CREATE INDEX IF NOT EXISTS idx_requests_status_urgency ON public.blood_requests (status, urgency_level, blood_group);
 CREATE INDEX IF NOT EXISTS idx_requests_patient ON public.blood_requests (patient_id);
 CREATE INDEX IF NOT EXISTS idx_requests_hospital ON public.blood_requests (hospital_id);
+CREATE INDEX IF NOT EXISTS idx_requests_required_by ON public.blood_requests (required_by) WHERE status IN ('open', 'in_progress');
 
-CREATE INDEX IF NOT EXISTS idx_responses_req_donor ON public.donor_responses (request_id, donor_id);
+CREATE INDEX IF NOT EXISTS idx_responses_donor ON public.donor_responses (donor_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_recipient_read ON public.notifications (recipient_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON public.notifications (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_donation_hist_donor ON public.donation_history (donor_id);
+CREATE INDEX IF NOT EXISTS idx_donation_hist_hospital ON public.donation_history (hospital_id);
+CREATE INDEX IF NOT EXISTS idx_donation_hist_request ON public.donation_history (request_id) WHERE request_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_verification_target_status ON public.verification_records (target_user_id, status);
+CREATE INDEX IF NOT EXISTS idx_verification_reviewed_by ON public.verification_records (reviewed_by) WHERE reviewed_by IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_audit_actor ON public.audit_logs (actor_id) WHERE actor_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_audit_created ON public.audit_logs (created_at DESC);
 
 -- ==============================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- ROW LEVEL SECURITY (RLS) — FAIL-CLOSED BASE SCHEMA
 -- ==============================================================================
+-- Migration 001 creates the tables and enables RLS, but deliberately creates
+-- NO client-facing policies. This prevents an insecure access window between
+-- Migration 001 and Migration 002. Migration 002 is responsible for creating
+-- the reviewed 36 policies and granting the minimum required table privileges.
+--
+-- Until Migration 002 is applied, anon/authenticated have no table privileges.
+-- The trusted backend service_role is managed separately by Supabase.
+
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.donor_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hospitals ENABLE ROW LEVEL SECURITY;
@@ -220,90 +237,25 @@ ALTER TABLE public.donation_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.verification_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
--- 1. users Policies
-CREATE POLICY "Users can read own profile or admin can read all" ON public.users
-    FOR SELECT USING (auth.uid() = id OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
+REVOKE ALL ON TABLE
+    public.users,
+    public.donor_profiles,
+    public.hospitals,
+    public.blood_requests,
+    public.donor_responses,
+    public.notifications,
+    public.donation_history,
+    public.verification_records,
+    public.audit_logs
+FROM anon, authenticated;
 
-CREATE POLICY "Users can update own profile (excluding role)" ON public.users
-    FOR UPDATE USING (auth.uid() = id)
-    WITH CHECK (auth.uid() = id AND role = (SELECT role FROM public.users WHERE id = auth.uid()));
-
-CREATE POLICY "Service role can insert users" ON public.users
-    FOR INSERT WITH CHECK (true);
-
--- 2. donor_profiles Policies
-CREATE POLICY "Donors can manage own profile" ON public.donor_profiles
-    FOR ALL USING (auth.uid() = user_id);
-
-CREATE POLICY "Public read available donors non-sensitive data" ON public.donor_profiles
-    FOR SELECT USING (availability_status = 'available' OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
--- 3. hospitals Policies
-CREATE POLICY "Public read verified hospitals" ON public.hospitals
-    FOR SELECT USING (true);
-
-CREATE POLICY "Hospitals can update own facility info" ON public.hospitals
-    FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Hospital user can insert own hospital" ON public.hospitals
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-
--- 4. blood_requests Policies
-CREATE POLICY "Public read open blood requests" ON public.blood_requests
-    FOR SELECT USING (status IN ('open', 'in_progress') OR auth.uid() = patient_id OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
-CREATE POLICY "Authenticated users can create requests" ON public.blood_requests
-    FOR INSERT WITH CHECK (auth.uid() = patient_id);
-
-CREATE POLICY "Request creator or hospital can update request" ON public.blood_requests
-    FOR UPDATE USING (auth.uid() = patient_id OR auth.uid() IN (SELECT user_id FROM public.hospitals WHERE id = hospital_id) OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
--- 5. donor_responses Policies
-CREATE POLICY "Participants can read donor responses" ON public.donor_responses
-    FOR SELECT USING (
-        donor_id IN (SELECT id FROM public.donor_profiles WHERE user_id = auth.uid()) OR
-        request_id IN (SELECT id FROM public.blood_requests WHERE patient_id = auth.uid()) OR
-        (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin'
-    );
-
-CREATE POLICY "Donors can submit response" ON public.donor_responses
-    FOR INSERT WITH CHECK (donor_id IN (SELECT id FROM public.donor_profiles WHERE user_id = auth.uid()));
-
-CREATE POLICY "Donors can update own response" ON public.donor_responses
-    FOR UPDATE USING (donor_id IN (SELECT id FROM public.donor_profiles WHERE user_id = auth.uid()));
-
--- 6. notifications Policies
-CREATE POLICY "Users can read own notifications" ON public.notifications
-    FOR SELECT USING (recipient_id = auth.uid());
-
-CREATE POLICY "Users can mark own notifications read" ON public.notifications
-    FOR UPDATE USING (recipient_id = auth.uid());
-
--- 7. donation_history Policies
-CREATE POLICY "Donors and hospitals can view related donation history" ON public.donation_history
-    FOR SELECT USING (
-        donor_id IN (SELECT id FROM public.donor_profiles WHERE user_id = auth.uid()) OR
-        hospital_id IN (SELECT id FROM public.hospitals WHERE user_id = auth.uid()) OR
-        (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin'
-    );
-
-CREATE POLICY "Hospitals can insert donation records" ON public.donation_history
-    FOR INSERT WITH CHECK (hospital_id IN (SELECT id FROM public.hospitals WHERE user_id = auth.uid()) OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
--- 8. verification_records Policies
-CREATE POLICY "Users view own verifications; Admins view all" ON public.verification_records
-    FOR SELECT USING (target_user_id = auth.uid() OR (SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
-CREATE POLICY "Admins update verifications" ON public.verification_records
-    FOR UPDATE USING ((SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
--- 9. audit_logs Policies (Immutable)
-CREATE POLICY "Admins read audit logs" ON public.audit_logs
-    FOR SELECT USING ((SELECT role FROM public.users WHERE id = auth.uid()) = 'admin');
-
-CREATE POLICY "No public updates to audit logs" ON public.audit_logs
-    FOR UPDATE USING (false);
-
-CREATE POLICY "No public deletes to audit logs" ON public.audit_logs
-    FOR DELETE USING (false);
+-- NOTE:
+-- 1. Migration 002 must be applied immediately after this migration.
+-- 2. Do not expose these base tables through the client until Migration 002
+--    has installed its RLS policies and explicit grants.
+-- 3. Keep real accounts/requests is_demo = FALSE. Set TRUE explicitly only
+--    for synthetic demonstration records.
+-- 4. This script uses CREATE TABLE IF NOT EXISTS; it does not repair an
+--    already-existing table with a different definition. Use a new ALTER
+--    migration for any deployed schema changes.
 
