@@ -10,7 +10,7 @@ from backend.app.routes.health import health_bp
 from backend.app.routes.hospitals import hospitals_bp
 from backend.app.routes.blood_requests import blood_requests_bp
 from backend.app.routes.auth import auth_bp
-from backend.app.api.v1.donors import donors_bp
+from backend.app.routes.donors import donors_bp
 from backend.app.api.v1.matching import matching_bp
 
 def create_app(config_class=Config) -> Flask:

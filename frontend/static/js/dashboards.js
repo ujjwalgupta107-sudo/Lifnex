@@ -9,7 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const availStatusText = document.getElementById("availabilityStatusLabel");
   if (availToggle && availStatusText) {
     availToggle.addEventListener("change", () => {
-      if (availToggle.checked) {
+      const isAvailable = availToggle.checked;
+      const statusValue = isAvailable ? "available" : "inactive";
+
+      if (isAvailable) {
         availStatusText.textContent = "Available for Emergency Dispatch";
         availStatusText.className = "text-sm font-semibold text-emerald-600";
         Toast.show("Status Updated", "You are now marked AVAILABLE for compatible emergency requests.", "success");
@@ -18,6 +21,17 @@ document.addEventListener("DOMContentLoaded", () => {
         availStatusText.className = "text-sm font-semibold text-slate-500";
         Toast.show("Status Updated", "You are now marked INACTIVE. Emergency notifications paused.", "info");
       }
+
+      // Sync with Flask backend API
+      const token = typeof LifnexAuth !== "undefined" ? LifnexAuth.getToken() : null;
+      fetch("/api/v1/donors/availability", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ availability_status: statusValue })
+      }).catch(err => console.debug("Availability API sync (offline/fallback mode):", err));
     });
   }
 
@@ -94,6 +108,34 @@ document.addEventListener("DOMContentLoaded", () => {
         clinical_note: notes || "Emergency clinical requirement.",
         created_at: "Just now"
       };
+
+      // Send API Request to Flask backend if user is authenticated
+      const token = typeof LifnexAuth !== "undefined" ? LifnexAuth.getToken() : null;
+      if (token) {
+        fetch("/api/v1/blood-requests", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            hospital_id: hospital.includes("-") ? hospital : "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+            blood_group: bloodGroup,
+            units_required: parseInt(units, 10),
+            urgency_level: urgency,
+            clinical_notes: notes || "Emergency clinical requirement.",
+            latitude: 28.6145,
+            longitude: 77.2100,
+            required_by: new Date(Date.now() + 12 * 3600 * 1000).toISOString()
+          })
+        }).then(res => res.json()).then(respData => {
+          if (respData.success) {
+            Toast.show("Emergency Broadcast Live", `Requisition created for ${units} units of ${bloodGroup}.`, "success", 4000);
+          }
+        }).catch(err => {
+          console.error("Error creating request via API:", err);
+        });
+      }
 
       LifnexDemoStore.addRequest(newRecord);
       Toast.show("Emergency Broadcast Live", `Alert dispatched for ${units} units of ${bloodGroup} to nearby donors.`, "success", 4000);

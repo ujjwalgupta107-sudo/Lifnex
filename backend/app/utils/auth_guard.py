@@ -163,21 +163,28 @@ def require_auth(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def require_roles(allowed_roles: List[str]):
+def require_roles(*allowed_roles):
     """
-    Decorator restricting route to users possessing one of `allowed_roles`
+    Decorator restricting route to users possessing one of `allowed_roles`.
+    Accepts roles as either positional strings: @require_roles("patient", "admin")
+    or as a single iterable list: @require_roles(["patient", "admin"]).
     """
+    if len(allowed_roles) == 1 and isinstance(allowed_roles[0], (list, tuple, set)):
+        roles_set = set(allowed_roles[0])
+    else:
+        roles_set = set(allowed_roles)
+
     def decorator(f):
         @wraps(f)
         @require_auth
         def wrapper(*args, **kwargs):
             user_role = g.user.get("role")
-            if user_role not in allowed_roles:
+            if user_role not in roles_set:
                 return jsonify({
                     "success": False,
                     "error": {
                         "code": "FORBIDDEN",
-                        "message": f"Access denied. Requires one of the following roles: {', '.join(allowed_roles)}."
+                        "message": f"Access denied. Requires one of the following roles: {', '.join(sorted(roles_set))}."
                     }
                 }), 403
             return f(*args, **kwargs)

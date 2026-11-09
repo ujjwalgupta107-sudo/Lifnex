@@ -74,12 +74,15 @@ def test_blood_requests_get(client):
     assert isinstance(data["data"], list)
 
 def test_request_validation_failure(client):
-    """Verifies rejection of invalid request schemas"""
+    """Verifies rejection of invalid request schemas when authenticated"""
+    from backend.tests.test_auth import create_test_jwt
+    token = create_test_jwt(user_id="00000000-0000-0000-0000-000000000001", role="patient")
+    headers = {"Authorization": f"Bearer {token}"}
     payload = {
         "blood_group": "INVALID_TYPE",
         "units_required": 999  # Exceeds max 20
     }
-    res = client.post("/api/v1/requests", json=payload)
+    res = client.post("/api/v1/requests", json=payload, headers=headers)
     assert res.status_code == 400
     data = res.get_json()
     assert data["success"] is False
