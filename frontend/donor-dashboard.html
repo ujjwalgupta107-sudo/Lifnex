@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Hub & Availability Management — Lifnex</title>
+
+  <link rel="stylesheet" href="static/css/variables.css">
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="static/css/dashboards.css">
+</head>
+<body>
+
+  <!-- Demo Disclaimer Banner -->
+  <div class="demo-banner">
+    <div class="container flex justify-between items-center">
+      <div class="demo-banner-text">
+        <span class="demo-tag">Donor Portal Demo</span>
+        <span>Voluntary donor demonstration interface with interactive availability toggle and dispatch simulation.</span>
+      </div>
+      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Return to Public Site</a>
+    </div>
+  </div>
+
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-brand">
+        <a href="index.html" class="flex items-center gap-2">
+          <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+          <span class="brand-name font-bold text-lg">Lifnex</span>
+        </a>
+      </div>
+
+      <div class="sidebar-user-badge">
+        <div class="user-avatar-circle" style="background: #e11d48;">
+          <img src="static/assets/images/a85d36a49b94b9f1882397279955e05b.jpg" alt="Donor Avatar" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="user-info-text">
+          <div class="user-display-name">Alex Rivera (Demo)</div>
+          <div class="user-role-tag">
+            <span class="badge badge-success" style="font-size: 0.65rem;">Active Donor</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="donor-dashboard.html" class="sidebar-item active">
+          <span class="sidebar-item-icon">🩸</span>
+          <span>Donor Hub</span>
+        </a>
+        <a href="hospitals.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🏥</span>
+          <span>Find Blood Banks</span>
+        </a>
+        <a href="patient-dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🔄</span>
+          <span>Switch to Patient View</span>
+        </a>
+        <a href="hospital-dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🔄</span>
+          <span>Switch to Hospital View</span>
+        </a>
+        <a href="admin-dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🔄</span>
+          <span>Switch to Admin View</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="login.html" class="btn btn-ghost btn-sm w-full text-slate-400 hover:text-white justify-start">
+          <span>🚪 Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">&#9776;</button>
+          <div class="dashboard-title">
+            <h2>Voluntary Donor Hub</h2>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Availability Toggle Component -->
+          <div class="switch-container">
+            <label class="switch">
+              <input type="checkbox" id="donorAvailabilityToggle" checked>
+              <span class="slider"></span>
+            </label>
+            <div>
+              <div class="text-xs font-bold text-slate-900">Emergency Dispatch</div>
+              <div id="availabilityStatusLabel" class="text-xs font-semibold text-emerald-600">Available for Emergency Dispatch</div>
+            </div>
+          </div>
+
+          <button class="notifications-trigger" id="notificationsBtn" aria-label="View notifications">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            <span class="unread-bubble"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="dashboard-body">
+        
+        <!-- Metrics Row -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-icon-box icon-crimson">🩸</div>
+            <div class="metric-info">
+              <h3>O- (Universal)</h3>
+              <p>Registered Blood Group</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box icon-emerald">⭐</div>
+            <div class="metric-info">
+              <h3>5 Donations</h3>
+              <p>Lifetime Verified Contributions</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box icon-blue">📍</div>
+            <div class="metric-info">
+              <h3>15 km</h3>
+              <p>Active Dispatch Alert Radius</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box icon-amber">🛡</div>
+            <div class="metric-info">
+              <h3>Eligible</h3>
+              <p>Cooldown Cleared (Last: 110d ago)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Feed for this Donor -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">
+              <span>Compatible Emergency Blood Requests Within Radius</span>
+              <span class="badge badge-blood">Matching: O- Donors</span>
+            </div>
+            <span class="text-xs text-slate-500">Live Haversine Proximity Feed</span>
+          </div>
+
+          <div class="space-y-4">
+            
+            <!-- Feed Item 1 -->
+            <div class="emergency-item-card" data-id="REQ-701">
+              <div class="emergency-badge-column">
+                <span class="blood-type-display">O-</span>
+                <span class="units-req-label">2 Units</span>
+              </div>
+              <div class="emergency-detail-column">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="badge badge-critical pulse-critical">Critical</span>
+                  <span class="badge badge-success">Hospital Verified</span>
+                  <span class="text-xs text-slate-400 font-mono">REQ-701</span>
+                </div>
+                <h4 class="emergency-hospital-name">City Care Super Specialty Hospital</h4>
+                <div class="emergency-meta-tags">
+                  <span>📍 2.4 km away (Est. 8 mins drive)</span>
+                  <span>⏱ Required by: Within 45 mins</span>
+                  <span>🏥 ICU Bed 4 Trauma Surgery</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 italic">"Acute trauma resuscitation; negative cross-match unit required immediately."</p>
+              </div>
+              <div class="emergency-actions">
+                <button class="btn btn-sm btn-secondary" data-action="decline-request">Decline</button>
+                <button class="btn btn-sm btn-primary" data-action="accept-request">Accept & Respond</button>
+              </div>
+            </div>
+
+            <!-- Feed Item 2 -->
+            <div class="emergency-item-card" data-id="REQ-704">
+              <div class="emergency-badge-column">
+                <span class="blood-type-display">AB+</span>
+                <span class="units-req-label">2 Units</span>
+              </div>
+              <div class="emergency-detail-column">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="badge badge-urgent">Urgent</span>
+                  <span class="badge badge-demo">Universal Donor Match</span>
+                  <span class="text-xs text-slate-400 font-mono">REQ-704</span>
+                </div>
+                <h4 class="emergency-hospital-name">Apex Regional Medical Center</h4>
+                <div class="emergency-meta-tags">
+                  <span>📍 8.3 km away</span>
+                  <span>⏱ Required by: Within 3 hours</span>
+                  <span>🏥 Cardiac Surgery Pre-op</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 italic">"Scheduled cardiothoracic support. O- red cells are biologically acceptable."</p>
+              </div>
+              <div class="emergency-actions">
+                <button class="btn btn-sm btn-secondary" data-action="decline-request">Decline</button>
+                <button class="btn btn-sm btn-primary" data-action="accept-request">Accept & Respond</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Verified Donation History & Cooldown Tracker -->
+        <div class="grid-2 gap-6">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Verified Donation Ledger</div>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Hospital Center</th>
+                    <th>Units</th>
+                    <th>Certificate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-xs">22 Jul 2026</td>
+                    <td class="text-xs font-semibold">City Care Super Specialty</td>
+                    <td class="text-xs">1 Unit (O-)</td>
+                    <td><span class="badge badge-success text-xs font-mono">CERT-99201</span></td>
+                  </tr>
+                  <tr>
+                    <td class="text-xs">18 Apr 2026</td>
+                    <td class="text-xs font-semibold">Metro Central Trauma</td>
+                    <td class="text-xs">1 Unit (O-)</td>
+                    <td><span class="badge badge-success text-xs font-mono">CERT-87114</span></td>
+                  </tr>
+                  <tr>
+                    <td class="text-xs">12 Jan 2026</td>
+                    <td class="text-xs font-semibold">St. Jude Blood Bank</td>
+                    <td class="text-xs">1 Unit (O-)</td>
+                    <td><span class="badge badge-success text-xs font-mono">CERT-76503</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Donor Preparation Guidance -->
+          <div class="card p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="user-avatar-circle" style="background:#e11d48; width:36px; height:36px;">💧</div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-900">Pre-Donation Medical Checklist</h4>
+                <div class="text-xs text-slate-500">Ensure optimal hydration & clinical eligibility</div>
+              </div>
+            </div>
+            <ul class="text-xs space-y-2 text-slate-700">
+              <li>💧 <strong>Hydration:</strong> Drink at least 500ml of water or fruit juice before travel.</li>
+              <li>🥗 <strong>Nutrition:</strong> Eat a healthy, non-fatty meal within 3 hours prior to donation.</li>
+              <li>😴 <strong>Rest:</strong> Ensure a minimum of 6 to 8 hours of uninterrupted sleep.</li>
+              <li>🆔 <strong>Identification:</strong> Carry an official government photo identity card to the hospital desk.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Accept Confirmation Modal -->
+  <div class="modal-backdrop" id="donorResponseModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="font-bold text-base text-slate-900">Confirm Emergency Blood Dispatch</h3>
+        <button class="btn-ghost btn-icon" data-modal-close="donorResponseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-slate-600 mb-3">
+          You are responding to emergency request <strong id="modalReqId" class="text-crimson-600">REQ-701</strong>. The hospital transfusion desk will prepare receiving protocols.
+        </p>
+
+        <div class="form-group">
+          <label for="donorEtaInput" class="form-label text-xs">Estimated Arrival Time (Minutes) <span class="required">*</span></label>
+          <select id="donorEtaInput" class="form-select text-xs">
+            <option value="15">Within 15 minutes</option>
+            <option value="30" selected>Within 30 minutes</option>
+            <option value="45">Within 45 minutes</option>
+            <option value="60">Within 1 hour</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-amber-50 rounded border border-amber-200 text-xs text-amber-800">
+          <strong>Notice:</strong> If your transit conditions change or you cannot arrive, please decline or contact the hospital desk promptly so another voluntary donor can be dispatched.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-modal-close="donorResponseModal">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="confirmDonorAcceptBtn">Confirm Response & Notify Hospital</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="static/js/main.js"></script>
+  <script src="static/js/dashboards.js"></script>
+</body>
+</html>
+

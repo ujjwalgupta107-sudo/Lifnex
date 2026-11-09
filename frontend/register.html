@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create an Account — Lifnex Platform</title>
+
+  <link rel="stylesheet" href="static/css/variables.css">
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+  <style>
+    .role-selector-card {
+      border: 2px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: center;
+    }
+    .role-selector-card:hover {
+      border-color: var(--crimson-400);
+      background-color: var(--crimson-50);
+    }
+    .role-selector-card.selected {
+      border-color: var(--crimson-600);
+      background-color: var(--crimson-50);
+    }
+  </style>
+</head>
+<body style="background: radial-gradient(circle at top right, rgba(254, 205, 211, 0.3), transparent 60%), var(--slate-100); min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Demo Disclaimer Banner -->
+  <div class="demo-banner">
+    <div class="container flex justify-between items-center">
+      <div class="demo-banner-text">
+        <span class="demo-tag">Synthetic Demo Environment</span>
+        <span>Simulated account onboarding — no real medical records or credentials stored.</span>
+      </div>
+      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Back to Home</a>
+    </div>
+  </div>
+
+  <main class="flex items-center justify-center flex-1 p-6">
+    <div class="card p-8" style="max-width: 580px; width: 100%; box-shadow: var(--shadow-xl);">
+      <div class="text-center mb-6">
+        <a href="index.html" class="inline-flex items-center gap-2 mb-2">
+          <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 38px; width: auto; margin: 0 auto;">
+        </a>
+        <h2 class="text-xl font-bold text-slate-900">Join the Lifnex Network</h2>
+        <p class="text-xs text-slate-500 mt-1">Select your role to configure your emergency coordination account</p>
+      </div>
+
+      <form id="registrationForm">
+        <!-- Role Selection -->
+        <input type="hidden" id="selectedRoleInput" value="donor">
+        <div class="form-group">
+          <label class="form-label">I am joining as a:</label>
+          <div class="grid-3 gap-2">
+            <div class="role-selector-card selected" data-role="donor">
+              <div class="text-xl mb-1">🩸</div>
+              <div class="font-bold text-xs text-slate-900">Voluntary Donor</div>
+            </div>
+            <div class="role-selector-card" data-role="patient">
+              <div class="text-xl mb-1">🆘</div>
+              <div class="font-bold text-xs text-slate-900">Patient / Family</div>
+            </div>
+            <div class="role-selector-card" data-role="hospital">
+              <div class="text-xl mb-1">🏥</div>
+              <div class="font-bold text-xs text-slate-900">Hospital / Bank</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 gap-4">
+          <div class="form-group">
+            <label for="regFullName" class="form-label">Full Name <span class="required">*</span></label>
+            <input type="text" id="regFullName" class="form-input" placeholder="e.g. Maya Lin" required>
+          </div>
+          <div class="form-group">
+            <label for="regEmail" class="form-label">Email Address <span class="required">*</span></label>
+            <input type="email" id="regEmail" class="form-input" placeholder="maya.lin@example.com" required>
+          </div>
+        </div>
+
+        <div class="grid-2 gap-4">
+          <div class="form-group">
+            <label for="regPhone" class="form-label">Phone (Optional)</label>
+            <input type="tel" id="regPhone" class="form-input" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label for="regCity" class="form-label">City / Municipality</label>
+            <input type="text" id="regCity" class="form-input" placeholder="Metropolis" value="Metropolis">
+          </div>
+        </div>
+
+        <!-- Conditional Donor Fields -->
+        <div id="donorSpecificFields" class="p-3 bg-rose-50 rounded border border-rose-200 mb-4">
+          <div class="font-bold text-xs text-crimson-700 mb-2">Donor Medical Profile Details</div>
+          <div class="grid-2 gap-3">
+            <div class="form-group mb-0">
+              <label for="regBloodGroup" class="form-label text-xs">Blood Group <span class="required">*</span></label>
+              <select id="regBloodGroup" class="form-select text-xs">
+                <option value="O-">O Negative (O-)</option>
+                <option value="O+">O Positive (O+)</option>
+                <option value="A-">A Negative (A-)</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="B-">B Negative (B-)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="AB-">AB Negative (AB-)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label for="regRadius" class="form-label text-xs">Alert Radius (km)</label>
+              <select id="regRadius" class="form-select text-xs">
+                <option value="5">Within 5 km</option>
+                <option value="15" selected>Within 15 km (Recommended)</option>
+                <option value="25">Within 25 km</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conditional Hospital Fields -->
+        <div id="hospitalSpecificFields" class="p-3 bg-blue-50 rounded border border-blue-200 mb-4" style="display:none;">
+          <div class="font-bold text-xs text-blue-800 mb-2">Hospital Accreditation Details</div>
+          <div class="grid-2 gap-3">
+            <div class="form-group mb-0">
+              <label for="regHospitalLicense" class="form-label text-xs">Medical License No. <span class="required">*</span></label>
+              <input type="text" id="regHospitalLicense" class="form-input text-xs" placeholder="e.g. MED-LIC-2026-990">
+            </div>
+            <div class="form-group mb-0">
+              <label for="regHospitalPhone" class="form-label text-xs">24/7 Desk Phone</label>
+              <input type="text" id="regHospitalPhone" class="form-input text-xs" placeholder="+1 (555) 019-0000">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regPassword" class="form-label">Create Password <span class="required">*</span></label>
+          <div class="input-with-action">
+            <input type="password" id="regPassword" class="form-input" placeholder="Minimum 8 characters" required>
+            <button type="button" class="input-action-btn password-toggle-btn" aria-label="Toggle password visibility">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" id="regTerms" required>
+            <span class="text-xs">
+              I acknowledge that Lifnex is an emergency coordination platform and that medical suitability & compatibility must be certified on-site by healthcare professionals.
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full py-2 mb-4">Complete Registration</button>
+
+        <div class="text-center text-xs text-slate-500">
+          Already have an account? <a href="login.html" class="font-bold text-crimson-600 hover:underline">Sign In</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="static/js/main.js"></script>
+  <script src="static/js/auth.js"></script>
+</body>
+</html>
+

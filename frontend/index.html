@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lifnex — Connecting Lives When Every Second Matters | AI-Powered Emergency Blood Donor Network</title>
+  <meta name="description" content="AI-powered emergency blood donor coordination platform connecting patients requiring blood with verified voluntary donors, hospitals, and blood banks.">
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="static/css/variables.css">
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+</head>
+<body>
+
+  <!-- Demo Disclaimer Banner -->
+  <div class="demo-banner">
+    <div class="container flex justify-between items-center">
+      <div class="demo-banner-text">
+        <span class="demo-tag">Synthetic Demo Environment</span>
+        <span>All donor records, hospitals, emergency cases, and coordinates are simulated for demonstration.</span>
+      </div>
+      <a href="how-it-works.html" class="text-xs text-cyan-200 hover:underline">Learn How It Works &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link">
+        <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
+        <div class="brand-title">
+          <span class="brand-name">Lifnex</span>
+          <span class="brand-tagline-sub">Emergency Donor Network</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="how-it-works.html" class="nav-link">How It Works</a>
+        <a href="hospitals.html" class="nav-link">Hospitals & Blood Banks</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+
+      <!-- Auth Actions -->
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-secondary btn-sm">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu">&#9776;</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-badge-pill">
+            <span class="badge badge-critical badge-dot">Live Coordination</span>
+            <span>Intelligent Location-Based Emergency Blood Matching</span>
+          </div>
+          <h1 class="hero-title">
+            Connecting Lives When <br><span class="highlight">Every Second Matters</span>
+          </h1>
+          <p class="hero-description">
+            Lifnex coordinates critical emergency blood requests with verified voluntary donors, accredited blood banks, and hospitals in real time using geospatial discovery and AI-assisted triage.
+          </p>
+
+          <div class="hero-ctas">
+            <a href="register.html" class="btn btn-primary btn-lg">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Request Blood Immediately
+            </a>
+            <a href="register.html?role=donor" class="btn btn-secondary btn-lg">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+              Become a Voluntary Donor
+            </a>
+          </div>
+
+          <!-- Illustrative Demo Stats -->
+          <div class="hero-stats-row">
+            <div class="hero-stat-item">
+              <h4>1,420+</h4>
+              <p>Demo Donors Registered</p>
+            </div>
+            <div class="hero-stat-item">
+              <h4>14 min</h4>
+              <p>Simulated Average Dispatch</p>
+            </div>
+            <div class="hero-stat-item">
+              <h4>98.4%</h4>
+              <p>Fulfillment Target Ratio</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Visual (Using demo-assests hero image) -->
+        <div class="hero-visual-card">
+          <img src="static/assets/images/63880284821092a1499a052d23a92755.jpg" alt="Blood Donation Care by Medical Team" class="hero-image">
+          <div class="hero-floating-badge">
+            <div class="user-avatar-circle" style="background:#e11d48;">
+              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            </div>
+            <div>
+              <div class="font-bold text-sm">Verified Healthcare Checkpoints</div>
+              <div class="text-xs text-slate-300">All compatibility and eligibility confirmed by authorized clinicians.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Medical Safety Banner -->
+  <section class="container">
+    <div class="medical-disclaimer-box">
+      <div class="medical-disclaimer-icon">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+      <div>
+        <div class="medical-disclaimer-title">IMPORTANT MEDICAL & LEGAL DISCLAIMER</div>
+        <div class="medical-disclaimer-text">
+          Lifnex is a technological <strong>communication and coordination platform</strong>, NOT a blood bank, testing laboratory, or transfusion facility. Biological cross-matching, Rh antigen compatibility, hemoglobin verification, infectious screening, and final donor eligibility must <strong>always</strong> be confirmed by certified healthcare professionals on-site at authorized hospitals or blood banks.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Blood Compatibility Matrix -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Clinical Compatibility Guide</span>
+        <h2 class="section-title">Blood Group Compatibility Matrix</h2>
+        <p class="section-desc">Click any blood type below to explore biological donor and recipient matches in emergency scenarios.</p>
+      </div>
+
+      <div class="matrix-container container-narrow">
+        <div class="matrix-grid">
+          <div class="matrix-cell active" data-group="O-">
+            <div class="matrix-cell-label">O-</div>
+            <div class="text-xs">Universal</div>
+          </div>
+          <div class="matrix-cell" data-group="O+">
+            <div class="matrix-cell-label">O+</div>
+            <div class="text-xs">Common</div>
+          </div>
+          <div class="matrix-cell" data-group="A-">
+            <div class="matrix-cell-label">A-</div>
+            <div class="text-xs">Rare</div>
+          </div>
+          <div class="matrix-cell" data-group="A+">
+            <div class="matrix-cell-label">A+</div>
+            <div class="text-xs">High Demand</div>
+          </div>
+          <div class="matrix-cell" data-group="B-">
+            <div class="matrix-cell-label">B-</div>
+            <div class="text-xs">Rare</div>
+          </div>
+          <div class="matrix-cell" data-group="B+">
+            <div class="matrix-cell-label">B+</div>
+            <div class="text-xs">Common</div>
+          </div>
+          <div class="matrix-cell" data-group="AB-">
+            <div class="matrix-cell-label">AB-</div>
+            <div class="text-xs">Very Rare</div>
+          </div>
+          <div class="matrix-cell" data-group="AB+">
+            <div class="matrix-cell-label">AB+</div>
+            <div class="text-xs">Recipient</div>
+          </div>
+        </div>
+
+        <div class="matrix-details-box" id="matrixDetailBox">
+          <h4 class="font-bold text-crimson mb-1">Blood Group: O- (Universal Donor)</h4>
+          <p class="text-sm mb-1"><strong>Can safely donate red blood cells to:</strong> All Blood Types (O-, O+, A-, A+, B-, B+, AB-, AB+)</p>
+          <p class="text-sm"><strong>Can receive red blood cells from:</strong> O- Only</p>
+          <p class="text-xs text-muted mt-2"><em>*Final biological compatibility must always be verified via clinical cross-matching by certified healthcare professionals.</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Platform Pillars -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">How Lifnex Protects Communities</span>
+        <h2 class="section-title">Engineered for Rapid Response</h2>
+        <p class="section-desc">Combining cutting-edge geospatial discovery, real-time sync, and Gemini AI assistance to minimize critical dispatch delays.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          </div>
+          <h3 class="feature-title">Location-Based Matching</h3>
+          <p class="text-sm text-muted">
+            The Haversine proximity engine alerts compatible voluntary donors within a tailored radius (5km to 25km), dramatically shrinking response transit time.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <h3 class="feature-title">Real-Time Dispatch Updates</h3>
+          <p class="text-sm text-muted">
+            Realtime WebSocket alerts synchronize request states instantly across patients, hospital desks, and donors without browser reloads.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+          </div>
+          <h3 class="feature-title">Gemini AI Triage Assistant</h3>
+          <p class="text-sm text-muted">
+            Google Gemini API parses physician notes into structured emergency parameters and guides prospective donors on hydration and resting protocols.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Simulated Live Emergency Broadcasts Feed (Interactive) -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Live Demonstration Feed</span>
+        <h2 class="section-title">Current Emergency Requests</h2>
+        <p class="section-desc">Sample emergency cases currently open in the synthetic demonstration network.</p>
+      </div>
+
+      <div class="container-narrow">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <label for="filterBloodGroup" class="text-xs font-bold text-slate-600">Blood Group:</label>
+            <select id="filterBloodGroup" class="form-select form-input text-xs" style="width: auto; padding: 4px 8px;">
+              <option value="ALL">All Types</option>
+              <option value="O-">O-</option>
+              <option value="O+">O+</option>
+              <option value="A-">A-</option>
+              <option value="A+">A+</option>
+              <option value="B+">B+</option>
+              <option value="AB+">AB+</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label for="filterUrgency" class="text-xs font-bold text-slate-600">Urgency:</label>
+            <select id="filterUrgency" class="form-select form-input text-xs" style="width: auto; padding: 4px 8px;">
+              <option value="ALL">All Priorities</option>
+              <option value="critical">Critical</option>
+              <option value="urgent">Urgent</option>
+              <option value="normal">Normal</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="emergencyFeedContainer" class="emergency-feed">
+          <!-- Rendered via requests.js -->
+        </div>
+
+        <div class="text-center mt-6">
+          <a href="register.html?role=donor" class="btn btn-primary">Join the Donor Network to Respond</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="flex items-center gap-2 mb-2">
+            <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+            <span class="text-white font-bold text-lg">Lifnex</span>
+          </div>
+          <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
+          <div class="text-xs text-cyan-400">DEMO PLATFORM — SYNTHETIC DATA ONLY</div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Quick Links</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Mission</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="hospitals.html">Hospitals & Blood Banks</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Dashboards</h5>
+          <ul>
+            <li><a href="patient-dashboard.html">Patient Portal</a></li>
+            <li><a href="donor-dashboard.html">Donor Hub</a></li>
+            <li><a href="hospital-dashboard.html">Hospital Coordination</a></li>
+            <li><a href="admin-dashboard.html">Admin Analytics</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Emergency Desk</h5>
+          <p class="text-xs text-slate-400 mb-2">For real medical crises, call your national emergency ambulance hotline immediately.</p>
+          <div class="text-sm font-bold text-white">Demo Helpline: +1 (555) 019-LIFNEX</div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Lifnex Platform. All rights reserved. Built for professional academic demonstration.</div>
+        <div class="flex gap-4">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Coordination</a>
+          <a href="#">Clinical Disclaimers</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="static/js/main.js"></script>
+  <script src="static/js/requests.js"></script>
+</body>
+</html>
+

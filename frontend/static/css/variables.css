@@ -1,0 +1,109 @@
+/* ==========================================================================
+   LIFNEX DESIGN SYSTEM - CSS VARIABLES
+   Derived from UI_DESIGN_SYSTEM.md & demo-assests reference concepts
+   ========================================================================== */
+
+:root {
+  /* Brand Crimson Palette */
+  --crimson-50:  #fff1f2;
+  --crimson-100: #ffe4e6;
+  --crimson-200: #fecdd3;
+  --crimson-300: #fda4af;
+  --crimson-400: #fb7185;
+  --crimson-500: #f43f5e;
+  --crimson-600: #e11d48;  /* Primary Brand Action */
+  --crimson-700: #be123c;
+  --crimson-800: #9f1239;
+  --crimson-900: #881337;
+  --crimson-950: #4c0519;
+
+  /* Neutral Medical Slates */
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  /* Pure Accents */
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Healthcare Status Indicators */
+  --status-critical: #ef4444; /* Emergency / Critical */
+  --status-urgent:   #f59e0b; /* Urgent Attention */
+  --status-normal:   #3b82f6; /* Standard Priority */
+  --status-success:  #10b981; /* Confirmed / Fulfilled / Available */
+  --status-cooldown: #8b5cf6; /* Cooldown Period (90 days) */
+  --status-demo:     #06b6d4; /* Fictional Synthetic Demo Badge */
+
+  /* Surface & Background Roles */
+  --bg-body: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-glass: rgba(255, 255, 255, 0.85);
+  --bg-sidebar: #0f172a;
+  --bg-sidebar-hover: #1e293b;
+
+  /* Text Roles */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --text-inverted: #ffffff;
+
+  /* Borders & Dividers */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-focus: #e11d48;
+  --border-dark: #334155;
+
+  /* Elevation Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 2px 4px 0 rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+  --shadow-xl: 0 20px 30px -6px rgba(15, 23, 42, 0.15), 0 8px 16px -4px rgba(15, 23, 42, 0.08);
+  --shadow-crimson: 0 8px 20px -4px rgba(225, 29, 72, 0.35);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout Constants */
+  --header-height: 72px;
+  --sidebar-width: 270px;
+  --container-max: 1280px;
+}
+
+/* Optional Dark Surface Theme tokens for Dashboard / Visual Sections */
+[data-theme="dark"] {
+  --bg-body: #020617;
+  --bg-surface: #0f172a;
+  --bg-surface-elevated: #1e293b;
+  --bg-surface-glass: rgba(15, 23, 42, 0.85);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-light: #1e293b;
+  --border-medium: #334155;
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.6);
+}
+

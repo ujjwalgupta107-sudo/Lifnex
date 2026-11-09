@@ -1,0 +1,518 @@
+/* ==========================================================================
+   LIFNEX DASHBOARD STYLES
+   Patient, Donor, Hospital, and Admin Portals
+   Derived from demo-assests/ui and ux idea 1.png & ui and ux idea 2.png
+   ========================================================================== */
+
+/* 1. DASHBOARD WRAPPER & LAYOUT */
+.dashboard-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--slate-100);
+}
+
+/* 2. SIDEBAR NAVIGATION */
+.dashboard-sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--slate-900);
+  color: var(--slate-300);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: transform var(--transition-normal);
+  border-right: 1px solid var(--slate-800);
+}
+
+.sidebar-brand {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--slate-800);
+  background-color: var(--slate-950);
+}
+
+.sidebar-brand .brand-name {
+  color: var(--crimson-500);
+}
+
+.sidebar-user-badge {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--slate-800);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background-color: rgba(30, 41, 59, 0.4);
+}
+
+.user-avatar-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--crimson-600);
+  color: var(--white);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.user-avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-info-text {
+  overflow: hidden;
+}
+
+.user-display-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--white);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.user-role-tag {
+  font-size: 0.75rem;
+  color: var(--slate-400);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1.25rem 0.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  color: var(--slate-300);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background-color: var(--slate-800);
+  color: var(--white);
+}
+
+.sidebar-item.active {
+  background-color: var(--crimson-600);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.sidebar-item-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--slate-800);
+  background-color: var(--slate-950);
+}
+
+/* 3. MAIN DASHBOARD CONTENT AREA */
+.dashboard-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-normal);
+}
+
+.dashboard-topbar {
+  height: var(--header-height);
+  background: var(--white);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sidebar-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--slate-600);
+  cursor: pointer;
+}
+
+.dashboard-title h2 {
+  font-size: 1.25rem;
+  color: var(--slate-900);
+  font-weight: 700;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.notifications-trigger {
+  position: relative;
+  background: none;
+  border: none;
+  color: var(--slate-600);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.notifications-trigger:hover {
+  background-color: var(--slate-100);
+  color: var(--slate-900);
+}
+
+.unread-bubble {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--crimson-600);
+  border-radius: 50%;
+  border: 2px solid var(--white);
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 2rem;
+  width: 360px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  display: none;
+  z-index: 100;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.notifications-dropdown.active {
+  display: block;
+}
+
+.notif-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notif-item {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.notif-item:hover {
+  background-color: var(--slate-50);
+}
+
+.notif-item.unread {
+  background-color: var(--crimson-50);
+}
+
+.dashboard-body {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* 4. DASHBOARD STATS GRID */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.icon-crimson { background-color: var(--crimson-50); color: var(--crimson-600); }
+.icon-emerald { background-color: #ecfdf5; color: #059669; }
+.icon-blue    { background-color: #eff6ff; color: #2563eb; }
+.icon-amber   { background-color: #fffbeb; color: #d97706; }
+
+.metric-info h3 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--slate-900);
+  line-height: 1.1;
+}
+
+.metric-info p {
+  font-size: 0.8125rem;
+  color: var(--slate-500);
+  margin-top: 0.2rem;
+}
+
+/* 5. REQUEST FEED & CARDS (From ui and ux idea 1.png) */
+.emergency-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.emergency-item-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-left: 5px solid var(--crimson-600);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  transition: all var(--transition-fast);
+}
+
+.emergency-item-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-medium);
+  border-left-color: var(--crimson-600);
+}
+
+.emergency-badge-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 0.75rem;
+  background: var(--crimson-50);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--crimson-200);
+}
+
+.blood-type-display {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--crimson-700);
+  line-height: 1;
+}
+
+.units-req-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--crimson-900);
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+}
+
+.emergency-detail-column {
+  flex: 1;
+}
+
+.emergency-hospital-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin-bottom: 0.25rem;
+}
+
+.emergency-meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.8125rem;
+  color: var(--slate-500);
+}
+
+.emergency-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 6. LEAFLET MAP WRAPPERS */
+.map-container-box {
+  width: 100%;
+  height: 480px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 10;
+}
+
+/* 7. AVAILABILITY TOGGLE SWITCH */
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--slate-300);
+  transition: .3s;
+  border-radius: var(--radius-pill);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--status-success);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* 8. AI TRIAGE ASSISTANT CHAT/BOX */
+.ai-assistant-card {
+  background: linear-gradient(135deg, rgba(255, 241, 242, 0.7), rgba(248, 250, 252, 0.9));
+  border: 1px solid var(--crimson-200);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.ai-assistant-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.ai-assistant-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--crimson-600);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Responsive Dashboard Breakpoints */
+@media (max-width: 1024px) {
+  .dashboard-sidebar {
+    transform: translateX(-100%);
+  }
+  .dashboard-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+  .dashboard-main {
+    margin-left: 0;
+  }
+  .sidebar-toggle-btn {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-topbar {
+    padding: 0 1rem;
+  }
+  .dashboard-body {
+    padding: 1rem;
+  }
+  .emergency-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .emergency-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+

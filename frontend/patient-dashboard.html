@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient & Emergency Request Portal — Lifnex</title>
+
+  <link rel="stylesheet" href="static/css/variables.css">
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="static/css/dashboards.css">
+</head>
+<body>
+
+  <!-- Demo Disclaimer Banner -->
+  <div class="demo-banner">
+    <div class="container flex justify-between items-center">
+      <div class="demo-banner-text">
+        <span class="demo-tag">Patient Portal Demo</span>
+        <span>Simulated emergency blood request tracking. All matches and donors are fictional demonstration records.</span>
+      </div>
+      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Return to Public Site</a>
+    </div>
+  </div>
+
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-brand">
+        <a href="index.html" class="flex items-center gap-2">
+          <img src="static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
+          <span class="brand-name font-bold text-lg">Lifnex</span>
+        </a>
+      </div>
+
+      <div class="sidebar-user-badge">
+        <div class="user-avatar-circle">SJ</div>
+        <div class="user-info-text">
+          <div class="user-display-name">Sarah Jenkins (Demo)</div>
+          <div class="user-role-tag">
+            <span class="badge badge-normal" style="font-size: 0.65rem;">Patient Account</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="patient-dashboard.html" class="sidebar-item active">
+          <span class="sidebar-item-icon">📊</span>
+          <span>Emergency Center</span>
+        </a>
+        <a href="#" class="sidebar-item" data-modal-open="createRequestModal">
+          <span class="sidebar-item-icon">➕</span>
+          <span>New Blood Request</span>
+        </a>
+        <a href="hospitals.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🏥</span>
+          <span>Hospital Directory</span>
+        </a>
+        <a href="donor-dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🔄</span>
+          <span>Switch to Donor View</span>
+        </a>
+        <a href="hospital-dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🔄</span>
+          <span>Switch to Hospital View</span>
+        </a>
+        <a href="admin-dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🔄</span>
+          <span>Switch to Admin View</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="login.html" class="btn btn-ghost btn-sm w-full text-slate-400 hover:text-white justify-start">
+          <span>🚪 Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <!-- Topbar -->
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">&#9776;</button>
+          <div class="dashboard-title">
+            <h2>Patient Emergency Coordination Desk</h2>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="notifications-trigger" id="notificationsBtn" aria-label="View notifications">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            <span class="unread-bubble"></span>
+          </button>
+
+          <!-- Notifications Dropdown -->
+          <div class="notifications-dropdown" id="notificationsDropdown">
+            <div class="notif-header">
+              <span class="font-bold text-xs uppercase text-slate-600">Emergency Notifications</span>
+              <span class="badge badge-normal text-xs">2 New</span>
+            </div>
+            <div class="notif-item unread">
+              <div class="text-xs font-bold text-crimson-600">Donor Accepted Request REQ-701</div>
+              <div class="text-xs text-slate-600 mt-1">Alex Rivera (Demo) accepted your request. ETA: 25 mins.</div>
+              <div class="text-xs text-slate-400 mt-1">4 minutes ago</div>
+            </div>
+            <div class="notif-item">
+              <div class="text-xs font-bold text-slate-800">Hospital Verified Case</div>
+              <div class="text-xs text-slate-600 mt-1">City Care Super Specialty verified your clinical requisition.</div>
+              <div class="text-xs text-slate-400 mt-1">15 minutes ago</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-sm" data-modal-open="createRequestModal">
+            + New Emergency Request
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="dashboard-body">
+        
+        <!-- Metrics Row -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-icon-box icon-crimson">🆘</div>
+            <div class="metric-info">
+              <h3>1 Active</h3>
+              <p>Current Emergency Broadcasts</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box icon-emerald">👥</div>
+            <div class="metric-info">
+              <h3>8 Donors</h3>
+              <p>Notified Within Radius</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box icon-blue">⏱</div>
+            <div class="metric-info">
+              <h3>2 Confirmed</h3>
+              <p>Donors En Route to Hospital</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon-box icon-amber">🏥</div>
+            <div class="metric-info">
+              <h3>Verified</h3>
+              <p>Clinical Status at Hospital</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Request Assistant Callout -->
+        <div class="ai-assistant-card mb-6">
+          <div class="ai-assistant-header">
+            <div class="ai-assistant-avatar">AI</div>
+            <div>
+              <h4 class="font-bold text-sm text-slate-900">Gemini AI Emergency Triage Assistant (Demo)</h4>
+              <p class="text-xs text-slate-500">Unsure about medical terms or units? Paste the doctor's message to extract request parameters automatically.</p>
+            </div>
+          </div>
+
+          <div class="grid-2 gap-3">
+            <textarea id="aiTriageInput" rows="2" class="form-textarea text-xs" placeholder="e.g. Doctor says patient has acute hemorrhage in ICU, urgently requires 2 units of O-negative blood at City Care Hospital..."></textarea>
+            <div class="flex flex-col justify-between">
+              <div id="aiTriageResult" style="display:none;" class="mb-2"></div>
+              <button class="btn btn-secondary btn-sm" id="runAiTriageBtn">Analyze with Gemini AI</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Requests & Real-time Responses -->
+        <div class="grid-2 gap-6">
+          
+          <!-- Left: My Active Request Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>Active Blood Requisition</span>
+                <span class="badge badge-critical pulse-critical">Critical Urgency</span>
+              </div>
+              <span class="badge badge-demo">Case #REQ-701</span>
+            </div>
+
+            <div class="p-3 bg-rose-50 rounded border border-rose-200 mb-4 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-crimson-800 uppercase">Required Blood Group</span>
+                <div class="text-2xl font-black text-crimson-700">O Negative (O-)</div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-slate-600">Requirement</span>
+                <div class="text-xl font-bold text-slate-900">2 Units</div>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-xs mb-4">
+              <div><strong>Receiving Center:</strong> City Care Super Specialty Hospital</div>
+              <div><strong>Attending Doctor:</strong> Dr. R. Henderson (Emergency Trauma)</div>
+              <div><strong>Verification:</strong> <span class="badge badge-success">Hospital Verified</span></div>
+              <div><strong>Prescription Document:</strong> <a href="#" class="text-crimson-600 hover:underline">requisition_rx_701.pdf (Attached)</a></div>
+            </div>
+
+            <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-xs">
+              <span class="text-slate-500">Dispatched 22 minutes ago</span>
+              <button class="btn btn-sm btn-secondary" onclick="Toast.show('Status Updated', 'Requisition marked as fulfilled in demo mode.', 'success')">Mark Fulfilled</button>
+            </div>
+          </div>
+
+          <!-- Right: Confirmed Donor Responses -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>Live Donor Responses</span>
+              </div>
+              <span class="badge badge-success">2 Accepted</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="user-avatar-circle" style="background:#059669; width:36px; height:36px; font-size:0.85rem;">AR</div>
+                  <div>
+                    <div class="text-xs font-bold text-slate-900">Alex Rivera (Demo Donor)</div>
+                    <div class="text-xs text-emerald-600 font-semibold">Accepted • En Route (ETA: 25 mins)</div>
+                    <div class="text-xs text-slate-400">Blood Group: O- (Universal Match)</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="Toast.show('Contact Coordinates', 'Connecting with Alex Rivera dispatch coordinator...', 'info')">Contact</button>
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="user-avatar-circle" style="background:#059669; width:36px; height:36px; font-size:0.85rem;">PS</div>
+                  <div>
+                    <div class="text-xs font-bold text-slate-900">Priya Sharma (Demo Donor)</div>
+                    <div class="text-xs text-emerald-600 font-semibold">Accepted • En Route (ETA: 40 mins)</div>
+                    <div class="text-xs text-slate-400">Blood Group: O- (Universal Match)</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="Toast.show('Contact Coordinates', 'Connecting with Priya Sharma dispatch coordinator...', 'info')">Contact</button>
+              </div>
+            </div>
+
+            <div class="p-3 bg-blue-50 rounded border border-blue-200 text-xs text-blue-800 mt-4">
+              <strong>Clinical Step:</strong> Upon donor arrival at the hospital, medical staff perform mandatory screening before collection.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Request History Table -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div class="card-title">Past Request History</div>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Blood Group</th>
+                  <th>Units</th>
+                  <th>Hospital</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-mono text-xs">REQ-650</td>
+                  <td><span class="badge badge-blood">O-</span></td>
+                  <td>1 Unit</td>
+                  <td>Metro Central Trauma Center</td>
+                  <td><span class="badge badge-success">Fulfilled</span></td>
+                  <td class="text-slate-500 text-xs">14 Oct 2026</td>
+                </tr>
+                <tr>
+                  <td class="font-mono text-xs">REQ-580</td>
+                  <td><span class="badge badge-blood">O-</span></td>
+                  <td>2 Units</td>
+                  <td>St. Jude Memorial Blood Bank</td>
+                  <td><span class="badge badge-success">Fulfilled</span></td>
+                  <td class="text-slate-500 text-xs">28 Aug 2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Create Request Modal -->
+  <div class="modal-backdrop" id="createRequestModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="font-bold text-base text-slate-900">Create Emergency Blood Request</h3>
+        <button class="btn-ghost btn-icon" data-modal-close="createRequestModal">&times;</button>
+      </div>
+      <form id="createRequestForm">
+        <div class="modal-body">
+          <div class="p-3 bg-rose-50 rounded border border-rose-200 text-xs text-crimson-800 mb-4">
+            <strong>Emergency Protocol:</strong> Submissions are immediately broadcast to compatible voluntary donors within the hospital radius.
+          </div>
+
+          <div class="grid-2 gap-3">
+            <div class="form-group">
+              <label for="reqBloodGroup" class="form-label text-xs">Required Blood Group <span class="required">*</span></label>
+              <select id="reqBloodGroup" class="form-select text-xs" required>
+                <option value="O-">O Negative (O-)</option>
+                <option value="O+">O Positive (O+)</option>
+                <option value="A-">A Negative (A-)</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="B-">B Negative (B-)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="AB-">AB Negative (AB-)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reqUnits" class="form-label text-xs">Units Required <span class="required">*</span></label>
+              <input type="number" id="reqUnits" class="form-input text-xs" min="1" max="10" value="2" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reqHospital" class="form-label text-xs">Target Hospital / Blood Bank <span class="required">*</span></label>
+            <select id="reqHospital" class="form-select text-xs" required>
+              <option value="City Care Super Specialty Hospital">City Care Super Specialty Hospital</option>
+              <option value="Metro Central Trauma Center">Metro Central Trauma Center</option>
+              <option value="St. Jude Memorial Blood Bank">St. Jude Memorial Blood Bank</option>
+              <option value="Apex Regional Medical Center">Apex Regional Medical Center</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="reqUrgency" class="form-label text-xs">Clinical Urgency <span class="required">*</span></label>
+            <select id="reqUrgency" class="form-select text-xs" required>
+              <option value="critical">Critical (Immediate surgery / ICU resuscitation)</option>
+              <option value="urgent" selected>Urgent (Needed within 2-4 hours)</option>
+              <option value="normal">Normal (Scheduled transfusion within 12 hours)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="reqNotes" class="form-label text-xs">Clinical Notes / Condition</label>
+            <textarea id="reqNotes" rows="2" class="form-textarea text-xs" placeholder="e.g. ICU Bed 4, severe anemia / surgical transfusion"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-modal-close="createRequestModal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Dispatch Emergency Broadcast</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="static/js/main.js"></script>
+  <script src="static/js/dashboards.js"></script>
+</body>
+</html>
+

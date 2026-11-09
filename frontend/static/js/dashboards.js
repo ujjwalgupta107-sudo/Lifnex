@@ -1,0 +1,167 @@
+/**
+ * LIFNEX DASHBOARDS & REQUEST WORKFLOWS
+ * Manages donor availability, request responses, filterings, and emergency submissions
+ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Donor Availability Toggle Switch
+  const availToggle = document.getElementById("donorAvailabilityToggle");
+  const availStatusText = document.getElementById("availabilityStatusLabel");
+  if (availToggle && availStatusText) {
+    availToggle.addEventListener("change", () => {
+      if (availToggle.checked) {
+        availStatusText.textContent = "Available for Emergency Dispatch";
+        availStatusText.className = "text-sm font-semibold text-emerald-600";
+        Toast.show("Status Updated", "You are now marked AVAILABLE for compatible emergency requests.", "success");
+      } else {
+        availStatusText.textContent = "Temporarily Inactive / Busy";
+        availStatusText.className = "text-sm font-semibold text-slate-500";
+        Toast.show("Status Updated", "You are now marked INACTIVE. Emergency notifications paused.", "info");
+      }
+    });
+  }
+
+  // 2. Accept / Decline Donor Responses
+  document.querySelectorAll("[data-action='accept-request']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".emergency-item-card");
+      const reqId = card?.getAttribute("data-id") || "REQ-SAMPLE";
+      
+      const modal = document.getElementById("donorResponseModal");
+      if (modal) {
+        document.getElementById("modalReqId").textContent = reqId;
+        Modal.open("donorResponseModal");
+      } else {
+        Toast.show("Response Recorded", `You accepted request ${reqId}. Healthcare desk notified.`, "success");
+        if (card) {
+          card.style.opacity = "0.7";
+          btn.outerHTML = `<span class="badge badge-success font-semibold">Accepted - En Route</span>`;
+        }
+      }
+    });
+  });
+
+  const confirmAcceptBtn = document.getElementById("confirmDonorAcceptBtn");
+  if (confirmAcceptBtn) {
+    confirmAcceptBtn.addEventListener("click", () => {
+      const eta = document.getElementById("donorEtaInput")?.value || "30";
+      Modal.close("donorResponseModal");
+      Toast.show("Dispatch Confirmed", `Response registered. Hospital informed of your arrival in ${eta} minutes.`, "success");
+    });
+  }
+
+  document.querySelectorAll("[data-action='decline-request']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".emergency-item-card");
+      if (card) {
+        card.style.transition = "opacity 0.3s";
+        card.style.opacity = "0.4";
+        Toast.show("Request Declined", "We will alert alternative compatible donors.", "info");
+        setTimeout(() => {
+          card.style.display = "none";
+        }, 300);
+      }
+    });
+  });
+
+  // 3. Emergency Request Creation Form (Patient & Hospital)
+  const reqForm = document.getElementById("createRequestForm");
+  if (reqForm) {
+    reqForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const bloodGroup = document.getElementById("reqBloodGroup").value;
+      const units = document.getElementById("reqUnits").value;
+      const hospital = document.getElementById("reqHospital").value;
+      const urgency = document.getElementById("reqUrgency").value;
+      const notes = document.getElementById("reqNotes").value;
+
+      if (!bloodGroup || !units || !hospital) {
+        Toast.show("Missing Fields", "Please specify blood group, units, and target hospital.", "error");
+        return;
+      }
+
+      const newRecord = {
+        id: "REQ-" + Math.floor(100 + Math.random() * 900),
+        patient_name: "Self / Family Proxy (Demo)",
+        hospital: hospital,
+        city: "Metropolis",
+        blood_group: bloodGroup,
+        units: parseInt(units, 10),
+        urgency: urgency,
+        status: "open",
+        distance: "1.8 km",
+        time_left: urgency === "critical" ? "45 mins" : "3 hrs",
+        clinical_note: notes || "Emergency clinical requirement.",
+        created_at: "Just now"
+      };
+
+      LifnexDemoStore.addRequest(newRecord);
+      Toast.show("Emergency Broadcast Live", `Alert dispatched for ${units} units of ${bloodGroup} to nearby donors.`, "success", 4000);
+      
+      const modal = document.getElementById("createRequestModal");
+      if (modal) Modal.close("createRequestModal");
+      reqForm.reset();
+
+      // Refresh table or feed if present
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    });
+  }
+
+  // 4. Simulated AI Request Triage Assistant
+  const aiTriageBtn = document.getElementById("runAiTriageBtn");
+  const aiTriageInput = document.getElementById("aiTriageInput");
+  const aiTriageResult = document.getElementById("aiTriageResult");
+
+  if (aiTriageBtn && aiTriageInput && aiTriageResult) {
+    aiTriageBtn.addEventListener("click", () => {
+      const text = aiTriageInput.value.trim();
+      if (!text) {
+        Toast.show("Empty Input", "Please paste doctor's notes or clinical emergency message.", "warning");
+        return;
+      }
+
+      aiTriageBtn.disabled = true;
+      aiTriageBtn.textContent = "Analyzing clinical text...";
+
+      setTimeout(() => {
+        aiTriageBtn.disabled = false;
+        aiTriageBtn.textContent = "Analyze with Gemini AI";
+
+        // Simulated intelligent parsing
+        let detectedGroup = "O-";
+        if (text.toLowerCase().includes("b+")) detectedGroup = "B+";
+        else if (text.toLowerCase().includes("a+")) detectedGroup = "A+";
+        else if (text.toLowerCase().includes("ab+")) detectedGroup = "AB+";
+
+        aiTriageResult.style.display = "block";
+        aiTriageResult.innerHTML = `
+          <div class="p-3 bg-white rounded border border-rose-200 text-sm">
+            <div class="flex items-center gap-2 text-crimson-600 font-bold mb-1">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Gemini AI Structured Extraction
+            </div>
+            <p class="text-xs text-slate-600 mb-2">Simulated extraction for demonstration:</p>
+            <ul class="text-xs space-y-1 text-slate-800">
+              <li><strong>Detected Blood Group:</strong> ${detectedGroup}</li>
+              <li><strong>Recommended Urgency:</strong> Critical (Immediate Dispatch)</li>
+              <li><strong>Recommended Units:</strong> 2 Units</li>
+              <li><strong>Pre-transfusion Advisory:</strong> Cross-matching required at receiving hospital.</li>
+            </ul>
+            <button class="btn btn-sm btn-primary mt-3 w-full" id="applyAiTriageBtn">Apply Values to Request Form</button>
+          </div>
+        `;
+
+        document.getElementById("applyAiTriageBtn")?.addEventListener("click", () => {
+          const bgSelect = document.getElementById("reqBloodGroup");
+          const urgencySelect = document.getElementById("reqUrgency");
+          if (bgSelect) bgSelect.value = detectedGroup;
+          if (urgencySelect) urgencySelect.value = "critical";
+          Toast.show("Parameters Applied", "Form populated with AI recommendations.", "success");
+        });
+      }, 1200);
+    });
+  }
+});
+
