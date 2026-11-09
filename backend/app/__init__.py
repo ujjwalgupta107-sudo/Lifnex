@@ -42,6 +42,36 @@ def create_app(config_class=Config) -> Flask:
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(self)"
         return response
 
+    # Frontend Static & HTML Routes
+    import os
+    from flask import send_from_directory
+
+    frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
+
+    @app.route("/", defaults={"filename": "index.html"})
+    @app.route("/<path:filename>")
+    def serve_frontend(filename):
+        # Allow API routes to be handled by blueprints
+        if filename.startswith("api/"):
+            return jsonify({"success": False, "error": {"code": "NOT_FOUND", "message": "API endpoint not found."}}), 404
+
+        # Serve static assets from frontend/static
+        if filename.startswith("static/"):
+            subpath = filename[len("static/"):]
+            return send_from_directory(os.path.join(frontend_dir, "static"), subpath)
+
+        # Serve HTML files from frontend/
+        file_path = os.path.join(frontend_dir, filename)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return send_from_directory(frontend_dir, filename)
+        
+        # If HTML file without extension
+        if os.path.exists(file_path + ".html"):
+            return send_from_directory(frontend_dir, filename + ".html")
+
+        # Default fallback to index.html for single-page navigations
+        return send_from_directory(frontend_dir, "index.html")
+
     # Global Error Handlers
     @app.errorhandler(404)
     def not_found_handler(e):
