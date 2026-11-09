@@ -1,0 +1,15 @@
+# Backend Environments
+.env
+.env.*
+*.env
+
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+

@@ -1,10 +1,12 @@
-# Environments & Secret Keys (Strictly Prohibited from Git)
+# Environment Variables (Strictly Private)
 .env
 .env.*
 !.env.example
 *.env
+backend/.env
+backend/.env.*
 
-# Python Bytecode & Virtual Environments
+# Python Virtual Environments & Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
@@ -16,12 +18,17 @@ build/
 dist/
 *.egg-info/
 
-# Operating System Files
+# Pytest & Testing Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# System Files
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# IDE & Editor Settings
+# IDE Settings
 .vscode/
 .idea/
 *.sublime-project
