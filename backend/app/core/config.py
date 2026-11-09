@@ -19,6 +19,7 @@ class Config:
     SUPABASE_URL = os.getenv("SUPABASE_URL", "https://paxkftydmvibrjtroinn.supabase.co")
     SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY", "")
     SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "")
+    SUPABASE_JWKS_URL = os.getenv("SUPABASE_JWKS_URL", "")
 
     # Google Gemini AI Settings
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
@@ -28,11 +29,12 @@ class Config:
 
     @classmethod
     def is_supabase_configured(cls) -> bool:
-        """Returns True if the Supabase keys are populated with real values"""
+        """Returns True if the Supabase keys are populated with non-empty values"""
         return bool(
             cls.SUPABASE_URL
             and cls.SUPABASE_PUBLISHABLE_KEY
             and cls.SUPABASE_SECRET_KEY
-            and "sb_publishable" not in cls.SUPABASE_PUBLISHABLE_KEY
+            and cls.SUPABASE_PUBLISHABLE_KEY != "sb_publishable_anon_key_here"
+            and cls.SUPABASE_SECRET_KEY != "sb_secret_service_role_key_here"
         )
 

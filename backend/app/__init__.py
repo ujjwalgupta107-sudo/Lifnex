@@ -9,6 +9,7 @@ from backend.app.config import Config
 from backend.app.routes.health import health_bp
 from backend.app.routes.hospitals import hospitals_bp
 from backend.app.routes.blood_requests import blood_requests_bp
+from backend.app.routes.auth import auth_bp
 from backend.app.api.v1.donors import donors_bp
 from backend.app.api.v1.matching import matching_bp
 
@@ -21,6 +22,7 @@ def create_app(config_class=Config) -> Flask:
 
     # Register API Blueprints
     app.register_blueprint(health_bp, url_prefix="/api/v1")
+    app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
     app.register_blueprint(hospitals_bp, url_prefix="/api/v1/hospitals")
     app.register_blueprint(blood_requests_bp, url_prefix="/api/v1/blood-requests")
     app.register_blueprint(blood_requests_bp, url_prefix="/api/v1/requests", name="blood_requests_alias")
