@@ -247,20 +247,26 @@
             </div>
           </div>
 
-          <!-- Donor Preparation Guidance -->
+          <!-- Donor Preparation Guidance & AI Assistant -->
           <div class="card p-5">
             <div class="flex items-center gap-3 mb-3">
-              <div class="user-avatar-circle" style="background:#e11d48; width:36px; height:36px;">💧</div>
+              <div class="user-avatar-circle" style="background:#e11d48; width:36px; height:36px;">🤖</div>
               <div>
-                <h4 class="font-bold text-sm text-slate-900">Pre-Donation Medical Checklist</h4>
-                <div class="text-xs text-slate-500">Ensure optimal hydration & clinical eligibility</div>
+                <h4 class="font-bold text-sm text-slate-900">Gemini AI Donor Assistant</h4>
+                <div class="text-xs text-slate-500">Ask about dispatch protocols, hydration, or donation preparation</div>
               </div>
             </div>
-            <ul class="text-xs space-y-2 text-slate-700">
+            <div class="space-y-2 mb-3">
+              <div class="flex gap-2">
+                <input type="text" id="donorAiInput" class="form-input text-xs flex-1" placeholder="e.g. How much water should I drink before donation?">
+                <button class="btn btn-sm btn-primary" id="donorAiAskBtn">Ask</button>
+              </div>
+              <div id="donorAiResponse" style="display:none;" class="p-2 bg-slate-50 border border-slate-200 rounded text-xs text-slate-800"></div>
+            </div>
+            <ul class="text-xs space-y-1 text-slate-600 border-t pt-2">
               <li>💧 <strong>Hydration:</strong> Drink at least 500ml of water or fruit juice before travel.</li>
               <li>🥗 <strong>Nutrition:</strong> Eat a healthy, non-fatty meal within 3 hours prior to donation.</li>
-              <li>😴 <strong>Rest:</strong> Ensure a minimum of 6 to 8 hours of uninterrupted sleep.</li>
-              <li>🆔 <strong>Identification:</strong> Carry an official government photo identity card to the hospital desk.</li>
+              <li>🛡 <strong>Notice:</strong> Specific clinical eligibility is determined exclusively on-site by accredited doctors.</li>
             </ul>
           </div>
         </div>

@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 4. Simulated AI Request Triage Assistant
+  // 4. Gemini AI Request Triage Assistant
   const aiTriageBtn = document.getElementById("runAiTriageBtn");
   const aiTriageInput = document.getElementById("aiTriageInput");
   const aiTriageResult = document.getElementById("aiTriageResult");
@@ -165,17 +165,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       aiTriageBtn.disabled = true;
-      aiTriageBtn.textContent = "Analyzing clinical text...";
+      aiTriageBtn.textContent = "Analyzing clinical text with Gemini AI...";
 
-      setTimeout(() => {
+      fetch("/api/v1/ai/triage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text })
+      })
+      .then(res => res.json())
+      .then(data => {
         aiTriageBtn.disabled = false;
         aiTriageBtn.textContent = "Analyze with Gemini AI";
 
-        // Simulated intelligent parsing
-        let detectedGroup = "O-";
-        if (text.toLowerCase().includes("b+")) detectedGroup = "B+";
-        else if (text.toLowerCase().includes("a+")) detectedGroup = "A+";
-        else if (text.toLowerCase().includes("ab+")) detectedGroup = "AB+";
+        const bg = data.detected_blood_group || "O-";
+        const urgency = data.recommended_urgency || "critical";
+        const units = data.recommended_units || 2;
+        const analysis = data.analysis || "Parameters extracted from clinical description.";
+        const disclaimer = data.disclaimer || "Emergency coordination only. Clinical verification required.";
 
         aiTriageResult.style.display = "block";
         aiTriageResult.innerHTML = `
@@ -184,12 +190,12 @@ document.addEventListener("DOMContentLoaded", () => {
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               Gemini AI Structured Extraction
             </div>
-            <p class="text-xs text-slate-600 mb-2">Simulated extraction for demonstration:</p>
+            <p class="text-xs text-slate-600 mb-2">${analysis}</p>
             <ul class="text-xs space-y-1 text-slate-800">
-              <li><strong>Detected Blood Group:</strong> ${detectedGroup}</li>
-              <li><strong>Recommended Urgency:</strong> Critical (Immediate Dispatch)</li>
-              <li><strong>Recommended Units:</strong> 2 Units</li>
-              <li><strong>Pre-transfusion Advisory:</strong> Cross-matching required at receiving hospital.</li>
+              <li><strong>Detected Blood Group:</strong> ${bg}</li>
+              <li><strong>Recommended Urgency:</strong> ${urgency.toUpperCase()}</li>
+              <li><strong>Recommended Units:</strong> ${units} Units</li>
+              <li class="text-muted italic"><strong>Notice:</strong> ${disclaimer}</li>
             </ul>
             <button class="btn btn-sm btn-primary mt-3 w-full" id="applyAiTriageBtn">Apply Values to Request Form</button>
           </div>
@@ -198,11 +204,59 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("applyAiTriageBtn")?.addEventListener("click", () => {
           const bgSelect = document.getElementById("reqBloodGroup");
           const urgencySelect = document.getElementById("reqUrgency");
-          if (bgSelect) bgSelect.value = detectedGroup;
-          if (urgencySelect) urgencySelect.value = "critical";
-          Toast.show("Parameters Applied", "Form populated with AI recommendations.", "success");
+          const unitsInput = document.getElementById("reqUnits");
+          if (bgSelect) bgSelect.value = bg;
+          if (urgencySelect) urgencySelect.value = urgency;
+          if (unitsInput) unitsInput.value = units;
+          Toast.show("Parameters Applied", "Form populated with Gemini AI recommendations.", "success");
         });
-      }, 1200);
+      })
+      .catch(err => {
+        aiTriageBtn.disabled = false;
+        aiTriageBtn.textContent = "Analyze with Gemini AI";
+        console.error("AI Triage error:", err);
+        Toast.show("AI Assistant", "Could not complete AI triage. Check network connection.", "error");
+      });
+    });
+  }
+
+  // 5. Donor Hub Gemini AI Guidance Assistant
+  const donorAiInput = document.getElementById("donorAiInput");
+  const donorAiAskBtn = document.getElementById("donorAiAskBtn");
+  const donorAiResponse = document.getElementById("donorAiResponse");
+
+  if (donorAiInput && donorAiAskBtn && donorAiResponse) {
+    donorAiAskBtn.addEventListener("click", () => {
+      const query = donorAiInput.value.trim();
+      if (!query) {
+        Toast.show("Empty Query", "Please ask a question about donation protocols.", "warning");
+        return;
+      }
+
+      donorAiAskBtn.disabled = true;
+      donorAiAskBtn.textContent = "Thinking...";
+
+      fetch("/api/v1/ai/donor-guidance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query })
+      })
+      .then(res => res.json())
+      .then(data => {
+        donorAiAskBtn.disabled = false;
+        donorAiAskBtn.textContent = "Ask";
+        donorAiResponse.style.display = "block";
+        donorAiResponse.innerHTML = `
+          <p class="font-medium text-slate-800 mb-1">${data.guidance || "No guidance available."}</p>
+          <p class="text-slate-400 text-[10px] italic">${data.disclaimer || ""}</p>
+        `;
+      })
+      .catch(err => {
+        donorAiAskBtn.disabled = false;
+        donorAiAskBtn.textContent = "Ask";
+        console.error("Donor AI error:", err);
+        Toast.show("Error", "Could not reach AI assistant.", "error");
+      });
     });
   }
 });

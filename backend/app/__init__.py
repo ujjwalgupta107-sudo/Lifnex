@@ -11,6 +11,7 @@ from backend.app.routes.hospitals import hospitals_bp
 from backend.app.routes.blood_requests import blood_requests_bp
 from backend.app.routes.auth import auth_bp
 from backend.app.routes.donors import donors_bp
+from backend.app.routes.ai import ai_bp
 from backend.app.api.v1.matching import matching_bp
 
 def create_app(config_class=Config) -> Flask:
@@ -28,6 +29,7 @@ def create_app(config_class=Config) -> Flask:
     app.register_blueprint(blood_requests_bp, url_prefix="/api/v1/requests", name="blood_requests_alias")
     app.register_blueprint(donors_bp, url_prefix="/api/v1/donors")
     app.register_blueprint(matching_bp, url_prefix="/api/v1/matching")
+    app.register_blueprint(ai_bp, url_prefix="/api/v1/ai")
 
     # Global Error Handlers
     @app.errorhandler(404)
