@@ -1,27 +1,30 @@
-# Lifnex — AI-Powered Emergency Blood Donor Coordination Platform
-> **Tagline:** Connecting Lives When Every Second Matters.
+# Lifnex — Connecting Lives When Every Second Matters
 
-Lifnex is an intelligent, real-time emergency blood donor coordination platform designed to bridge the critical gap between patients needing blood, nearby voluntary donors, hospitals, and accredited blood banks.
+[![CI Tests](https://img.shields.io/badge/pytest-56%20passed-brightgreen.svg)]()
+[![Platform](https://img.shields.io/badge/python-3.11-blue.svg)]()
+[![Database](https://img.shields.io/badge/Supabase-PostgreSQL%2015-emerald.svg)]()
+[![AI](https://img.shields.io/badge/Gemini-2.5--Flash-orange.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 
----
-
-## 🚀 Project Overview
-
-- **Core Mission**: Accelerate life-saving voluntary blood donor discovery from hours to minutes using location intelligence, real-time synchronization, and Google Gemini AI-driven assistance.
-- **Medical Disclaimer**: Lifnex is strictly a **communication and coordination platform**, NOT a blood bank or clinical laboratory. Biological compatibility and donor eligibility are always confirmed on-site by authorized healthcare professionals.
-- **Data Policy**: Synthetic demonstration data only. All demo records, hospitals, and coordinates are simulated for demonstration and academic evaluation.
+> **Lifnex** is an emergency blood donor coordination platform combining geospatial proximity matching, Supabase PostgreSQL with strict Row-Level Security, Google Gemini AI triage assistance, and real-time response synchronization to eliminate critical dispatch delays.
 
 ---
 
-## 🛠️ Mandatory Technology Stack
+## 🚀 Key Features
 
-- **Frontend**: HTML5, Modern CSS3, Vanilla JavaScript (ES6+), Leaflet.js (OpenStreetMap), Chart.js
-- **Backend (Planned)**: Python Flask, RESTful APIs, Gunicorn
-- **Database & Auth**: Supabase PostgreSQL 15, Supabase Auth, Row Level Security (RLS)
-- **Storage & Realtime**: Supabase Storage, Supabase Realtime (WebSockets)
-- **AI Engine**: Google Gemini API
-- **Deployment**: Render Cloud PaaS
-- **Version Control**: Git & GitHub
+- **🚨 Emergency Requisitions:** Real-time blood requests with ABO/Rh group filtering, required units, and urgency levels (Critical, High, Normal).
+- **🩸 Intelligent Matching Engine:** Great-circle Haversine distance proximity calculation, donor availability enforcement, travel radius adherence, and composite urgency/distance ranking.
+- **🤖 Gemini AI Assistance:**
+  - Clinical request triage and automated parameter extraction.
+  - Emergency dispatch summary generation.
+  - Educational donor guidance with mandatory clinical boundary advisories.
+  - Admin operational insights and high-demand blood group trend analytics.
+- **📍 Privacy-Preserving Geospatial Discovery:**
+  - Integrated Leaflet.js and OpenStreetMap visualizer.
+  - Approximate donor location blurring (~500m radius) to prevent tracking.
+  - Hospital cold storage stock and direct turn-by-turn routing navigation links.
+- **⚡ Real-Time Coordination:** Live Supabase Realtime subscriptions for instantaneous donor dispatch notifications and request feed updates.
+- **🛡️ Enterprise Database Security:** PostgreSQL 15 schema with 36 Row-Level Security (RLS) policies, immutable audit logging, and role-based permissions (`patient`, `donor`, `hospital`, `admin`).
 
 ---
 
@@ -29,56 +32,70 @@ Lifnex is an intelligent, real-time emergency blood donor coordination platform 
 
 ```
 Lifnex/
-├── demo-assests/                  # Original, immutable branding & UI reference assets
-├── frontend/                      # Phase 2 Complete Frontend (12 pages + pure CSS/JS)
-│   ├── index.html                 # Landing page & emergency broadcast feed
-│   ├── about.html                 # Platform mission, vision & 3 pillars
-│   ├── how-it-works.html          # Patient, donor & hospital coordination workflows
-│   ├── hospitals.html             # Hospital discovery directory with Leaflet.js map
-│   ├── contact.html               # Support & hospital onboarding desk
-│   ├── login.html                 # Authentication & portal role selector
-│   ├── register.html              # Role-based onboarding with conditional fields
-│   ├── forgot-password.html       # Password recovery simulation
-│   ├── patient-dashboard.html     # Patient emergency requisition hub & AI triage
-│   ├── donor-dashboard.html       # Donor hub, availability toggle & response actions
-│   ├── hospital-dashboard.html    # Transfusion desk, arrival queue & inventory meters
-│   ├── admin-dashboard.html       # Platform telemetry, Chart.js metrics & audit logs
-│   └── static/
-│       ├── css/                   # Modular stylesheets (variables, base, components, etc.)
-│       ├── js/                    # Modular scripts (auth, dashboards, maps, charts, requests)
-│       └── assets/                # Web-ready logo & visuals
-├── API_DESIGN_PLAN.md             # REST API specifications (/api/v1/*)
-├── ASSET_INVENTORY.md             # Detailed inventory of demo-assests/
-├── DATABASE_DESIGN_PLAN.md        # Normalized 3NF PostgreSQL schema & RLS policies
-├── DEVELOPMENT_ROADMAP.md         # Nine-phase execution roadmap
-├── FRONTEND_PAGE_INVENTORY.md     # Phase 2 frontend page breakdown
-├── FRONTEND_TEST_REPORT.md        # Responsive & functional test verification suite
-├── PHASE_1_COMPLETION_REPORT.md   # Phase 1 planning completion summary
-├── PHASE_2_COMPLETION_REPORT.md   # Phase 2 frontend completion summary
-├── PROJECT_OVERVIEW.md            # Platform scope, disclaimer & objectives
-├── REQUIREMENTS.md                # Functional & non-functional requirements
-├── SECURITY_THREAT_MODEL.md       # STRIDE analysis & OWASP security mitigations
-├── SUPABASE_SETUP_GUIDE.md        # Supabase LifnexDB configuration plan
-├── SYSTEM_ARCHITECTURE.md         # Architecture diagrams & component flows
-└── UI_DESIGN_SYSTEM.md            # Design tokens, color palette & typography
+├── backend/
+│   ├── app/
+│   │   ├── api/v1/          # Legacy compatibility endpoints
+│   │   ├── core/            # Configuration & clients
+│   │   ├── routes/          # REST API routes (auth, blood_requests, donors, ai, notifications)
+│   │   ├── services/        # Matching, notification, audit, and Gemini AI services
+│   │   ├── utils/           # Auth guards, geo calculations, and audit loggers
+│   │   └── validators/      # Pydantic data schemas
+│   ├── migrations/          # Canonical SQL migrations (001_initial_schema, 002_security_hardening)
+│   └── tests/               # 56 automated unit, integration, and E2E tests
+├── frontend/                # Vanilla HTML5 / CSS3 / JavaScript frontend
+│   ├── static/js/           # Maps (Leaflet), Realtime, Dashboards, Auth
+│   └── *.html               # Dashboards & public portal pages
+├── docs/                    # Architectural plans, threat models, API and deployment guides
+├── render.yaml              # Render blueprint for zero-downtime deployment
+├── run.py                   # Flask server entrypoint
+└── requirements.txt         # Production dependencies
 ```
 
 ---
 
-## 📌 Development Roadmap
+## 🛠️ Local Development Setup
 
-- [x] **Phase 1:** Project Planning and System Design
-- [x] **Phase 2:** Complete Frontend UI/UX Development
-- [ ] **Phase 3:** Flask Backend and Supabase PostgreSQL Integration
-- [ ] **Phase 4:** Supabase Authentication and Role-Based Access Control
-- [ ] **Phase 5:** Blood Request Management and Donor Matching
-- [ ] **Phase 6:** Google Gemini AI Integration
-- [ ] **Phase 7:** Maps, Notifications, Storage and Realtime
-- [ ] **Phase 8:** Admin Analytics, Database Optimization and Security Audit
-- [ ] **Phase 9:** Testing, Deployment, GitHub and Final Documentation
+### 1. Prerequisites
+- Python 3.11+
+- Virtual Environment tool (`venv`)
+- Supabase Project or local PostgreSQL 15 instance
+
+### 2. Environment Configuration
+Copy `.env.example` to `backend/.env`:
+```powershell
+cp .env.example backend/.env
+```
+Populate `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, and `GEMINI_API_KEY`.
+
+### 3. Installation
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 4. Running the Test Suite
+```powershell
+$env:PYTHONPATH="."
+.\venv\Scripts\pytest backend/tests -v
+```
+
+### 5. Running the Local Backend Server
+```powershell
+python run.py
+```
+Backend will be available at `http://localhost:5000`.
 
 ---
 
-## ⚖️ License & Disclaimer
+## 🔒 Security & Privacy Notice
+- **Medical Disclaimer:** Lifnex does not diagnose medical conditions or certify biological donor compatibility. Clinical cross-matching must be conducted by certified medical personnel before transfusion.
+- **Data Privacy:** Exact donor GPS coordinates and personal contact numbers are strictly masked until a donor explicitly accepts a request.
 
-Academic demonstration prototype. Built with pure web standards. All donor and patient details are fictional synthetic records.
+---
+
+## 📄 Documentation Links
+- [API Documentation](docs/API_DOCUMENTATION.md)
+- [Deployment Runbook](docs/DEPLOYMENT_GUIDE.md)
+- [Security Threat Model](SECURITY_THREAT_MODEL.md)
+- [Database Schema Reference](docs/DATABASE_SCHEMA_REFERENCE.md)
