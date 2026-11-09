@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/static/(.*)",
+      "destination": "/frontend/static/$1"
+    },
+    {
+      "source": "/((?!api/|static/).*\\.(?:html|css|js|png|jpg|jpeg|svg|ico|json|woff|woff2|ttf|map))",
+      "destination": "/frontend/$1"
+    },
+    {
+      "source": "/((?!api/|static/).*)",
+      "destination": "/frontend/$1.html"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/index.html"
+    }
+  ]
+}
+

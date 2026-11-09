@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LIFNEX DASHBOARD STYLES
+   LIFNEX DASHBOARD STYLES (UI/UX 2.0 UPGRADE)
    Patient, Donor, Hospital, and Admin Portals
    Derived from demo-assests/ui and ux idea 1.png & ui and ux idea 2.png
    ========================================================================== */
@@ -8,13 +8,13 @@
 .dashboard-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: var(--slate-100);
+  background-color: #f8fafc;
 }
 
 /* 2. SIDEBAR NAVIGATION */
 .dashboard-sidebar {
   width: var(--sidebar-width);
-  background-color: var(--slate-900);
+  background-color: #0b1120;
   color: var(--slate-300);
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
   left: 0;
   z-index: 100;
   transition: transform var(--transition-normal);
-  border-right: 1px solid var(--slate-800);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-brand {
@@ -32,8 +32,8 @@
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
-  border-bottom: 1px solid var(--slate-800);
-  background-color: var(--slate-950);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #070c18;
 }
 
 .sidebar-brand .brand-name {
@@ -42,16 +42,16 @@
 
 .sidebar-user-badge {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--slate-800);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background-color: rgba(30, 41, 59, 0.4);
+  background-color: rgba(30, 41, 59, 0.25);
 }
 
 .user-avatar-circle {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--crimson-600);
   color: var(--white);
@@ -59,9 +59,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.05rem;
   flex-shrink: 0;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .user-avatar-circle img {
@@ -106,22 +107,23 @@
   gap: 0.85rem;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
-  color: var(--slate-300);
+  color: var(--slate-400);
   font-size: 0.9375rem;
   font-weight: 500;
+  text-decoration: none;
   transition: all var(--transition-fast);
-  cursor: pointer;
 }
 
 .sidebar-item:hover {
-  background-color: var(--slate-800);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--white);
 }
 
 .sidebar-item.active {
-  background-color: var(--crimson-600);
+  background: var(--gradient-brand);
   color: var(--white);
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
 }
 
 .sidebar-item-icon {
@@ -133,24 +135,22 @@
 }
 
 .sidebar-footer {
-  padding: 1rem;
-  border-top: 1px solid var(--slate-800);
-  background-color: var(--slate-950);
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 3. MAIN DASHBOARD CONTENT AREA */
+/* 3. MAIN DASHBOARD CONTENT */
 .dashboard-main {
   flex: 1;
   margin-left: var(--sidebar-width);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  transition: margin-left var(--transition-normal);
+  min-width: 0;
 }
 
 .dashboard-topbar {
   height: var(--header-height);
-  background: var(--white);
+  background-color: var(--white);
   border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
@@ -164,22 +164,23 @@
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .sidebar-toggle-btn {
   display: none;
   background: none;
   border: none;
-  font-size: 1.25rem;
-  color: var(--slate-600);
+  font-size: 1.5rem;
+  color: var(--slate-700);
   cursor: pointer;
 }
 
 .dashboard-title h2 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 800;
   color: var(--slate-900);
-  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .topbar-right {
@@ -188,84 +189,15 @@
   gap: 1.25rem;
 }
 
-.notifications-trigger {
-  position: relative;
-  background: none;
-  border: none;
-  color: var(--slate-600);
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  transition: background-color var(--transition-fast);
-}
-
-.notifications-trigger:hover {
-  background-color: var(--slate-100);
-  color: var(--slate-900);
-}
-
-.unread-bubble {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 8px;
-  height: 8px;
-  background-color: var(--crimson-600);
-  border-radius: 50%;
-  border: 2px solid var(--white);
-}
-
-.notifications-dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 2rem;
-  width: 360px;
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-xl);
-  display: none;
-  z-index: 100;
-  max-height: 480px;
-  overflow-y: auto;
-}
-
-.notifications-dropdown.active {
-  display: block;
-}
-
-.notif-header {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-light);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.notif-item {
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--border-light);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.notif-item:hover {
-  background-color: var(--slate-50);
-}
-
-.notif-item.unread {
-  background-color: var(--crimson-50);
-}
-
 .dashboard-body {
   padding: 2rem;
   flex: 1;
 }
 
-/* 4. DASHBOARD STATS GRID */
+/* 4. METRIC CARDS ROW */
 .metrics-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -273,12 +205,18 @@
 .metric-card {
   background: var(--white);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.5rem;
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  box-shadow: var(--shadow-sm);
+  gap: 1.15rem;
+  transition: all var(--transition-fast);
+}
+
+.metric-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .metric-icon-box {
@@ -288,7 +226,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
@@ -298,126 +236,66 @@
 .icon-amber   { background-color: #fffbeb; color: #d97706; }
 
 .metric-info h3 {
-  font-size: 1.75rem;
+  font-size: 1.65rem;
   font-weight: 800;
   color: var(--slate-900);
   line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .metric-info p {
   font-size: 0.8125rem;
   color: var(--slate-500);
+  font-weight: 500;
   margin-top: 0.2rem;
 }
 
-/* 5. REQUEST FEED & CARDS (From ui and ux idea 1.png) */
-.emergency-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* 5. AI TRIAGE ASSISTANT CARD */
+.ai-assistant-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%);
+  border: 1px solid #fecdd3;
+  border-radius: var(--radius-xl);
+  padding: 1.5rem 1.75rem;
+  box-shadow: var(--shadow-sm);
 }
 
-.emergency-item-card {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-left: 5px solid var(--crimson-600);
-  border-radius: var(--radius-md);
-  padding: 1.25rem 1.5rem;
-  box-shadow: var(--shadow-sm);
+.ai-assistant-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  transition: all var(--transition-fast);
+  gap: 0.85rem;
+  margin-bottom: 1.15rem;
 }
 
-.emergency-item-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-medium);
-  border-left-color: var(--crimson-600);
-}
-
-.emergency-badge-column {
+.ai-assistant-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  color: var(--white);
+  font-weight: 800;
+  font-size: 0.8125rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 72px;
-  padding: 0.75rem;
-  background: var(--crimson-50);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--crimson-200);
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.4);
 }
 
-.blood-type-display {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--crimson-700);
-  line-height: 1;
-}
-
-.units-req-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--crimson-900);
-  margin-top: 0.25rem;
-  text-transform: uppercase;
-}
-
-.emergency-detail-column {
-  flex: 1;
-}
-
-.emergency-hospital-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--slate-900);
-  margin-bottom: 0.25rem;
-}
-
-.emergency-meta-tags {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem;
-  font-size: 0.8125rem;
-  color: var(--slate-500);
-}
-
-.emergency-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* 6. LEAFLET MAP WRAPPERS */
-.map-container-box {
-  width: 100%;
-  height: 480px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--border-medium);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  z-index: 10;
-}
-
-/* 7. AVAILABILITY TOGGLE SWITCH */
+/* 6. SWITCH TOGGLE (DONOR AVAILABILITY) */
 .switch-container {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.75rem 1rem;
-  background: var(--white);
+  background-color: var(--slate-50);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 1rem 0.35rem 0.5rem;
 }
 
 .switch {
   position: relative;
   display: inline-block;
-  width: 48px;
-  height: 26px;
+  width: 44px;
+  height: 24px;
 }
 
 .switch input {
@@ -429,22 +307,26 @@
 .slider {
   position: absolute;
   cursor: pointer;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--slate-300);
   transition: .3s;
-  border-radius: var(--radius-pill);
+  border-radius: 24px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   left: 3px;
   bottom: 3px;
   background-color: white;
   transition: .3s;
   border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 input:checked + .slider {
@@ -452,43 +334,87 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(22px);
+  transform: translateX(20px);
 }
 
-/* 8. AI TRIAGE ASSISTANT CHAT/BOX */
-.ai-assistant-card {
-  background: linear-gradient(135deg, rgba(255, 241, 242, 0.7), rgba(248, 250, 252, 0.9));
-  border: 1px solid var(--crimson-200);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-}
-
-.ai-assistant-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.ai-assistant-avatar {
-  width: 36px;
-  height: 36px;
+/* 7. NOTIFICATIONS DROPDOWN */
+.notifications-trigger {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--slate-600);
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-sm);
-  background: var(--crimson-600);
-  color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 0.85rem;
+  transition: background-color var(--transition-fast);
 }
 
-/* Responsive Dashboard Breakpoints */
+.notifications-trigger:hover {
+  background-color: var(--slate-100);
+  color: var(--slate-900);
+}
+
+.unread-bubble {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  background-color: var(--crimson-600);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--white);
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 2rem;
+  width: 360px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: 60;
+  display: none;
+  overflow: hidden;
+}
+
+.notifications-dropdown.open {
+  display: block;
+  animation: toastSlideIn 0.25s ease;
+}
+
+.notif-item {
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.notif-item:hover {
+  background-color: var(--slate-50);
+}
+
+.notif-item.unread {
+  background-color: #fff1f2;
+}
+
+/* 8. RESPONSIVE DASHBOARD BREAKPOINTS */
 @media (max-width: 1024px) {
   .dashboard-sidebar {
     transform: translateX(-100%);
   }
-  .dashboard-sidebar.sidebar-open {
+  .dashboard-sidebar.open {
     transform: translateX(0);
   }
   .dashboard-main {
@@ -497,6 +423,9 @@ input:checked + .slider:before {
   .sidebar-toggle-btn {
     display: block;
   }
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -504,15 +433,13 @@ input:checked + .slider:before {
     padding: 0 1rem;
   }
   .dashboard-body {
-    padding: 1rem;
+    padding: 1.25rem 1rem;
   }
-  .emergency-item-card {
-    flex-direction: column;
-    align-items: flex-start;
+  .metrics-row {
+    grid-template-columns: 1fr;
   }
-  .emergency-actions {
-    width: 100%;
-    justify-content: flex-end;
+  .notifications-dropdown {
+    right: 1rem;
+    width: calc(100vw - 2rem);
   }
 }
-
