@@ -3,7 +3,8 @@ import { api } from '../../services/api';
 import { 
   Activity, Bell, CheckCircle2, Clock, Droplets, MapPin, 
   ShieldCheck, User, Settings, Check, X, AlertTriangle, RefreshCw,
-  Phone, Send, Heart, Radio, Sliders, ChevronRight
+  Phone, Send, Heart, Radio, Sliders, ChevronRight,
+  Building2, Calendar, Download
 } from 'lucide-react';
 
 export const DonorDashboard: React.FC = () => {
@@ -666,58 +667,205 @@ export const DonorDashboard: React.FC = () => {
           )}
 
           {/* TAB 4: DONATION HISTORY */}
+          {/* TAB 4: DONATION HISTORY */}
           {activeTab === 'history' && (
-            <div 
-              className="card"
-              style={{
-                padding: '1.75rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">Verified Donation Record</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Officially logged donations verified by participating hospitals</p>
+            <div className="space-y-6">
+              {/* Top Impact Metrics Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div 
+                  className="p-4 rounded-xl flex items-center gap-3.5"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.88)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#FF2E54]/15 border border-[#FF2E54]/30 flex items-center justify-center text-[#FF2E54] shrink-0">
+                    <Droplets size={22} />
+                  </div>
+                  <div>
+                    <div className="text-xl font-extrabold text-white">1,350 ml</div>
+                    <div className="text-[11px] text-slate-400 font-medium">Total Blood Donated</div>
+                  </div>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                  3 Logged
-                </span>
+
+                <div 
+                  className="p-4 rounded-xl flex items-center gap-3.5"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.88)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                    <Heart size={22} />
+                  </div>
+                  <div>
+                    <div className="text-xl font-extrabold text-white">~9 Patients</div>
+                    <div className="text-[11px] text-slate-400 font-medium">Estimated Lives Saved</div>
+                  </div>
+                </div>
+
+                <div 
+                  className="p-4 rounded-xl flex items-center gap-3.5"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.88)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <div className="w-11 h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
+                    <ShieldCheck size={22} />
+                  </div>
+                  <div>
+                    <div className="text-xl font-extrabold text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Eligible Today
+                    </div>
+                    <div className="text-[11px] text-slate-400 font-medium">Next Cooldown: 0 Days</div>
+                  </div>
+                </div>
               </div>
 
-              <div className="divide-y divide-white/10 text-sm">
-                <div className="py-3.5 flex justify-between items-center">
+              {/* Main Verified Donation Record Card */}
+              <div 
+                className="card"
+                style={{
+                  padding: '1.75rem',
+                  background: 'rgba(15, 23, 42, 0.88)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '18px',
+                  boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
+                }}
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-4 border-b border-white/10">
                   <div>
-                    <div className="font-bold text-white">Whole Blood Donation (1 Unit • 450 ml)</div>
-                    <div className="text-xs text-slate-400 mt-0.5">City Care Super Specialty Hospital • Verified by Dr. Arthur Vance</div>
+                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                      <Droplets className="text-[#FF2E54]" size={18} />
+                      <span>Verified Clinical Donation Record</span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">Officially logged transfusions verified by accredited hospital blood banks</p>
                   </div>
-                  <div className="text-right">
-                    <span className="badge badge-success text-[10px]">VERIFIED</span>
-                    <div className="text-xs text-slate-400 mt-1">14 Oct 2026</div>
-                  </div>
+                  <span className="text-xs px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    3 Verified Transfusions
+                  </span>
                 </div>
 
-                <div className="py-3.5 flex justify-between items-center">
-                  <div>
-                    <div className="font-bold text-white">Packed Red Blood Cells (1 Unit)</div>
-                    <div className="text-xs text-slate-400 mt-0.5">KGMU Trauma Center • Emergency Dispatch Mesh</div>
-                  </div>
-                  <div className="text-right">
-                    <span className="badge badge-success text-[10px]">VERIFIED</span>
-                    <div className="text-xs text-slate-400 mt-1">22 Jun 2026</div>
-                  </div>
+                {/* Clean Donation Record Cards */}
+                <div className="space-y-3.5">
+                  {[
+                    {
+                      id: 'don-1',
+                      title: 'Whole Blood Donation',
+                      volume: '1 Unit • 450 ml',
+                      hospital: 'City Care Super Specialty Hospital',
+                      city: 'New Delhi',
+                      clinician: 'Dr. Arthur Vance (MD Transfusion)',
+                      date: '14 Oct 2026',
+                      certId: 'LFX-2026-WB450',
+                      meshType: 'Emergency Bypass Requisition',
+                      icon: Droplets,
+                      iconBg: 'bg-[#FF2E54]/15',
+                      iconBorder: 'border-[#FF2E54]/30',
+                      iconColor: 'text-[#FF2E54]',
+                    },
+                    {
+                      id: 'don-2',
+                      title: 'Packed Red Blood Cells (PRBC)',
+                      volume: '1 Unit • 300 ml',
+                      hospital: 'KGMU Trauma Center',
+                      city: 'Lucknow',
+                      clinician: 'Dr. R. K. Mishra (Head of Trauma)',
+                      date: '22 Jun 2026',
+                      certId: 'LFX-2026-RBC300',
+                      meshType: 'Trauma Mesh Alert Match',
+                      icon: Activity,
+                      iconBg: 'bg-cyan-500/15',
+                      iconBorder: 'border-cyan-500/30',
+                      iconColor: 'text-cyan-400',
+                    },
+                    {
+                      id: 'don-3',
+                      title: 'Platelet Apheresis Single Donor (SDP)',
+                      volume: '1 Therapeutic Dose',
+                      hospital: 'Metropolitan Regional Blood Bank',
+                      city: 'Gurugram',
+                      clinician: 'Dr. S. Nair (Oncology Division)',
+                      date: '05 Jan 2026',
+                      certId: 'LFX-2026-PLT250',
+                      meshType: 'Platelet Emergency Support',
+                      icon: Heart,
+                      iconBg: 'bg-purple-500/15',
+                      iconBorder: 'border-purple-500/30',
+                      iconColor: 'text-purple-400',
+                    },
+                  ].map((rec) => {
+                    const Icon = rec.icon;
+                    return (
+                      <div 
+                        key={rec.id}
+                        className="p-4 rounded-xl bg-slate-950/70 border border-white/10 hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className={`w-11 h-11 rounded-xl ${rec.iconBg} border ${rec.iconBorder} flex items-center justify-center ${rec.iconColor} shrink-0 mt-0.5`}>
+                            <Icon size={20} />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="font-bold text-white text-sm">{rec.title}</h3>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-mono font-bold">
+                                {rec.volume}
+                              </span>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1">
+                                <CheckCircle2 size={11} />
+                                VERIFIED
+                              </span>
+                            </div>
+                            
+                            <div className="text-xs text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                              <span className="flex items-center gap-1 text-slate-300">
+                                <Building2 size={12} className="text-slate-400" />
+                                {rec.hospital} ({rec.city})
+                              </span>
+                              <span>•</span>
+                              <span className="text-slate-400">
+                                Verified by <strong className="text-slate-200">{rec.clinician}</strong>
+                              </span>
+                            </div>
+
+                            <div className="text-[11px] text-slate-500 font-mono">
+                              Cert ID: <span className="text-slate-400">{rec.certId}</span> • {rec.meshType}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="sm:text-right shrink-0 flex sm:flex-col justify-between items-center sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-300 font-semibold">
+                            <Calendar size={13} className="text-slate-400" />
+                            <span>{rec.date}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFeedback({ type: 'success', message: `Downloaded digital verification certificate ${rec.certId}.` });
+                              setTimeout(() => setFeedback(null), 3000);
+                            }}
+                            className="text-[11px] font-bold text-[#FF2E54] hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-[#FF2E54]/20 border border-white/10 cursor-pointer"
+                          >
+                            <Download size={11} />
+                            <span>Certificate</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                <div className="py-3.5 flex justify-between items-center">
-                  <div>
-                    <div className="font-bold text-white">Platelet Apheresis Single Donor</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Metropolitan Regional Blood Bank • Oncology Support</div>
+                {/* Clinical Safety & Verification Badge */}
+                <div className="mt-5 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+                    <span>All records validated under National Blood Transfusion Council (NBTC) clinical protocols.</span>
                   </div>
-                  <div className="text-right">
-                    <span className="badge badge-success text-[10px]">VERIFIED</span>
-                    <div className="text-xs text-slate-400 mt-1">05 Jan 2026</div>
-                  </div>
+                  <span className="text-[11px] text-slate-500 font-mono">Audit Hash: 0x8F4E...C91B</span>
                 </div>
               </div>
             </div>
