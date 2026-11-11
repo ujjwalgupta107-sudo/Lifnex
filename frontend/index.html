@@ -3,209 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LIFNEX — Connecting Lives When Every Second Matters | 3D Emergency Blood Network</title>
-  <meta name="description" content="Lifnex is a futuristic, AI-driven emergency blood donor network connecting verified donors, patients, and trauma centers with sub-second precision.">
+  <title>Lifnex — Connecting Lives When Every Second Matters | 3D Emergency Blood Network</title>
+  <meta name="description" content="AI-powered emergency blood donor coordination platform connecting patients requiring blood with verified voluntary donors, hospitals, and blood banks.">
   <link rel="icon" type="image/svg+xml" href="/static/assets/branding/favicon.svg">
-
-  <!-- Design System Styles -->
   <link rel="stylesheet" href="/static/css/variables.css">
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/components.css">
   <link rel="stylesheet" href="/static/css/layout.css">
-
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/css/dashboards.css">
 </head>
 <body>
-
-  <!-- Premium Floating Navigation -->
-  <header class="navbar" id="mainNav">
-    <div class="container navbar-inner">
-      <a href="index.html" class="nav-brand">
-        <img src="/static/assets/branding/logo.svg" alt="Lifnex Neural Blood Grid">
-      </a>
-
-      <nav class="nav-links">
-        <a href="index.html" class="nav-link active">Home</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="how-it-works.html" class="nav-link">How It Works</a>
-        <a href="hospitals.html" class="nav-link">Hospitals & Blood Banks</a>
-        <a href="contact.html" class="nav-link">Contact</a>
-      </nav>
-
-      <div class="nav-actions">
-        <a href="login.html" class="btn btn-secondary btn-sm">Sign In</a>
-        <a href="register.html" class="btn btn-primary btn-sm">Join Network</a>
-      </div>
+  <!-- Fallback static anchors for search engines and testing harnesses -->
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
-  </header>
-
-  <!-- 3D Cinematic Hero Experience -->
-  <section class="hero-wrapper">
-    <div id="hero-3d-canvas"></div>
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span style="color:#FF2E54;">●</span> AI-POWERED NEURAL BLOOD COORDINATION
-        </div>
-        <h1 class="hero-title">
-          Connecting Lives<br>
-          <span>When Every Second</span><br>
-          Matters.
-        </h1>
-        <p class="hero-subtitle">
-          Lifnex deploys real-time geospatial intelligence, verified voluntary donor routing, and predictive blood bank synchronization to rescue critical patients during emergencies.
-        </p>
-
-        <div class="hero-ctas">
-          <a href="register.html" class="btn btn-primary btn-lg btn-magnetic">
-            Request Blood Immediately &rarr;
-          </a>
-          <a href="register.html?role=donor" class="btn btn-secondary btn-lg">
-            Become a Verified Donor
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Realtime Impact Statistics -->
-  <section class="section section-darker">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-card card-tilt">
-          <div class="stat-icon red">🩸</div>
-          <div>
-            <div class="stat-value" data-counter="12480" data-suffix="+">12,480+</div>
-            <div class="stat-label">Verified Donors</div>
-          </div>
-        </div>
-
-        <div class="stat-card card-tilt">
-          <div class="stat-icon cyan">⚡</div>
-          <div>
-            <div class="stat-value" data-counter="3210" data-suffix="+">3,210+</div>
-            <div class="stat-label">Emergency Responses</div>
-          </div>
-        </div>
-
-        <div class="stat-card card-tilt">
-          <div class="stat-icon emerald">🏥</div>
-          <div>
-            <div class="stat-value" data-counter="98" data-suffix="%">98%</div>
-            <div class="stat-label">Dispatch Fulfillment</div>
-          </div>
-        </div>
-
-        <div class="stat-card card-tilt">
-          <div class="stat-icon amber">⏱️</div>
-          <div>
-            <div class="stat-value" data-counter="6" data-suffix=" min">6 min</div>
-            <div class="stat-label">Average Match Time</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works (Cinematic Grid) -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Intelligent Workflow</span>
-        <h2 class="section-title">Sub-Second Emergency Protocol</h2>
-        <p class="section-desc">From triage input to bedside transfusion, Lifnex automates critical life-saving logistics.</p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-        <div class="card card-tilt">
-          <div class="stat-icon red" style="margin-bottom: 1.5rem;">01</div>
-          <h3 style="color:#FFF; font-size:1.35rem; margin-bottom:0.75rem;">Instant AI Triage</h3>
-          <p style="color:var(--slate-400); line-height:1.6;">Patients or trauma personnel submit emergency requests. Gemini AI extracts blood units, antibodies, and patient vitals.</p>
-        </div>
-
-        <div class="card card-tilt">
-          <div class="stat-icon cyan" style="margin-bottom: 1.5rem;">02</div>
-          <h3 style="color:#FFF; font-size:1.35rem; margin-bottom:0.75rem;">Geospatial Mesh Matching</h3>
-          <p style="color:var(--slate-400); line-height:1.6;">Algorithms calculate travel radii, traffic conditions, and donor availability to alert the top nearest compatible donors.</p>
-        </div>
-
-        <div class="card card-tilt">
-          <div class="stat-icon emerald" style="margin-bottom: 1.5rem;">03</div>
-          <h3 style="color:#FFF; font-size:1.35rem; margin-bottom:0.75rem;">Verified Hospital Handshake</h3>
-          <p style="color:var(--slate-400); line-height:1.6;">Hospitals authenticate donor arrival via secure encrypted handshakes, orchestrating direct bedside transfusions.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Banner -->
-  <section class="section section-darker" style="text-align: center;">
-    <div class="container" style="max-width: 800px;">
-      <h2 class="section-title">Ready to Save a Life Today?</h2>
-      <p class="section-desc" style="margin-bottom: 2.5rem;">
-        Join thousands of active healthcare providers and community heroes. Registration takes under 60 seconds.
-      </p>
-      <div style="display:flex; justify-content:center; gap:1.25rem;">
-        <a href="register.html?role=donor" class="btn btn-primary btn-lg">Join as Voluntary Donor</a>
-        <a href="login.html" class="btn btn-secondary btn-lg">Sign Into Portal</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Premium Dark Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <img src="/static/assets/branding/logo.svg" alt="Lifnex Logo" style="height: 38px; margin-bottom: 1.25rem;">
-          <p style="color: var(--slate-400); line-height: 1.6; max-width: 320px;">
-            Connecting verified blood donors with patients and hospitals across India when every second matters.
-          </p>
-        </div>
-        <div class="footer-col">
-          <h4>Platform</h4>
-          <ul class="footer-links">
-            <li><a href="how-it-works.html">How It Works</a></li>
-            <li><a href="hospitals.html">Hospitals & Blood Banks</a></li>
-            <li><a href="register.html">Request Blood</a></li>
-            <li><a href="register.html?role=donor">Become a Donor</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <ul class="footer-links">
-            <li><a href="about.html">About Lifnex</a></li>
-            <li><a href="contact.html">Emergency Contact</a></li>
-            <li><a href="#">Privacy & RLS Security</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Emergency Dispatch</h4>
-          <p style="color: #FF2E54; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem;">1800-LIFNEX-EMG</p>
-          <p style="color: var(--slate-400); font-size: 0.85rem;">24/7 Monitored Dispatch Hotline</p>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <div>&copy; 2026 Lifnex Healthcare Network. All rights reserved.</div>
-        <div>Engineered with Three.js WebGL & Supabase RLS</div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Scripts -->
-  <script type="module" src="/static/js/hero3d.js"></script>
-  <script type="module" src="/static/js/animations.js"></script>
-  <script>
-    lucide.createIcons();
-    window.addEventListener('scroll', () => {
-      const nav = document.getElementById('mainNav');
-      if (window.scrollY > 40) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
-    });
-  </script>
+  </div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
