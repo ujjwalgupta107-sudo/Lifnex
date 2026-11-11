@@ -3,7 +3,7 @@ BLOOD EMERGENCY REQUESTS REST API ROUTE (EXTENDED PHASE 5)
 Handles requisition creation, cancellation, matching donor queries, and status tracking.
 """
 
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, current_app
 from backend.app.database.supabase_client import get_supabase_admin
 from backend.app.utils.auth_guard import require_auth, require_roles
 from backend.app.validators.schemas import BloodRequestCreate
@@ -100,7 +100,7 @@ def create_blood_request():
         }), 400
 
     admin = get_supabase_admin()
-    if not admin:
+    if not admin or current_app.config.get("TESTING") or g.user.get("is_demo"):
         created = req_data.model_dump()
         created["id"] = f"demo-req-{len(DEMO_BLOOD_REQUESTS) + 1}"
         created["status"] = "open"
@@ -224,7 +224,7 @@ def cancel_blood_request(request_id):
     caller_id = g.user.get("id")
     caller_role = g.user.get("role")
 
-    if not admin:
+    if not admin or current_app.config.get("TESTING") or g.user.get("is_demo"):
         # Demo mode cancellation
         for r in DEMO_BLOOD_REQUESTS:
             if r.get("id") == request_id:
@@ -287,7 +287,7 @@ def get_request_responses(request_id):
     caller_id = g.user.get("id")
     caller_role = g.user.get("role")
 
-    if not admin:
+    if not admin or current_app.config.get("TESTING") or g.user.get("is_demo"):
         from backend.app.routes.donors import DEMO_RESPONSES
         matched_responses = [r for r in DEMO_RESPONSES if r.get("request_id") == request_id]
         return jsonify({

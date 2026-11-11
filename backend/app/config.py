@@ -6,11 +6,14 @@ Handles environment variables, Supabase connection endpoints, and security flags
 import os
 from dotenv import load_dotenv
 
-# Search for .env in current directory and backend directory
+# Search for .env in current directory, backend directory, and project root
 load_dotenv()
-backend_env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
-if os.path.exists(backend_env_path):
-    load_dotenv(backend_env_path)
+_backend_dir_env = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+if os.path.exists(_backend_dir_env):
+    load_dotenv(_backend_dir_env)
+_root_dir_env = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
+if os.path.exists(_root_dir_env):
+    load_dotenv(_root_dir_env)
 
 class Config:
     # Flask Settings

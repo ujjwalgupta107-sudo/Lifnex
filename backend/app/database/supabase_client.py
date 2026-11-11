@@ -20,7 +20,7 @@ def get_supabase_admin() -> Optional[Client]:
     """
     global _supabase_admin_client
     if _supabase_admin_client is None:
-        if Config.SUPABASE_URL and Config.SUPABASE_SECRET_KEY and "sb_secret" not in Config.SUPABASE_SECRET_KEY:
+        if Config.SUPABASE_URL and Config.SUPABASE_SECRET_KEY and Config.SUPABASE_SECRET_KEY != "sb_secret_service_role_key_here":
             try:
                 _supabase_admin_client = create_client(Config.SUPABASE_URL, Config.SUPABASE_SECRET_KEY)
                 logger.info("Supabase Admin client initialized successfully.")
@@ -36,7 +36,7 @@ def get_supabase_anon() -> Optional[Client]:
     """
     global _supabase_anon_client
     if _supabase_anon_client is None:
-        if Config.SUPABASE_URL and Config.SUPABASE_PUBLISHABLE_KEY and "sb_publishable" not in Config.SUPABASE_PUBLISHABLE_KEY:
+        if Config.SUPABASE_URL and Config.SUPABASE_PUBLISHABLE_KEY and Config.SUPABASE_PUBLISHABLE_KEY != "sb_publishable_anon_key_here":
             try:
                 _supabase_anon_client = create_client(Config.SUPABASE_URL, Config.SUPABASE_PUBLISHABLE_KEY)
                 logger.info("Supabase Anon client initialized successfully.")

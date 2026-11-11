@@ -99,6 +99,19 @@ def get_auth_token_from_header() -> Optional[str]:
         return auth_header[7:].strip()
     return None
 
+def generate_token(user_id: str, email: str, role: str, expires_in_seconds: int = 86400) -> str:
+    """Generates an HS256 JWT for user authentication sessions."""
+    from datetime import datetime, timedelta, timezone
+    exp = datetime.now(timezone.utc) + timedelta(seconds=expires_in_seconds)
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "aud": "authenticated",
+        "exp": int(exp.timestamp())
+    }
+    return jwt.encode(payload, Config.SECRET_KEY, algorithm="HS256")
+
 def require_auth(f):
     """
     Decorator requiring a valid authenticated session

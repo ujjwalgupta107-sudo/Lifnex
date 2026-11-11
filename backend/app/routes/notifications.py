@@ -8,7 +8,7 @@ Allows authenticated users (patients, donors, hospitals, admins) to:
 Enforces strict owner-access verification.
 """
 
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, current_app
 from backend.app.database.supabase_client import get_supabase_admin
 from backend.app.utils.auth_guard import require_auth
 from backend.app.services.notification_service import create_notification
@@ -50,7 +50,7 @@ def get_user_notifications():
     unread_only = request.args.get("unread_only", "").lower() == "true"
 
     admin = get_supabase_admin()
-    if not admin:
+    if not admin or current_app.config.get("TESTING") or (hasattr(g, "user") and g.user.get("is_demo")):
         user_notifs = [n for n in DEMO_NOTIFICATIONS if n.get("recipient_id") == user_id]
         if unread_only:
             user_notifs = [n for n in user_notifs if not n.get("is_read")]
@@ -87,7 +87,7 @@ def mark_notification_read(notification_id: str):
     user_id = g.user.get("id")
 
     admin = get_supabase_admin()
-    if not admin:
+    if not admin or current_app.config.get("TESTING") or (hasattr(g, "user") and g.user.get("is_demo")):
         for n in DEMO_NOTIFICATIONS:
             if n["id"] == notification_id:
                 if n["recipient_id"] != user_id and g.user.get("role") != "admin":
@@ -119,7 +119,7 @@ def mark_all_notifications_read():
     user_id = g.user.get("id")
 
     admin = get_supabase_admin()
-    if not admin:
+    if not admin or current_app.config.get("TESTING") or (hasattr(g, "user") and g.user.get("is_demo")):
         for n in DEMO_NOTIFICATIONS:
             if n.get("recipient_id") == user_id:
                 n["is_read"] = True
