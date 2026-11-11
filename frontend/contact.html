@@ -3,43 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Lifnex — Support & Technical Inquiry Desk</title>
-  <meta name="description" content="Get in touch with the Lifnex coordination team, report platform feedback, or request hospital onboarding.">
+  <title>Emergency Contact & Hospital Helpdesk — Lifnex Platform</title>
+  <meta name="description" content="Reach the Lifnex emergency coordination desk, report urgent technical needs, or request hospital onboarding.">
+  <link rel="icon" type="image/svg+xml" href="/static/assets/branding/favicon.svg">
 
   <link rel="stylesheet" href="/static/css/variables.css">
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/components.css">
   <link rel="stylesheet" href="/static/css/layout.css">
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
   <!-- Demo Disclaimer Banner -->
   <div class="demo-banner">
     <div class="container flex justify-between items-center">
-      <div class="demo-banner-text">
+      <div class="flex items-center">
         <span class="demo-tag">Synthetic Demo Environment</span>
-        <span>For real medical emergencies, contact certified emergency services or dial 911 / local dispatch.</span>
+        <span>For real-world medical emergencies, immediately dial national ambulance dispatch (108 / 112).</span>
       </div>
-      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Back to Home</a>
+      <a href="index.html" style="color: var(--cyan-400); font-size: 0.8rem;">&larr; Back to Home</a>
     </div>
   </div>
 
-  <!-- Header -->
-  <header class="navbar">
-    <div class="container nav-container">
-      <a href="index.html" class="brand-link">
-        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
-        <div class="brand-title">
-          <span class="brand-name">Lifnex</span>
-          <span class="brand-tagline-sub">Emergency Donor Network</span>
-        </div>
+  <!-- Unified Navigation Header -->
+  <header class="navbar" id="mainNav">
+    <div class="container navbar-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="/static/assets/branding/logo.svg" alt="Lifnex Official Logo">
       </a>
 
       <nav class="nav-links" id="navLinks">
@@ -52,158 +42,139 @@
 
       <div class="nav-actions">
         <a href="login.html" class="btn btn-secondary btn-sm">Sign In</a>
-        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Join Network</a>
         <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu">&#9776;</button>
       </div>
     </div>
   </header>
 
-  <!-- Page Header -->
-  <section class="section section-alt" style="padding: 3rem 0 2rem;">
-    <div class="container text-center">
-      <span class="section-subtitle">Communications & Support</span>
-      <h1 class="section-title">We Are Here To Assist</h1>
-      <p class="section-desc" style="max-width: 650px; margin: 0 auto;">
-        Have questions about hospital integration, donor volunteering, or platform feedback? Reach out to the Lifnex coordination support team.
-      </p>
+  <!-- Compact Page Hero -->
+  <section class="page-hero">
+    <div class="container">
+      <span class="section-tag">24/7 Operations Desk</span>
+      <h1 class="page-hero-title">Emergency Communications & Support</h1>
+      <p class="page-hero-desc">Connect directly with the Lifnex engineering, verification, and hospital onboarding team.</p>
     </div>
   </section>
 
-  <!-- Contact Form & Info Section -->
+  <!-- Contact Form & Info Grid -->
   <section class="section">
     <div class="container">
-      <div class="grid-2 gap-8 items-start">
-        
-        <!-- Contact Form Card -->
-        <div class="card p-6">
-          <h3 class="card-title mb-4">Send Us A Message</h3>
-          
-          <form id="contactForm" onsubmit="event.preventDefault(); Toast.show('Message Dispatched', 'Thank you! Your inquiry has been logged in our demo desk.', 'success'); this.reset();">
+      <div class="grid-2" style="grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: start;">
+        <div>
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="stat-icon red" style="margin-bottom: 1rem;">🚨</div>
+            <h3 style="color:#FFF; font-size:1.25rem; margin-bottom:0.5rem;">Urgent Emergency Hotline</h3>
+            <p style="font-size:0.9375rem; color:var(--slate-400); margin-bottom: 1rem;">Direct triage line monitored by medical coordination officers.</p>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #FF2E54;">1800-LIFNEX-EMG</div>
+            <div style="font-size: 0.8125rem; color: var(--slate-400); margin-top: 0.25rem;">Toll-free across India • 24/7/365</div>
+          </div>
+
+          <div class="card">
+            <h4 style="color:#FFF; font-size:1.1rem; margin-bottom:1rem;">Operational Desks</h4>
+            <div style="display:flex; flex-direction:column; gap:1rem; font-size:0.9375rem;">
+              <div>
+                <strong style="color:#FFF;">Hospital Verification:</strong><br>
+                <span style="color:var(--slate-400);">hospital-verify@lifnex.org</span>
+              </div>
+              <div>
+                <strong style="color:#FFF;">Donor Coordination:</strong><br>
+                <span style="color:var(--slate-400);">donors@lifnex.org</span>
+              </div>
+              <div>
+                <strong style="color:#FFF;">Engineering & Security:</strong><br>
+                <span style="color:var(--slate-400);">security@lifnex.org</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 2.5rem;">
+          <h2 style="font-size: 1.6rem; font-weight: 800; color: #FFF; margin-bottom: 0.5rem;">Send a Message</h2>
+          <p style="font-size: 0.9375rem; color: var(--slate-400); margin-bottom: 2rem;">Our coordination coordinators respond within 15 minutes during active shift hours.</p>
+
+          <form id="contactForm">
             <div class="form-group">
-              <label for="contactName" class="form-label">Full Name <span class="required">*</span></label>
-              <input type="text" id="contactName" class="form-input" placeholder="e.g. Dr. Arthur Vance" required>
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" placeholder="Dr. Vikram Rao" required>
             </div>
 
             <div class="form-group">
-              <label for="contactEmail" class="form-label">Email Address <span class="required">*</span></label>
-              <input type="email" id="contactEmail" class="form-input" placeholder="arthur.vance@example.com" required>
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" placeholder="v.rao@hospital.org" required>
             </div>
 
             <div class="form-group">
-              <label for="contactCategory" class="form-label">Inquiry Category</label>
-              <select id="contactCategory" class="form-select">
-                <option value="general">General Platform Inquiry</option>
-                <option value="hospital">Hospital Accreditation & Onboarding</option>
-                <option value="donor">Voluntary Donor Network Support</option>
-                <option value="technical">Technical Bug or Security Report</option>
+              <label class="form-label">Department / Inquiry Category</label>
+              <select class="form-select">
+                <option value="emergency">Trauma & Blood Emergency Assistance</option>
+                <option value="hospital">Hospital / Blood Bank Verification</option>
+                <option value="donor">Voluntary Donor Network Inquiry</option>
+                <option value="security">Security & RLS Access Report</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="contactMessage" class="form-label">Message Details <span class="required">*</span></label>
-              <textarea id="contactMessage" rows="4" class="form-textarea" placeholder="Please describe how we can assist..." required></textarea>
+              <label class="form-label">Message Details</label>
+              <textarea class="form-control" rows="4" placeholder="Specify unit requirements, facility location, or feedback..." required></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full">Submit Inquiry</button>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+              Transmit Message &rarr;
+            </button>
           </form>
         </div>
-
-        <!-- Contact Information & Visual -->
-        <div>
-          <div class="card p-6 mb-6">
-            <h3 class="card-title mb-3">Headquarters & Support</h3>
-            <p class="text-sm text-slate-600 mb-4">
-              Lifnex Platform Coordination Operations<br>
-              Metro Health Tech Campus, Suite 400<br>
-              Metropolis, MP 10001
-            </p>
-            
-            <div class="space-y-3 text-sm">
-              <div class="flex items-center gap-2">
-                <span class="text-crimson-600 font-bold">📧 Email:</span>
-                <span class="text-slate-700">support@lifnex-demo.internal</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-crimson-600 font-bold">📞 Coordination Desk:</span>
-                <span class="text-slate-700">+1 (555) 019-LIFNEX</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-crimson-600 font-bold">⏱ Operating Hours:</span>
-                <span class="text-slate-700">24/7 Automated Emergency Dispatch</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Existing Asset Card (Avatar / Emblem voluntary-donor.jpg) -->
-          <div class="card p-4 flex items-center gap-4" style="background: var(--bg-surface); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); border-radius: var(--radius-lg);">
-            <img src="/static/assets/images/voluntary-donor.jpg" alt="Donor Emblem" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
-            <div>
-              <div class="font-bold text-sm" style="color: var(--brand-navy);">Voluntary Donor Network</div>
-              <div class="text-xs mt-1" style="color: var(--text-muted);">Our certified donor community responds 24/7 to hospital broadcasts across Metropolis.</div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="site-footer">
+  <!-- Unified Footer -->
+  <footer class="footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="flex items-center gap-2 mb-2">
-            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
-            <span class="text-white font-bold text-lg">Lifnex</span>
-          </div>
-          <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
-        </div>
-
         <div class="footer-col">
-          <h5>Quick Links</h5>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About Mission</a></li>
+          <img src="/static/assets/branding/logo.svg" alt="Lifnex Logo" style="height: 38px; margin-bottom: 1.25rem;">
+          <p style="color: var(--slate-400); line-height: 1.6; max-width: 320px;">
+            Connecting verified blood donors with patients and hospitals across India when every second matters.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul class="footer-links">
             <li><a href="how-it-works.html">How It Works</a></li>
             <li><a href="hospitals.html">Hospitals & Blood Banks</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="register.html">Request Blood</a></li>
+            <li><a href="register.html?role=donor">Become a Donor</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
-          <h5>Portals</h5>
-          <ul>
-            <li><a href="patient-dashboard.html">Patient Portal</a></li>
-            <li><a href="donor-dashboard.html">Donor Hub</a></li>
-            <li><a href="hospital-dashboard.html">Hospital Coordination</a></li>
-            <li><a href="admin-dashboard.html">Admin Analytics</a></li>
+          <h4>Company</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">About Lifnex</a></li>
+            <li><a href="contact.html">Emergency Contact</a></li>
+            <li><a href="#">Privacy & RLS Security</a></li>
+            <li><a href="#">Terms of Service</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
-          <h5>Demonstration</h5>
-          <p class="text-xs text-slate-400">Academic Project Prototype</p>
-          <div class="text-sm font-bold text-white mt-1">Metropolis District Demo</div>
+          <h4>Emergency Dispatch</h4>
+          <p style="color: #FF2E54; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem;">1800-LIFNEX-EMG</p>
+          <p style="color: var(--slate-400); font-size: 0.85rem;">24/7 Monitored Dispatch Hotline</p>
         </div>
       </div>
-
       <div class="footer-bottom">
-        <div>&copy; 2026 Lifnex Platform. All rights reserved.</div>
-        <div class="flex gap-4">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-        </div>
+        <div>&copy; 2026 Lifnex Healthcare Network. All rights reserved.</div>
+        <div>Engineered with Three.js WebGL & Supabase RLS</div>
       </div>
     </div>
   </footer>
 
-  <script src="/static/js/main.js"></script>
   <script>
-    if (window.lucide) {
-      lucide.createIcons();
+    const mobileBtn = document.getElementById('mobileNavToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (mobileBtn && navLinks) {
+      mobileBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
     }
   </script>
 </body>
 </html>
-
