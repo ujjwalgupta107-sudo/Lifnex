@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { 
   Activity, Bell, CheckCircle2, Clock, Droplets, MapPin, 
-  ShieldCheck, User, Settings, Check, X, AlertTriangle, RefreshCw
+  ShieldCheck, User, Settings, Check, X, AlertTriangle, RefreshCw,
+  Phone, Send, Heart, Radio, Sliders, ChevronRight
 } from 'lucide-react';
 
 export const DonorDashboard: React.FC = () => {
@@ -26,10 +27,12 @@ export const DonorDashboard: React.FC = () => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Profile Form State
-  const [fullName, setFullName] = useState(user.full_name || 'Anita (Voluntary Donor)');
+  const [fullName, setFullName] = useState(user.full_name || 'Anita Desai (Demo Donor)');
   const [phone, setPhone] = useState(user.phone_number || '+91 98765 43210');
-  const [city, setCity] = useState('Metropolis');
+  const [city, setCity] = useState('New Delhi');
   const [travelRadius, setTravelRadius] = useState(15);
+  const [pushAlerts, setPushAlerts] = useState(true);
+  const [smsAlerts, setSmsAlerts] = useState(true);
 
   const bloodGroup = user.blood_group || 'O+';
 
@@ -67,7 +70,10 @@ export const DonorDashboard: React.FC = () => {
       const res = await api.updateDonorAvailability(nextStatus, user.id);
       if (res.success) {
         setAvailable(!available);
-        setFeedback({ type: 'success', message: `Status updated to ${nextStatus.toUpperCase()}` });
+        setFeedback({ 
+          type: 'success', 
+          message: `Availability updated to ${nextStatus.toUpperCase()}. ${nextStatus === 'available' ? 'You are receiving nearby emergency dispatch alerts.' : 'Emergency alerts paused.'}` 
+        });
       } else {
         setFeedback({ type: 'error', message: res.error?.message || 'Failed to update availability.' });
       }
@@ -91,7 +97,7 @@ export const DonorDashboard: React.FC = () => {
       if (res.success) {
         setFeedback({
           type: 'success',
-          message: status === 'accepted' ? 'Emergency response dispatched! Hospital and patient notified.' : 'Request declined.',
+          message: status === 'accepted' ? 'Emergency response dispatched! Hospital and patient notified of your arrival in 25 mins.' : 'Request declined and removed from immediate feed.',
         });
 
         // Record in local state
@@ -105,13 +111,13 @@ export const DonorDashboard: React.FC = () => {
           ...prev,
         ]);
 
-        // Remove or update from feed
+        // Remove from feed
         setFeedRequests(prev => prev.filter(r => r.id !== requestId));
       } else {
         setFeedback({ type: 'error', message: res.error?.message || 'Unable to record response.' });
       }
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Network error.' });
+      setFeedback({ type: 'error', message: err.message || 'Network error recording response.' });
     }
     setTimeout(() => setFeedback(null), 4000);
   };
@@ -139,29 +145,74 @@ export const DonorDashboard: React.FC = () => {
     }
   };
 
+  // Navigation Items Definition for the Left Sidebar
+  const navItems = [
+    { id: 'overview', label: 'Dashboard Overview', icon: Activity, count: null },
+    { id: 'requests', label: 'Nearby Alerts', icon: Droplets, count: feedRequests.length },
+    { id: 'responses', label: 'My Responses', icon: CheckCircle2, count: myResponses.length },
+    { id: 'history', label: 'Donation History', icon: Clock, count: 3 },
+    { id: 'notifications', label: 'Notifications', icon: Bell, count: unreadNotifs },
+    { id: 'profile', label: 'Donor Profile', icon: User, count: null },
+    { id: 'settings', label: 'Settings & Geofence', icon: Settings, count: null },
+  ];
+
   return (
     <div className="container py-8 max-w-7xl">
-      {/* Top Banner Message */}
+      {/* Top Banner Alert Message */}
       {feedback && (
-        <div className={`mb-4 p-3 rounded-lg text-sm flex items-center justify-between ${
-          feedback.type === 'success' ? 'bg-emerald-950/70 border border-emerald-500/40 text-emerald-200' : 'bg-red-950/70 border border-red-500/40 text-red-200'
-        }`}>
-          <span>{feedback.message}</span>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white"><X size={16} /></button>
+        <div 
+          className={`mb-5 p-3.5 rounded-xl text-sm flex items-center justify-between shadow-lg ${
+            feedback.type === 'success' 
+              ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-200' 
+              : 'bg-red-950/80 border border-red-500/50 text-red-200'
+          }`}
+          style={{ backdropFilter: 'blur(16px)' }}
+        >
+          <div className="flex items-center gap-2.5">
+            {feedback.type === 'success' ? <CheckCircle2 size={18} className="text-emerald-400 shrink-0" /> : <AlertTriangle size={18} className="text-[#FF2E54] shrink-0" />}
+            <span>{feedback.message}</span>
+          </div>
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white transition-colors">
+            <X size={16} />
+          </button>
         </div>
       )}
 
-      {/* Greeting & Header */}
-      <div className="dashboard-greeting-row mb-6">
+      {/* Top Greeting & Availability Header */}
+      <div className="dashboard-greeting-row mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">Welcome, {user.full_name || 'Anita'}</h1>
-          <p className="text-sm text-slate-400">Voluntary Donor Emergency Hub • Blood Group: <span className="text-[#FF2E54] font-bold">{bloodGroup}</span></p>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Welcome, {user.full_name || 'Anita Desai (Demo Donor)'}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Voluntary Donor Emergency Hub • Blood Group: <span className="text-[#FF2E54] font-bold">{bloodGroup}</span>
+          </p>
         </div>
 
         {/* Functional Availability Toggle Switch */}
-        <div className="flex items-center gap-3 bg-[#0F172A] border border-white/10 px-4 py-2 rounded-full">
-          <span className="text-xs font-semibold text-slate-300">Available to Donate</span>
-          <label className="toggle-switch-wrapper">
+        <div 
+          className="flex items-center gap-3 px-4 py-2 rounded-full border"
+          style={{
+            background: 'rgba(15, 23, 42, 0.85)',
+            borderColor: available ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.12)',
+            boxShadow: available ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none',
+          }}
+        >
+          <div className="flex items-center gap-1.5">
+            <span 
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: available ? '#10B981' : '#64748B',
+                boxShadow: available ? '0 0 8px #10B981' : 'none',
+              }}
+            ></span>
+            <span className="text-xs font-semibold text-slate-200">
+              {available ? 'Available to Donate' : 'Unavailable / Busy'}
+            </span>
+          </div>
+          <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
             <input 
               type="checkbox" 
               checked={available} 
@@ -192,248 +243,718 @@ export const DonorDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Pills */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4">
-        {[
-          { id: 'overview', label: 'Dashboard Overview', icon: Activity },
-          { id: 'requests', label: `Nearby Alerts (${feedRequests.length})`, icon: Droplets },
-          { id: 'responses', label: `My Responses (${myResponses.length})`, icon: CheckCircle2 },
-          { id: 'history', label: 'Donation History', icon: Clock },
-          { id: 'notifications', label: `Notifications (${unreadNotifs})`, icon: Bell },
-          { id: 'profile', label: 'Donor Profile', icon: User },
-          { id: 'settings', label: 'Settings', icon: Settings },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeTab === tab.id 
-                  ? 'bg-[#FF2E54] text-white shadow-md' 
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <Icon size={14} />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* TAB CONTENT: Overview & Requests */}
-      {(activeTab === 'overview' || activeTab === 'requests') && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Droplets className="text-[#FF2E54]" size={18} />
-              Compatible Emergency Requests Near You
-            </h2>
-            <button onClick={loadDashboardData} className="btn btn-secondary btn-sm flex items-center gap-1.5 text-xs">
-              <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
-              Refresh Feed
-            </button>
-          </div>
-
-          {feedRequests.length === 0 ? (
-            <div className="card p-8 text-center text-slate-400">
-              <p className="text-sm">No critical requests matching your blood group in your area right now.</p>
-              <p className="text-xs text-slate-500 mt-1">Thank you for standing ready as a verified donor.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {feedRequests.map((req) => (
-                <div key={req.id} className="donor-urgent-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-900/80">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="badge badge-primary font-bold text-[11px]">{req.urgency_level || 'CRITICAL'}</span>
-                      <span className="text-white font-bold text-sm">{req.hospital_name || 'KGMU Trauma Center'}</span>
-                      <span className="text-xs text-slate-400">• {req.city || 'Metropolis'}</span>
-                    </div>
-                    <p className="text-xs text-slate-300">
-                      Requires <strong className="text-white">{req.units_required || 2} Units</strong> of <strong className="text-[#FF2E54]">{req.blood_group}</strong>
-                    </p>
-                    <p className="text-[11px] text-slate-400">{req.clinical_notes || 'Immediate trauma surgery transfusion required.'}</p>
-                  </div>
-
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <button 
-                      onClick={() => handleRespond(req.id, 'accepted')} 
-                      className="btn-teal-action flex-1 sm:flex-none text-xs py-2 px-3 rounded-lg"
-                    >
-                      I'm Available to Donate →
-                    </button>
-                    <button 
-                      onClick={() => handleRespond(req.id, 'declined')} 
-                      className="btn-decline-action text-xs py-2 px-3 rounded-lg"
-                    >
-                      Decline
-                    </button>
-                  </div>
+      {/* ======================================================== */}
+      {/* 2-COLUMN DASHBOARD LAYOUT: LEFT SIDEBAR + MAIN CONTENT   */}
+      {/* ======================================================== */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        {/* ======================================================== */}
+        {/* LEFT SIDEBAR NAVIGATION PANEL                            */}
+        {/* ======================================================== */}
+        <aside className="md:col-span-4 lg:col-span-3 space-y-4">
+          <div 
+            className="donor-sidebar-card"
+            style={{
+              background: 'rgba(15, 23, 42, 0.88)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: '18px',
+              padding: '1.25rem',
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            {/* Donor Mini Profile Card */}
+            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-white/10">
+              <div 
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF',
+                  fontWeight: 900,
+                  fontSize: '1.1rem',
+                  boxShadow: '0 4px 12px rgba(255, 46, 84, 0.35)',
+                }}
+              >
+                A
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-white truncate">Anita Desai</div>
+                <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
+                  <span>{bloodGroup} • Voluntary Donor</span>
                 </div>
-              ))}
+              </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* TAB CONTENT: My Responses */}
-      {activeTab === 'responses' && (
-        <div className="card p-6">
-          <h2 className="text-lg font-bold text-white mb-4">My Emergency Responses</h2>
-          {myResponses.length === 0 ? (
-            <p className="text-sm text-slate-400">You haven't responded to any active requests in this session yet.</p>
-          ) : (
-            <div className="divide-y divide-white/10">
-              {myResponses.map((res, i) => (
-                <div key={i} className="py-3 flex justify-between items-center text-sm">
-                  <div>
-                    <span className="font-semibold text-white">Case ID: {res.request_id}</span>
-                    <span className="text-xs text-slate-400 ml-2">ETA: {res.eta}</span>
+            {/* Navigation Tabs List */}
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
+              Donor Portal Navigation
+            </div>
+
+            <nav className="space-y-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    id={`donor-tab-${item.id}`}
+                    type="button"
+                    onClick={() => setActiveTab(item.id as any)}
+                    className={`donor-sidebar-item ${isActive ? 'active' : ''}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      padding: '0.75rem 0.9rem',
+                      borderRadius: '12px',
+                      fontSize: '0.825rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      border: isActive ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid transparent',
+                      background: isActive ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'transparent',
+                      color: isActive ? '#FFFFFF' : '#94A3B8',
+                      boxShadow: isActive ? '0 4px 14px rgba(255, 46, 84, 0.4)' : 'none',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
+                      <span>{item.label}</span>
+                    </div>
+
+                    {item.count !== null && item.count > 0 && (
+                      <span 
+                        className="donor-sidebar-badge"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '2px 7px',
+                          borderRadius: '9999px',
+                          fontSize: '0.7rem',
+                          fontWeight: 800,
+                          background: isActive ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                          color: isActive ? '#FFFFFF' : '#CBD5E1',
+                        }}
+                      >
+                        {item.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Sidebar Bottom Live Emergency Status Card */}
+            <div className="mt-5 pt-4 border-t border-white/10">
+              <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 space-y-1">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">Geofence Status</span>
+                  <span className="text-emerald-400 font-bold">15 km Active</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">Emergency Hotline</span>
+                  <span className="text-white font-mono text-[10px]">1800-LIFNEX</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* ======================================================== */}
+        {/* RIGHT MAIN CONTENT AREA                                  */}
+        {/* ======================================================== */}
+        <main className="md:col-span-8 lg:col-span-9 space-y-6">
+          
+          {/* TAB 1: OVERVIEW */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Droplets className="text-[#FF2E54]" size={18} />
+                    <span>Immediate Emergency Priority Feed</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Critical blood requests within your {travelRadius} km geofence requiring {bloodGroup}
+                  </p>
+                </div>
+                <button 
+                  onClick={loadDashboardData} 
+                  className="btn btn-secondary btn-sm flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-lg"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    color: '#CBD5E1',
+                  }}
+                >
+                  <RefreshCw size={12} className={loading ? 'animate-spin text-[#FF2E54]' : ''} />
+                  <span>Refresh Feed</span>
+                </button>
+              </div>
+
+              {/* Feed List */}
+              {feedRequests.length === 0 ? (
+                <div 
+                  className="card text-center text-slate-400"
+                  style={{
+                    padding: '3rem 2rem',
+                    background: 'rgba(15, 23, 42, 0.7)',
+                    border: '1px dashed rgba(255, 255, 255, 0.15)',
+                    borderRadius: '16px',
+                  }}
+                >
+                  <Heart size={36} className="mx-auto mb-3 text-slate-500 opacity-60" />
+                  <h3 className="text-base font-bold text-white mb-1">No Urgent Alerts Right Now</h3>
+                  <p className="text-xs text-slate-400 max-w-md mx-auto">
+                    All hospital requisitions matching blood group {bloodGroup} in your area are currently fulfilled. You will receive an instant dispatch ping when a match occurs.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {feedRequests.map((req) => (
+                    <div 
+                      key={req.id} 
+                      className="card"
+                      style={{
+                        padding: '1.25rem',
+                        background: 'rgba(15, 23, 42, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '14px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                      }}
+                    >
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span 
+                              style={{
+                                background: req.urgency_level === 'critical' ? 'rgba(255, 46, 84, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                                color: req.urgency_level === 'critical' ? '#FF2E54' : '#FBBF24',
+                                border: `1px solid ${req.urgency_level === 'critical' ? 'rgba(255, 46, 84, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
+                                padding: '0.15rem 0.5rem',
+                                borderRadius: '6px',
+                                fontWeight: 800,
+                                fontSize: '0.7rem',
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              {req.urgency_level || 'CRITICAL'}
+                            </span>
+                            <span className="text-white font-bold text-sm">{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
+                            <span className="text-xs text-slate-400">• {req.city || 'New Delhi'}</span>
+                          </div>
+                          
+                          <p className="text-xs text-slate-200">
+                            Requires <strong className="text-white font-bold">{req.units_required || 2} Units</strong> of <strong className="text-[#FF2E54] font-bold">{req.blood_group}</strong> • Approx. Distance: <strong className="text-slate-200">{req.distance_km || 3.4} km</strong>
+                          </p>
+                          
+                          <p className="text-[11px] text-slate-400 bg-black/20 p-2 rounded-lg border border-white/5">
+                            {req.clinical_notes || 'Trauma surgery priority requisition.'}
+                          </p>
+                        </div>
+
+                        {/* Interactive Accept & Decline Actions */}
+                        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                          <button 
+                            type="button"
+                            onClick={() => handleRespond(req.id, 'accepted')} 
+                            className="btn btn-primary text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 font-bold shadow-md flex-1 sm:flex-none"
+                            style={{
+                              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35)',
+                            }}
+                          >
+                            <Check size={14} />
+                            <span>I'm Available</span>
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => handleRespond(req.id, 'declined')} 
+                            className="btn btn-secondary text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1"
+                            style={{
+                              background: 'rgba(255, 255, 255, 0.05)',
+                              border: '1px solid rgba(255, 255, 255, 0.12)',
+                              color: '#94A3B8',
+                            }}
+                          >
+                            <X size={14} />
+                            <span>Pass</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Local Dispatch Radar Card */}
+              <div 
+                className="card"
+                style={{
+                  padding: '1.5rem',
+                  background: 'rgba(15, 23, 42, 0.75)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Radio size={16} className="text-[#38BDF8] animate-pulse" />
+                    <h3 className="text-sm font-bold text-white">Local Dispatch Mesh Radar</h3>
                   </div>
-                  <span className={`badge ${res.status === 'accepted' ? 'badge-success' : 'badge-warning'}`}>
-                    {res.status.toUpperCase()}
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                    15 km Geofence
                   </span>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB CONTENT: Donation History */}
-      {activeTab === 'history' && (
-        <div className="card p-6">
-          <h2 className="text-lg font-bold text-white mb-4">Verified Donation Record</h2>
-          <div className="divide-y divide-white/10 text-sm">
-            <div className="py-3 flex justify-between items-center">
-              <div>
-                <div className="font-bold text-white">Whole Blood Donation (1 Unit)</div>
-                <div className="text-xs text-slate-400">City Care Super Specialty Hospital • Verified by Dr. S. Nair</div>
-              </div>
-              <div className="text-right">
-                <span className="badge badge-success">COMPLETED</span>
-                <div className="text-xs text-slate-400 mt-0.5">14 Oct 2026</div>
-              </div>
-            </div>
-            <div className="py-3 flex justify-between items-center">
-              <div>
-                <div className="font-bold text-white">Packed Red Blood Cells (1 Unit)</div>
-                <div className="text-xs text-slate-400">KGMU Trauma Center • Emergency Dispatch</div>
-              </div>
-              <div className="text-right">
-                <span className="badge badge-success">COMPLETED</span>
-                <div className="text-xs text-slate-400 mt-0.5">22 Jun 2026</div>
-              </div>
-            </div>
-            <div className="py-3 flex justify-between items-center">
-              <div>
-                <div className="font-bold text-white">Platelet Apheresis</div>
-                <div className="text-xs text-slate-400">Metropolitan Blood Bank</div>
-              </div>
-              <div className="text-right">
-                <span className="badge badge-success">COMPLETED</span>
-                <div className="text-xs text-slate-400 mt-0.5">05 Jan 2026</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB CONTENT: Notifications */}
-      {activeTab === 'notifications' && (
-        <div className="card p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-white">Notifications ({notifications.length})</h2>
-            {unreadNotifs > 0 && (
-              <button onClick={handleMarkAllNotifications} className="btn btn-secondary btn-sm text-xs">
-                Mark All Read
-              </button>
-            )}
-          </div>
-
-          {notifications.length === 0 ? (
-            <p className="text-sm text-slate-400">No notifications on file.</p>
-          ) : (
-            <div className="divide-y divide-white/10">
-              {notifications.map((n) => (
-                <div key={n.id} className={`py-3 flex justify-between items-center ${!n.is_read ? 'bg-[#FF2E54]/5 px-3 rounded-lg' : ''}`}>
-                  <div>
-                    <div className="font-bold text-white text-sm">{n.title}</div>
-                    <div className="text-xs text-slate-300">{n.message}</div>
+                <p className="text-xs text-slate-400 mb-3">
+                  Your coordinates are protected through differential privacy and randomized geo-hashing. Only approximate route vectors are calculated for dispatch.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                    <div className="text-base font-black text-white">4</div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">Hospitals in Radius</div>
                   </div>
-                  {!n.is_read && (
-                    <button 
-                      onClick={() => handleMarkNotification(n.id)} 
-                      className="text-xs text-[#38BDF8] hover:underline"
-                    >
-                      Mark Read
-                    </button>
-                  )}
+                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                    <div className="text-base font-black text-[#10B981]">Active</div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">Triage Signal</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                    <div className="text-base font-black text-[#38BDF8]">18 mins</div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">Average ETA</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                    <div className="text-base font-black text-[#FF2E54]">100%</div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">RLS Protected</div>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           )}
-        </div>
-      )}
 
-      {/* TAB CONTENT: Donor Profile & Settings */}
-      {(activeTab === 'profile' || activeTab === 'settings') && (
-        <div className="card p-6 max-w-xl">
-          <h2 className="text-lg font-bold text-white mb-4">Donor Profile & Geofence Settings</h2>
-          <div className="space-y-4 text-sm">
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">Full Name</label>
-              <input 
-                type="text" 
-                className="form-control text-sm" 
-                value={fullName} 
-                onChange={(e) => setFullName(e.target.value)} 
-              />
+          {/* TAB 2: NEARBY ALERTS */}
+          {activeTab === 'requests' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Droplets className="text-[#FF2E54]" size={18} />
+                    <span>Compatible Emergency Alerts ({feedRequests.length})</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Live emergency requisitions matched against your {bloodGroup} blood group</p>
+                </div>
+                <button 
+                  onClick={loadDashboardData} 
+                  className="btn btn-secondary btn-sm flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-lg"
+                >
+                  <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
+                  <span>Refresh</span>
+                </button>
+              </div>
+
+              {feedRequests.length === 0 ? (
+                <div className="card p-8 text-center text-slate-400">
+                  <p className="text-sm">No emergency alerts in your immediate radius right now.</p>
+                  <p className="text-xs text-slate-500 mt-1">Thank you for standing ready as a verified donor.</p>
+                </div>
+              ) : (
+                feedRequests.map((req) => (
+                  <div 
+                    key={req.id} 
+                    className="card p-4 rounded-xl border border-white/10 bg-slate-900/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="badge badge-primary font-bold text-[11px]">{req.urgency_level || 'CRITICAL'}</span>
+                        <span className="text-white font-bold text-sm">{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
+                        <span className="text-xs text-slate-400">• {req.city || 'New Delhi'}</span>
+                      </div>
+                      <p className="text-xs text-slate-200">
+                        Requires <strong className="text-white">{req.units_required || 2} Units</strong> of <strong className="text-[#FF2E54]">{req.blood_group}</strong>
+                      </p>
+                      <p className="text-[11px] text-slate-400">{req.clinical_notes || 'Trauma surgery priority requisition.'}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <button 
+                        onClick={() => handleRespond(req.id, 'accepted')} 
+                        className="btn btn-primary text-xs py-2 px-3.5 rounded-lg flex-1 sm:flex-none font-bold shadow-md"
+                        style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
+                      >
+                        Accept & Dispatch →
+                      </button>
+                      <button 
+                        onClick={() => handleRespond(req.id, 'declined')} 
+                        className="btn btn-secondary text-xs py-2 px-3 rounded-lg"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">Phone Number (Protected via RLS)</label>
-              <input 
-                type="text" 
-                className="form-control text-sm" 
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)} 
-              />
-            </div>
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">City / Operating Zone</label>
-              <input 
-                type="text" 
-                className="form-control text-sm" 
-                value={city} 
-                onChange={(e) => setCity(e.target.value)} 
-              />
-            </div>
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">
-                Emergency Dispatch Travel Radius: <strong className="text-white">{travelRadius} km</strong>
-              </label>
-              <input 
-                type="range" 
-                min={5} 
-                max={50} 
-                value={travelRadius} 
-                onChange={(e) => setTravelRadius(Number(e.target.value))} 
-                className="w-full accent-[#FF2E54]" 
-              />
-            </div>
-            <button 
-              onClick={() => {
-                setFeedback({ type: 'success', message: 'Profile & travel geofence preferences updated.' });
-                setTimeout(() => setFeedback(null), 3000);
-              }} 
-              className="btn btn-primary text-xs py-2 px-4 rounded-lg mt-2"
+          )}
+
+          {/* TAB 3: MY RESPONSES */}
+          {activeTab === 'responses' && (
+            <div 
+              className="card"
+              style={{
+                padding: '1.75rem',
+                background: 'rgba(15, 23, 42, 0.88)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '18px',
+              }}
             >
-              Save Profile Preferences
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-white tracking-tight">My Emergency Responses</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Responses you have submitted for active emergency cases</p>
+                </div>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-mono">
+                  {myResponses.length} Cases
+                </span>
+              </div>
+
+              {myResponses.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 border border-white/5 rounded-xl bg-slate-950/40">
+                  <CheckCircle2 size={32} className="mx-auto mb-2 text-slate-600" />
+                  <p className="text-sm font-semibold text-slate-300">No Responses Submitted Yet</p>
+                  <p className="text-xs text-slate-400 mt-1">When you accept emergency alerts, your dispatch status will appear here.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-white/10">
+                  {myResponses.map((res, i) => (
+                    <div key={i} className="py-3.5 flex justify-between items-center text-sm">
+                      <div>
+                        <div className="font-bold text-white flex items-center gap-2">
+                          <span>Case #{res.request_id?.slice(0, 8) || 'Alert'}</span>
+                          <span className="text-xs text-slate-400 font-normal">({res.timestamp})</span>
+                        </div>
+                        <div className="text-xs text-slate-400 mt-0.5">Estimated Arrival: <strong className="text-[#38BDF8]">{res.eta}</strong></div>
+                      </div>
+                      <span 
+                        style={{
+                          fontSize: '0.725rem',
+                          fontWeight: 700,
+                          padding: '0.2rem 0.65rem',
+                          borderRadius: '9999px',
+                          textTransform: 'uppercase',
+                          background: res.status === 'accepted' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                          color: res.status === 'accepted' ? '#34D399' : '#F87171',
+                          border: `1px solid ${res.status === 'accepted' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'}`,
+                        }}
+                      >
+                        {res.status.toUpperCase()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 4: DONATION HISTORY */}
+          {activeTab === 'history' && (
+            <div 
+              className="card"
+              style={{
+                padding: '1.75rem',
+                background: 'rgba(15, 23, 42, 0.88)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '18px',
+              }}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-white tracking-tight">Verified Donation Record</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Officially logged donations verified by participating hospitals</p>
+                </div>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
+                  3 Logged
+                </span>
+              </div>
+
+              <div className="divide-y divide-white/10 text-sm">
+                <div className="py-3.5 flex justify-between items-center">
+                  <div>
+                    <div className="font-bold text-white">Whole Blood Donation (1 Unit • 450 ml)</div>
+                    <div className="text-xs text-slate-400 mt-0.5">City Care Super Specialty Hospital • Verified by Dr. Arthur Vance</div>
+                  </div>
+                  <div className="text-right">
+                    <span className="badge badge-success text-[10px]">VERIFIED</span>
+                    <div className="text-xs text-slate-400 mt-1">14 Oct 2026</div>
+                  </div>
+                </div>
+
+                <div className="py-3.5 flex justify-between items-center">
+                  <div>
+                    <div className="font-bold text-white">Packed Red Blood Cells (1 Unit)</div>
+                    <div className="text-xs text-slate-400 mt-0.5">KGMU Trauma Center • Emergency Dispatch Mesh</div>
+                  </div>
+                  <div className="text-right">
+                    <span className="badge badge-success text-[10px]">VERIFIED</span>
+                    <div className="text-xs text-slate-400 mt-1">22 Jun 2026</div>
+                  </div>
+                </div>
+
+                <div className="py-3.5 flex justify-between items-center">
+                  <div>
+                    <div className="font-bold text-white">Platelet Apheresis Single Donor</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Metropolitan Regional Blood Bank • Oncology Support</div>
+                  </div>
+                  <div className="text-right">
+                    <span className="badge badge-success text-[10px]">VERIFIED</span>
+                    <div className="text-xs text-slate-400 mt-1">05 Jan 2026</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: NOTIFICATIONS */}
+          {activeTab === 'notifications' && (
+            <div 
+              className="card"
+              style={{
+                padding: '1.75rem',
+                background: 'rgba(15, 23, 42, 0.88)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '18px',
+              }}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-white tracking-tight">Notification Center</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Emergency alerts and status updates</p>
+                </div>
+                {unreadNotifs > 0 && (
+                  <button 
+                    onClick={handleMarkAllNotifications} 
+                    className="btn btn-secondary btn-sm text-xs py-1.5 px-3 rounded-lg"
+                  >
+                    Mark All Read
+                  </button>
+                )}
+              </div>
+
+              {notifications.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 border border-white/5 rounded-xl bg-slate-950/40">
+                  <Bell size={28} className="mx-auto mb-2 text-slate-600" />
+                  <p className="text-sm">No new notifications on file.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-white/10">
+                  {notifications.map((n) => (
+                    <div key={n.id} className={`py-3.5 flex justify-between items-center ${!n.is_read ? 'bg-[#FF2E54]/5 px-3 rounded-xl' : ''}`}>
+                      <div>
+                        <div className="font-bold text-white text-sm flex items-center gap-2">
+                          {!n.is_read && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF2E54' }}></span>}
+                          <span>{n.title}</span>
+                        </div>
+                        <div className="text-xs text-slate-300 mt-0.5">{n.message}</div>
+                      </div>
+                      {!n.is_read && (
+                        <button 
+                          onClick={() => handleMarkNotification(n.id)} 
+                          className="text-xs text-[#38BDF8] hover:underline font-semibold ml-4 shrink-0"
+                        >
+                          Mark Read
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 6: DONOR PROFILE */}
+          {activeTab === 'profile' && (
+            <div 
+              className="card max-w-2xl"
+              style={{
+                padding: '2rem',
+                background: 'rgba(15, 23, 42, 0.88)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '18px',
+              }}
+            >
+              <h2 className="text-lg font-bold text-white mb-1 tracking-tight">Donor Profile Information</h2>
+              <p className="text-xs text-slate-400 mb-6">Manage your contact information and verified blood group identity</p>
+              
+              <div className="space-y-4 text-sm">
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">Full Name</label>
+                  <input 
+                    type="text" 
+                    className="form-control text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
+                    value={fullName} 
+                    onChange={(e) => setFullName(e.target.value)} 
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">
+                    Phone Number <span className="text-xs text-emerald-400 font-normal">(Protected via Supabase RLS)</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    className="form-control text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
+                    value={phone} 
+                    onChange={(e) => setPhone(e.target.value)} 
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">City / Operating Zone</label>
+                  <input 
+                    type="text" 
+                    className="form-control text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
+                    value={city} 
+                    onChange={(e) => setCity(e.target.value)} 
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">Blood Group (Verified)</label>
+                  <div className="flex items-center gap-2">
+                    <span 
+                      style={{
+                        background: 'rgba(255, 46, 84, 0.2)',
+                        color: '#FF2E54',
+                        border: '1px solid rgba(255, 46, 84, 0.4)',
+                        padding: '0.3rem 0.8rem',
+                        borderRadius: '8px',
+                        fontWeight: 900,
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      {bloodGroup}
+                    </span>
+                    <span className="text-xs text-slate-400">Clinical laboratory verified. Contact admin to re-certify.</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setFeedback({ type: 'success', message: 'Donor profile information saved successfully.' });
+                      setTimeout(() => setFeedback(null), 3000);
+                    }} 
+                    className="btn btn-primary text-xs py-2.5 px-5 rounded-xl font-bold shadow-md"
+                    style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' }}
+                  >
+                    Save Profile Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 7: SETTINGS & GEOFENCE */}
+          {activeTab === 'settings' && (
+            <div 
+              className="card max-w-2xl"
+              style={{
+                padding: '2rem',
+                background: 'rgba(15, 23, 42, 0.88)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '18px',
+              }}
+            >
+              <h2 className="text-lg font-bold text-white mb-1 tracking-tight">Geofence & Alert Settings</h2>
+              <p className="text-xs text-slate-400 mb-6">Configure dispatch travel radius and notification preferences</p>
+
+              <div className="space-y-6 text-sm">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-xs text-slate-300 font-semibold">
+                      Emergency Dispatch Travel Radius
+                    </label>
+                    <span className="text-xs font-bold text-[#FF2E54] bg-[#FF2E54]/10 px-2 py-0.5 rounded-full border border-[#FF2E54]/30">
+                      {travelRadius} km
+                    </span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min={5} 
+                    max={50} 
+                    step={1}
+                    value={travelRadius} 
+                    onChange={(e) => setTravelRadius(Number(e.target.value))} 
+                    className="w-full accent-[#FF2E54] cursor-pointer" 
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                    <span>5 km (Local neighborhood)</span>
+                    <span>25 km (Citywide)</span>
+                    <span>50 km (Regional)</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2 border-t border-white/10">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-xs font-semibold text-white">Emergency Push Alerts</div>
+                      <div className="text-[11px] text-slate-400">Receive instant audio chime on critical local matches</div>
+                    </div>
+                    <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={pushAlerts} 
+                        onChange={() => setPushAlerts(!pushAlerts)} 
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-xs font-semibold text-white">SMS Triage Notification</div>
+                      <div className="text-[11px] text-slate-400">Receive backup SMS dispatch route when app is backgrounded</div>
+                    </div>
+                    <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={smsAlerts} 
+                        onChange={() => setSmsAlerts(!smsAlerts)} 
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setFeedback({ type: 'success', message: 'Geofence radius and dispatch preferences updated.' });
+                      setTimeout(() => setFeedback(null), 3000);
+                    }} 
+                    className="btn btn-primary text-xs py-2.5 px-5 rounded-xl font-bold shadow-md"
+                    style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' }}
+                  >
+                    Save Preferences
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </main>
+      </div>
     </div>
   );
 };
