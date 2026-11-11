@@ -46,29 +46,53 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[82vh] flex items-center justify-center py-6 px-4">
-      {/* Compact 440px Centered Registration Card */}
-      <div className="card w-full max-w-[460px] p-6 sm:p-7 relative border border-white/10 shadow-2xl bg-[#0B1120]/90 backdrop-blur-xl">
+    <div 
+      className="auth-page-wrapper"
+      style={{
+        minHeight: '82vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1.5rem 1rem',
+        width: '100%',
+      }}
+    >
+      {/* Compact 430px Centered Registration Card */}
+      <div 
+        className="auth-card-compact"
+        style={{
+          maxWidth: '430px',
+          width: '100%',
+          margin: '0 auto',
+          background: 'rgba(11, 17, 32, 0.95)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 46, 84, 0.15)',
+          backdropFilter: 'blur(20px)',
+          position: 'relative',
+        }}
+      >
         
         {/* Subtle 3D Droplet Header */}
-        <div className="text-center mb-4">
+        <div className="text-center mb-3.5">
           <Mini3DDroplet />
-          <h1 className="text-2xl font-black text-white tracking-tight mt-1">Create Account</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">Create Account</h1>
           <p className="text-xs text-slate-400 mt-0.5">Join the Lifnex Emergency Blood Mesh</p>
         </div>
 
         {error && (
-          <div className="mb-3 p-2.5 rounded-lg bg-red-950/50 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
+          <div className="mb-3 p-2.5 rounded-lg bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
             <AlertCircle className="text-[#FF2E54] shrink-0" size={15} />
             <span>{error}</span>
           </div>
         )}
 
         {/* Role Toggle Selector */}
-        <div className="grid grid-cols-2 gap-2 mb-4 p-1 bg-slate-950/60 rounded-xl border border-white/10">
+        <div className="grid grid-cols-2 gap-1.5 mb-3.5 p-1 bg-slate-950/60 rounded-xl border border-white/10">
           <button
             type="button"
-            className={`py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
               role === 'patient'
                 ? 'bg-[#FF2E54] text-white shadow-md'
                 : 'text-slate-400 hover:text-white'
@@ -79,7 +103,7 @@ export const RegisterPage: React.FC = () => {
           </button>
           <button
             type="button"
-            className={`py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
               role === 'donor'
                 ? 'bg-[#FF2E54] text-white shadow-md'
                 : 'text-slate-400 hover:text-white'
@@ -96,7 +120,7 @@ export const RegisterPage: React.FC = () => {
             <div className="relative">
               <input
                 type="text"
-                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Rahul Sharma"
@@ -111,7 +135,7 @@ export const RegisterPage: React.FC = () => {
             <div className="relative">
               <input
                 type="email"
-                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="rahul@example.com"
@@ -126,7 +150,7 @@ export const RegisterPage: React.FC = () => {
             <div className="relative">
               <input
                 type="password"
-                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -139,7 +163,7 @@ export const RegisterPage: React.FC = () => {
           <div className="form-group mb-0">
             <label className="form-label text-xs font-semibold text-slate-300">Blood Group</label>
             <select
-              className="form-control text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+              className="form-control text-xs sm:text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
               value={bloodGroup}
               onChange={(e) => setBloodGroup(e.target.value)}
             >
@@ -151,7 +175,7 @@ export const RegisterPage: React.FC = () => {
 
           <button
             type="submit"
-            className="btn btn-primary w-full py-2.5 text-sm font-bold shadow-md mt-4 flex items-center justify-center gap-2"
+            className="btn btn-primary w-full py-2.5 text-xs sm:text-sm font-bold shadow-md mt-3 flex items-center justify-center gap-2"
             disabled={loading}
           >
             {loading ? (

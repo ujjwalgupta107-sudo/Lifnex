@@ -66,32 +66,56 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[82vh] flex items-center justify-center py-6 px-4">
-      {/* Compact 440px Centered Card */}
-      <div className="card w-full max-w-[460px] p-6 sm:p-8 relative border border-white/10 shadow-2xl bg-[#0B1120]/90 backdrop-blur-xl">
+    <div 
+      className="auth-page-wrapper"
+      style={{
+        minHeight: '82vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1.5rem 1rem',
+        width: '100%',
+      }}
+    >
+      {/* Compact 420px Centered Card */}
+      <div 
+        className="auth-card-compact"
+        style={{
+          maxWidth: '420px',
+          width: '100%',
+          margin: '0 auto',
+          background: 'rgba(11, 17, 32, 0.95)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 46, 84, 0.15)',
+          backdropFilter: 'blur(20px)',
+          position: 'relative',
+        }}
+      >
         
         {/* Subtle 3D Droplet Header */}
-        <div className="text-center mb-5">
+        <div className="text-center mb-4">
           <Mini3DDroplet />
-          <h1 className="text-2xl font-black text-white tracking-tight mt-1">Sign In to Lifnex</h1>
-          <p className="text-xs text-slate-400 mt-1">Emergency Neural Blood Mesh Terminal</p>
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">Sign In to Lifnex</h1>
+          <p className="text-xs text-slate-400 mt-0.5">Emergency Neural Blood Mesh Terminal</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-950/50 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
-            <AlertCircle className="text-[#FF2E54] shrink-0" size={16} />
+          <div className="mb-3 p-2.5 rounded-lg bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
+            <AlertCircle className="text-[#FF2E54] shrink-0" size={15} />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-3 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
-            <CheckCircle className="text-emerald-400 shrink-0" size={16} />
+          <div className="mb-3 p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
+            <CheckCircle className="text-emerald-400 shrink-0" size={15} />
             <span>{success}</span>
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-3.5">
           <div className="form-group mb-0">
             <label className="form-label text-xs font-semibold text-slate-300">
               Email Address
@@ -99,7 +123,7 @@ export const LoginPage: React.FC = () => {
             <div className="relative">
               <input
                 type="email"
-                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@lifnex.org"
@@ -121,7 +145,7 @@ export const LoginPage: React.FC = () => {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                className="form-control text-sm py-2 px-3 pl-9 pr-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 pr-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -141,7 +165,7 @@ export const LoginPage: React.FC = () => {
 
           <button
             type="submit"
-            className="btn btn-primary w-full py-2.5 text-sm font-bold shadow-md mt-2 flex items-center justify-center gap-2"
+            className="btn btn-primary w-full py-2.5 text-xs sm:text-sm font-bold shadow-md mt-2 flex items-center justify-center gap-2"
             disabled={loading}
           >
             {loading ? (
@@ -159,35 +183,35 @@ export const LoginPage: React.FC = () => {
         </form>
 
         {/* Compact Preset Roles */}
-        <div className="mt-5 pt-4 border-t border-white/10 text-center">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+        <div className="mt-4 pt-3.5 border-t border-white/10 text-center">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
             One-Click Demo Roles
           </div>
           <div className="grid grid-cols-4 gap-1.5">
             <button
               type="button"
-              className="btn btn-secondary text-[11px] py-1 px-1.5 font-medium"
+              className="btn btn-secondary text-[11px] py-1 px-1 font-medium"
               onClick={() => setDemoRole('patient')}
             >
               Patient
             </button>
             <button
               type="button"
-              className="btn btn-secondary text-[11px] py-1 px-1.5 font-medium"
+              className="btn btn-secondary text-[11px] py-1 px-1 font-medium"
               onClick={() => setDemoRole('donor')}
             >
               Donor
             </button>
             <button
               type="button"
-              className="btn btn-secondary text-[11px] py-1 px-1.5 font-medium"
+              className="btn btn-secondary text-[11px] py-1 px-1 font-medium"
               onClick={() => setDemoRole('hospital')}
             >
               Hospital
             </button>
             <button
               type="button"
-              className="btn btn-secondary text-[11px] py-1 px-1.5 font-medium"
+              className="btn btn-secondary text-[11px] py-1 px-1 font-medium"
               onClick={() => setDemoRole('admin')}
             >
               Admin
@@ -195,7 +219,7 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-4 text-center text-xs text-slate-400">
+        <div className="mt-3.5 text-center text-xs text-slate-400">
           Need an account?{' '}
           <Link to="/register" className="text-[#FF2E54] font-semibold hover:underline">
             Register as Voluntary Donor
