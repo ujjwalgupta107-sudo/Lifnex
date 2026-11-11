@@ -117,46 +117,49 @@ export const RegisterPage: React.FC = () => {
         <form onSubmit={handleRegister} className="space-y-3">
           <div className="form-group mb-0">
             <label className="form-label text-xs font-semibold text-slate-300">Full Name</label>
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type="text"
-                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Rahul Sharma"
                 required
               />
-              <User className="absolute left-3 top-2.5 text-slate-500" size={14} />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
             </div>
           </div>
 
           <div className="form-group mb-0">
             <label className="form-label text-xs font-semibold text-slate-300">Email Address</label>
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type="email"
-                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="rahul@example.com"
                 required
               />
-              <Mail className="absolute left-3 top-2.5 text-slate-500" size={14} />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
             </div>
           </div>
 
           <div className="form-group mb-0">
             <label className="form-label text-xs font-semibold text-slate-300">Password</label>
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type="password"
-                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
               />
-              <Lock className="absolute left-3 top-2.5 text-slate-500" size={14} />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
             </div>
           </div>
 

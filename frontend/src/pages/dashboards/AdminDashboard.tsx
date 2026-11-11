@@ -458,16 +458,17 @@ export const AdminDashboard: React.FC = () => {
                   <p className="text-xs text-slate-400 mt-0.5">Verify and accredit clinical hospital facilities for emergency intake</p>
                 </div>
                 
-                <div className="relative w-full sm:w-64">
+                <div className="relative w-full sm:w-64 flex items-center">
                   <input
                     id="admin-hospital-search"
                     type="text"
-                    className="form-control text-xs py-2 pl-8 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                    className="form-control text-xs py-2 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                    style={{ paddingLeft: '2.5rem', paddingRight: '0.85rem' }}
                     placeholder="Search hospital or city..."
                     value={hospitalSearch}
                     onChange={(e) => setHospitalSearch(e.target.value)}
                   />
-                  <Search className="absolute left-2.5 top-2.5 text-slate-500" size={13} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={14} />
                 </div>
               </div>
 

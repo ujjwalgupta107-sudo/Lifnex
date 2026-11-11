@@ -496,6 +496,43 @@ img {
   box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
 }
 
+/* Universal Form Control Icon Spacing */
+.input-with-icon-left,
+.form-control.input-with-icon-left,
+input.input-with-icon-left {
+  padding-left: 2.75rem !important;
+}
+
+.input-with-icon-right,
+.form-control.input-with-icon-right,
+input.input-with-icon-right {
+  padding-right: 2.75rem !important;
+}
+
+.input-with-icon-both,
+.form-control.input-with-icon-both,
+input.input-with-icon-both {
+  padding-left: 2.75rem !important;
+  padding-right: 2.75rem !important;
+}
+
+.input-icon-left {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748B;
+}
+
+.input-icon-right {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748B;
+}
+
 .form-helper {
   font-size: 0.78rem;
   color: var(--text-muted);

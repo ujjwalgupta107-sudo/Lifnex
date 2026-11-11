@@ -120,16 +120,17 @@ export const LoginPage: React.FC = () => {
             <label className="form-label text-xs font-semibold text-slate-300">
               Email Address
             </label>
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type="email"
-                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@lifnex.org"
                 required
               />
-              <Mail className="absolute left-3 top-2.5 text-slate-500" size={15} />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
             </div>
           </div>
 
@@ -142,23 +143,24 @@ export const LoginPage: React.FC = () => {
                 Forgot?
               </Link>
             </div>
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type={showPassword ? 'text' : 'password'}
-                className="form-control text-xs sm:text-sm py-2 px-3 pl-9 pr-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                className="form-control text-xs sm:text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                style={{ paddingLeft: '2.75rem', paddingRight: '2.75rem' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
               />
-              <Lock className="absolute left-3 top-2.5 text-slate-500" size={15} />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
               <button
                 type="button"
-                className="absolute right-3 top-2.5 text-slate-500 hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label="Toggle password visibility"
               >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>

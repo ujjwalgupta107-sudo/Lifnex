@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Mail } from 'lucide-react';
 
 export const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -48,14 +49,18 @@ export const ForgotPasswordPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div className="form-group mb-0 text-left">
               <label className="form-label text-xs font-semibold text-slate-300">Registered Email</label>
-              <input
-                type="email"
-                className="form-control text-xs sm:text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="doctor@hospital.org"
-                required
-              />
+              <div className="relative flex items-center">
+                <input
+                  type="email"
+                  className="form-control text-xs sm:text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                  style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="doctor@hospital.org"
+                  required
+                />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
+              </div>
             </div>
             <button type="submit" className="btn btn-primary w-full py-2.5 text-xs sm:text-sm font-bold shadow-md mt-2">
               Send Instructions →
