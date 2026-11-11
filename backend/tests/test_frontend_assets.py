@@ -44,8 +44,7 @@ def test_static_images_serve_correct_mime(client):
         ("images/clinical-verification.jpg", "image/jpeg"),
         ("images/voluntary-donor.jpg", "image/jpeg"),
         ("images/hospital-facility.jpg", "image/jpeg"),
-        ("images/platform-preview-1.png", "image/png"),
-        ("images/platform-preview-2.png", "image/png"),
+        ("images/Lifnex Healthcare UI Showcase.png", "image/png"),
     ]
     for path, expected_mime in images:
         res = client.get(f"/static/assets/{path}")
