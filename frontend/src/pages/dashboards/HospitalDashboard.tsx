@@ -422,13 +422,13 @@ export const HospitalDashboard: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs sm:text-sm">
                     <thead>
-                      <tr className="border-b border-white/10 text-slate-400 text-xs">
-                        <th className="pb-3">Case ID</th>
-                        <th className="pb-3">Group</th>
-                        <th className="pb-3">Units Needed</th>
-                        <th className="pb-3">Urgency</th>
-                        <th className="pb-3">Status</th>
-                        <th className="pb-3 text-right">Actions</th>
+                      <tr className="border-b border-white/10 text-slate-400 text-[11px] font-bold uppercase tracking-wider">
+                        <th className="pb-3.5 px-3">Case ID</th>
+                        <th className="pb-3.5 px-3">Blood Group</th>
+                        <th className="pb-3.5 px-3">Volume Needed</th>
+                        <th className="pb-3.5 px-3">Urgency Priority</th>
+                        <th className="pb-3.5 px-3">Mesh Status</th>
+                        <th className="pb-3.5 px-3 text-right">Triage Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-slate-300">
@@ -438,40 +438,77 @@ export const HospitalDashboard: React.FC = () => {
                         { id: 'REQ-1039', group: 'B+', units: 2, urgency: 'urgent', status: 'Searching', statusBadge: 'primary' },
                         { id: 'REQ-1035', group: 'O+', units: 4, urgency: 'routine', status: 'Coordinated', statusBadge: 'success' },
                       ].map((item) => (
-                        <tr key={item.id} className="hover:bg-white/[0.02]">
-                          <td className="py-3 font-mono font-bold text-white">{item.id}</td>
-                          <td>
-                            <span className="font-extrabold text-[#FF2E54] bg-[#FF2E54]/10 px-2 py-0.5 rounded border border-[#FF2E54]/30">
+                        <tr key={item.id} className="hover:bg-white/[0.03] transition-colors">
+                          <td className="py-3.5 px-3 font-mono font-bold text-white text-xs">{item.id}</td>
+                          <td className="py-3.5 px-3">
+                            <span 
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '34px',
+                                height: '26px',
+                                borderRadius: '6px',
+                                fontWeight: 900,
+                                fontSize: '0.85rem',
+                                color: '#FF2E54',
+                                background: 'rgba(255, 46, 84, 0.15)',
+                                border: '1px solid rgba(255, 46, 84, 0.4)',
+                              }}
+                            >
                               {item.group}
                             </span>
                           </td>
-                          <td className="font-semibold text-slate-200">{item.units} Units</td>
-                          <td>
-                            <span 
-                              style={{
-                                color: item.urgency === 'critical' ? '#FF2E54' : item.urgency === 'urgent' ? '#F59E0B' : '#38BDF8',
-                                fontWeight: 700,
-                                textTransform: 'uppercase',
-                                fontSize: '0.7rem',
-                              }}
-                            >
-                              {item.urgency}
-                            </span>
+                          <td className="py-3.5 px-3">
+                            <div className="font-bold text-white text-xs">{item.units} Units</div>
+                            <div className="text-[10px] text-slate-500 font-medium">Whole Blood / RBC</div>
                           </td>
-                          <td>
-                            <span className={`badge badge-${item.statusBadge} text-[10px]`}>
-                              {item.status}
-                            </span>
+                          <td className="py-3.5 px-3">
+                            {item.urgency === 'critical' ? (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-red-950/80 text-red-400 border border-red-500/30 inline-flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>
+                                CRITICAL
+                              </span>
+                            ) : item.urgency === 'urgent' ? (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-500/30 inline-flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                URGENT
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-sky-950/80 text-sky-400 border border-sky-500/30 inline-flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                ROUTINE
+                              </span>
+                            )}
                           </td>
-                          <td className="text-right">
+                          <td className="py-3.5 px-3">
+                            {item.statusBadge === 'success' ? (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 inline-flex items-center gap-1">
+                                <Check size={11} />
+                                {item.status}
+                              </span>
+                            ) : item.statusBadge === 'warning' ? (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-950/80 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1">
+                                <Clock size={11} />
+                                {item.status}
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-[#FF2E54]/15 text-[#FF2E54] border border-[#FF2E54]/30 inline-flex items-center gap-1">
+                                <Radio size={11} className="animate-pulse" />
+                                {item.status}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3.5 px-3 text-right">
                             <button
                               onClick={() => {
                                 setSelectedCase(item);
                                 setActiveTab('roster');
                               }}
-                              className="text-xs text-[#38BDF8] hover:underline font-semibold"
+                              className="btn btn-secondary text-xs py-1.5 px-3 rounded-lg font-bold inline-flex items-center gap-1 text-[#38BDF8] hover:text-white border border-white/10 hover:border-[#38BDF8]/40 transition-colors"
                             >
-                              View Triage →
+                              <span>View Triage</span>
+                              <ArrowRight size={12} />
                             </button>
                           </td>
                         </tr>
@@ -491,36 +528,46 @@ export const HospitalDashboard: React.FC = () => {
                   borderRadius: '16px',
                 }}
               >
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-3.5 pb-2.5 border-b border-white/5">
                   <div className="flex items-center gap-2">
                     <Boxes size={18} className="text-[#38BDF8]" />
                     <h3 className="text-sm font-bold text-white">Cold-Chain Inventory Status Snapshot</h3>
                   </div>
                   <button 
                     onClick={() => setActiveTab('inventory')}
-                    className="text-xs text-[#38BDF8] hover:underline font-semibold"
+                    className="text-xs text-[#38BDF8] hover:underline font-semibold flex items-center gap-1"
                   >
-                    Manage Full Inventory →
+                    <span>Manage Full Inventory</span>
+                    <ArrowRight size={12} />
                   </button>
                 </div>
 
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-center">
                   {Object.entries(inventory).map(([group, qty]) => {
                     const isCritical = qty <= 2;
                     return (
                       <div 
                         key={group}
-                        className="p-2.5 rounded-xl border"
+                        className="p-3 rounded-xl border transition-all hover:border-white/20"
                         style={{
-                          background: isCritical ? 'rgba(239, 68, 68, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                          borderColor: isCritical ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255, 255, 255, 0.08)',
+                          background: isCritical ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                          borderColor: isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.08)',
+                          boxShadow: isCritical ? '0 0 12px rgba(239, 68, 68, 0.15)' : 'none',
                         }}
                       >
-                        <div className="text-xs font-bold text-white">{group}</div>
-                        <div className="text-base font-black mt-0.5" style={{ color: isCritical ? '#FF2E54' : '#10B981' }}>
+                        <div className="text-xs font-black text-white">{group}</div>
+                        <div className="text-xl font-extrabold mt-0.5" style={{ color: isCritical ? '#FF2E54' : '#10B981' }}>
                           {qty}
                         </div>
-                        <div className="text-[9px] text-slate-500 uppercase tracking-tight">Units</div>
+                        <div 
+                          className="text-[9px] font-bold uppercase tracking-wider mt-1 px-1.5 py-0.5 rounded-full inline-block"
+                          style={{
+                            background: isCritical ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.15)',
+                            color: isCritical ? '#F87171' : '#34D399',
+                          }}
+                        >
+                          {isCritical ? 'LOW' : 'OPTIMAL'}
+                        </div>
                       </div>
                     );
                   })}
@@ -759,82 +806,137 @@ export const HospitalDashboard: React.FC = () => {
           {/* TAB 4: COLD-CHAIN INVENTORY MANAGEMENT                   */}
           {/* ======================================================== */}
           {activeTab === 'inventory' && (
-            <div 
-              className="card"
-              style={{
-                padding: '2rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                    <Boxes className="text-[#38BDF8]" size={18} />
-                    <span>Cold-Chain Blood Bank Reserve</span>
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Thermo-regulated cryo-reserve storage status (-20°C to 4°C)</p>
+            <div className="space-y-6">
+              <div 
+                className="card"
+                style={{
+                  padding: '2rem',
+                  background: 'rgba(15, 23, 42, 0.88)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '18px',
+                  boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
+                }}
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                  <div>
+                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                      <Boxes className="text-[#38BDF8]" size={20} />
+                      <span>Cold-Chain Blood Bank Cryo-Reserve</span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">Thermo-regulated cryo-reserve storage status (-20°C to 4°C) with real-time stock adjustment</p>
+                  </div>
+                  <div className="sm:text-right flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0">
+                    <span className="text-xl font-black text-white font-mono">{totalReserveUnits} Total Units</span>
+                    <span className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+                      <Check size={12} /> Cold-Chain Reserve Active
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-lg font-black text-white">{totalReserveUnits} Units</span>
-                  <div className="text-[10px] text-slate-400">Total Cold Storage</div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {Object.entries(inventory).map(([group, qty]) => {
+                    const isCritical = qty <= 2;
+                    const fillPercent = Math.min(100, Math.round((qty / 15) * 100));
+                    return (
+                      <div 
+                        key={group}
+                        className="p-4 rounded-xl border relative transition-all hover:border-white/20"
+                        style={{
+                          background: isCritical ? 'rgba(239, 68, 68, 0.08)' : 'rgba(15, 23, 42, 0.95)',
+                          borderColor: isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.1)',
+                          boxShadow: isCritical ? '0 0 15px rgba(239, 68, 68, 0.12)' : 'none',
+                        }}
+                      >
+                        <div className="flex justify-between items-center mb-3">
+                          <div className="flex items-center gap-2">
+                            <span 
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '36px',
+                                height: '28px',
+                                borderRadius: '8px',
+                                fontWeight: 900,
+                                fontSize: '0.95rem',
+                                color: '#FFFFFF',
+                                background: isCritical ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'rgba(255, 255, 255, 0.1)',
+                                border: isCritical ? '1px solid #FF2E54' : '1px solid rgba(255, 255, 255, 0.15)',
+                              }}
+                            >
+                              {group}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-300">Blood Bank</span>
+                          </div>
+                          <span 
+                            style={{
+                              fontSize: '0.68rem',
+                              fontWeight: 700,
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: '9999px',
+                              background: isCritical ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.15)',
+                              color: isCritical ? '#F87171' : '#34D399',
+                              border: `1px solid ${isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.3)'}`,
+                            }}
+                          >
+                            {isCritical ? 'LOW RESERVE' : 'ADEQUATE'}
+                          </span>
+                        </div>
+
+                        <div className="my-3">
+                          <div className="text-3xl font-black text-white flex items-baseline gap-1.5">
+                            <span>{qty}</span>
+                            <span className="text-xs font-normal text-slate-400">Units ({qty * 450} ml)</span>
+                          </div>
+                          
+                          {/* Mini visual reserve meter */}
+                          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2">
+                            <div 
+                              className="h-full rounded-full transition-all duration-300"
+                              style={{ 
+                                width: `${fillPercent}%`,
+                                background: isCritical ? '#FF2E54' : '#10B981',
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+                          <button
+                            type="button"
+                            onClick={() => handleInventoryChange(group, 1)}
+                            className="btn btn-secondary flex-1 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-emerald-500/50 hover:text-emerald-300 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                          >
+                            <span>+ Add Unit</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleInventoryChange(group, -1)}
+                            className="btn btn-secondary flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 border border-white/10 hover:border-red-500/50 hover:text-red-300 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                            disabled={qty <= 0}
+                          >
+                            <span>- Dispense</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {Object.entries(inventory).map(([group, qty]) => {
-                  const isCritical = qty <= 2;
-                  return (
-                    <div 
-                      key={group}
-                      className="p-4 rounded-xl border relative"
-                      style={{
-                        background: isCritical ? 'rgba(239, 68, 68, 0.08)' : 'rgba(15, 23, 42, 0.95)',
-                        borderColor: isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.1)',
-                      }}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-base font-extrabold text-white">{group}</span>
-                        <span 
-                          style={{
-                            fontSize: '0.68rem',
-                            fontWeight: 700,
-                            padding: '0.15rem 0.5rem',
-                            borderRadius: '9999px',
-                            background: isCritical ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                            color: isCritical ? '#F87171' : '#34D399',
-                            border: `1px solid ${isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
-                          }}
-                        >
-                          {isCritical ? 'LOW RESERVE' : 'ADEQUATE'}
-                        </span>
-                      </div>
-
-                      <div className="text-3xl font-black text-white mb-3">
-                        {qty} <span className="text-xs font-normal text-slate-400">Units</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleInventoryChange(group, 1)}
-                          className="btn btn-secondary flex-1 py-1.5 text-xs font-bold rounded-lg"
-                        >
-                          + Add Unit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInventoryChange(group, -1)}
-                          className="btn btn-secondary flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400"
-                          disabled={qty <= 0}
-                        >
-                          - Dispense
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                {/* Telemetry Status Banner */}
+                <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                      Temp: <strong className="text-white">-20.4°C</strong> (Cryo-Storage Spec)
+                    </span>
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>
+                      Power: <strong className="text-white">Dual UPS Grid Online</strong>
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-500 font-mono">Sensors: 8/8 Calibrated</span>
+                </div>
               </div>
             </div>
           )}
@@ -843,66 +945,104 @@ export const HospitalDashboard: React.FC = () => {
           {/* TAB 5: IN-TRANSIT DONOR HANDSHAKES                       */}
           {/* ======================================================== */}
           {activeTab === 'handshakes' && (
-            <div 
-              className="card"
-              style={{
-                padding: '2rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                    <HeartHandshake className="text-[#10B981]" size={18} />
-                    <span>In-Transit Voluntary Donor Handshakes</span>
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Donors actively traveling toward hospital reception for intake</p>
-                </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                  {handshakes.filter(h => h.status !== 'fulfilled').length} EN ROUTE
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {handshakes.map((hs) => (
-                  <div 
-                    key={hs.id} 
-                    className="p-4 rounded-xl border border-white/10 bg-slate-950/70 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-slate-400">#{hs.id}</span>
-                        <span className="font-bold text-white text-sm">{hs.donorName}</span>
-                        <span className="badge badge-primary font-bold text-[10px]">{hs.bloodGroup}</span>
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1 flex items-center gap-3">
-                        <span>Distance: <strong className="text-slate-200">{hs.distance}</strong></span>
-                        <span>Transport: <strong className="text-slate-200">{hs.transport}</strong></span>
-                        <span>Estimated Arrival: <strong className="text-[#38BDF8]">{hs.eta}</strong></span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {hs.status === 'fulfilled' ? (
-                        <span className="badge badge-success text-xs py-1 px-3">
-                          INTAKE COMPLETED
-                        </span>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleConfirmHandshake(hs.id)}
-                          className="btn btn-primary text-xs py-2 px-3.5 rounded-xl font-bold flex items-center gap-1.5 shadow-md"
-                          style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
-                        >
-                          <Check size={14} />
-                          <span>Confirm Intake</span>
-                        </button>
-                      )}
-                    </div>
+            <div className="space-y-6">
+              <div 
+                className="card"
+                style={{
+                  padding: '2rem',
+                  background: 'rgba(15, 23, 42, 0.88)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '18px',
+                  boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
+                }}
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                  <div>
+                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                      <HeartHandshake className="text-[#10B981]" size={20} />
+                      <span>In-Transit Voluntary Donor Handshakes</span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">Donors actively traveling toward hospital reception for immediate intake verification</p>
                   </div>
-                ))}
+                  <span className="text-xs px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    {handshakes.filter(h => h.status !== 'fulfilled').length} ACTIVE EN ROUTE
+                  </span>
+                </div>
+
+                <div className="space-y-3.5">
+                  {handshakes.map((hs) => (
+                    <div 
+                      key={hs.id} 
+                      className="p-4 rounded-xl border border-white/10 bg-slate-950/70 hover:border-white/20 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                          <Activity size={20} />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-xs text-slate-400 font-bold">#{hs.id}</span>
+                            <span className="font-bold text-white text-sm">{hs.donorName}</span>
+                            <span 
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                fontWeight: 900,
+                                fontSize: '0.8rem',
+                                color: '#FF2E54',
+                                background: 'rgba(255, 46, 84, 0.15)',
+                                border: '1px solid rgba(255, 46, 84, 0.4)',
+                              }}
+                            >
+                              {hs.bloodGroup}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                              DISPATCHED
+                            </span>
+                          </div>
+
+                          <div className="text-xs text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                            <span className="flex items-center gap-1 text-slate-300">
+                              <MapPin size={12} className="text-slate-400" />
+                              Distance: <strong className="text-white">{hs.distance}</strong>
+                            </span>
+                            <span>•</span>
+                            <span>Transport: <strong className="text-slate-200">{hs.transport}</strong></span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1 text-[#38BDF8] font-bold">
+                              <Clock size={12} />
+                              ETA: {hs.eta}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sm:text-right shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5 flex justify-end">
+                        {hs.status === 'fulfilled' ? (
+                          <span className="px-3 py-1.5 rounded-xl bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5">
+                            <Check size={14} />
+                            INTAKE CONFIRMED
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleConfirmHandshake(hs.id)}
+                            className="btn btn-primary text-xs py-2.5 px-4 rounded-xl font-bold flex items-center gap-1.5 shadow-md cursor-pointer w-full sm:w-auto justify-center"
+                            style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.35)' }}
+                          >
+                            <Check size={14} />
+                            <span>Confirm Intake</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -911,58 +1051,130 @@ export const HospitalDashboard: React.FC = () => {
           {/* TAB 6: CLINICAL ACCREDITATION & VERIFICATION             */}
           {/* ======================================================== */}
           {activeTab === 'accreditation' && (
-            <div 
-              className="card max-w-2xl"
-              style={{
-                padding: '2rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
-            >
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                <ShieldCheck size={32} className="text-[#10B981]" />
-                <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">National Accreditation & Certification</h2>
-                  <p className="text-xs text-slate-400">Verified by National Blood Transfusion Council (NBTC)</p>
-                </div>
-              </div>
-
-              <div className="space-y-4 text-xs sm:text-sm text-slate-300">
-                <div className="flex justify-between py-2 border-b border-white/5">
-                  <span className="text-slate-400">Hospital Facility License:</span>
-                  <span className="font-mono text-white font-bold">HOSP-DELHI-2026-001</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-white/5">
-                  <span className="text-slate-400">Clinical Verification Level:</span>
-                  <span className="text-[#10B981] font-bold">Level-1 Trauma & Critical Care</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-white/5">
-                  <span className="text-slate-400">Blood Bank License Registration:</span>
-                  <span className="font-mono text-white">DL-BB-2024-9844</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-white/5">
-                  <span className="text-slate-400">Cryo-Storage Certification:</span>
-                  <span className="text-[#38BDF8] font-bold">Compliant (ISO 15189)</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-white/5">
-                  <span className="text-slate-400">Chief Medical Officer:</span>
-                  <span className="text-white font-semibold">Dr. Arthur Vance, MD, FRCEM</span>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFeedback({ type: 'success', message: 'Hospital accreditation certificate downloaded.' });
-                    setTimeout(() => setFeedback(null), 3000);
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Official License Records */}
+              <div className="lg:col-span-7">
+                <div 
+                  className="card"
+                  style={{
+                    padding: '2rem',
+                    background: 'rgba(15, 23, 42, 0.88)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '18px',
+                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
                   }}
-                  className="btn btn-secondary text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 font-semibold"
                 >
-                  <ShieldCheck size={15} className="text-emerald-400" />
-                  <span>Download Verified Certificate (PDF)</span>
-                </button>
+                  <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                    <ShieldCheck size={28} className="text-[#10B981]" />
+                    <div>
+                      <h2 className="text-lg font-bold text-white tracking-tight">National Accreditation & Certification</h2>
+                      <p className="text-xs text-slate-400">Verified by National Blood Transfusion Council (NBTC)</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3.5 text-xs sm:text-sm">
+                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
+                      <span className="text-slate-400">Hospital Facility License:</span>
+                      <span className="font-mono text-white font-bold text-xs">HOSP-DELHI-2026-001</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
+                      <span className="text-slate-400">Clinical Verification Level:</span>
+                      <span className="text-[#10B981] font-bold text-xs flex items-center gap-1">
+                        <Check size={13} /> Level-1 Trauma & Critical Care
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
+                      <span className="text-slate-400">Blood Bank License Registration:</span>
+                      <span className="font-mono text-white text-xs">DL-BB-2024-9844</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
+                      <span className="text-slate-400">Cryo-Storage Certification:</span>
+                      <span className="text-[#38BDF8] font-bold text-xs">Compliant (ISO 15189)</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
+                      <span className="text-slate-400">Chief Medical Officer:</span>
+                      <span className="text-white font-semibold text-xs">Dr. Arthur Vance, MD, FRCEM</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFeedback({ type: 'success', message: 'Hospital accreditation certificate downloaded.' });
+                        setTimeout(() => setFeedback(null), 3000);
+                      }}
+                      className="btn btn-secondary text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 font-semibold border border-white/10 hover:border-emerald-500/40 text-white cursor-pointer"
+                    >
+                      <ShieldCheck size={15} className="text-emerald-400" />
+                      <span>Download Verified Certificate (PDF)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Accreditation Seal Card */}
+              <div className="lg:col-span-5 space-y-4">
+                <div 
+                  className="card"
+                  style={{
+                    padding: '1.75rem',
+                    background: 'rgba(15, 23, 42, 0.9)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '18px',
+                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
+                  }}
+                >
+                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+                    <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                      <Building2 size={15} className="text-[#FF2E54]" />
+                      Accreditation Status
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
+                      ACCREDITED
+                    </span>
+                  </div>
+
+                  <div className="text-center py-4">
+                    <div 
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '16px',
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 1rem',
+                        boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
+                        color: '#FFFFFF',
+                      }}
+                    >
+                      <ShieldCheck size={32} />
+                    </div>
+                    <h3 className="text-base font-bold text-white">City Care Super Specialty</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Level-1 Trauma & Emergency Surgery Center</p>
+                  </div>
+
+                  <div className="space-y-2 text-xs pt-2 border-t border-white/5">
+                    <div className="flex justify-between p-2 rounded-lg bg-white/5">
+                      <span className="text-slate-400">Accreditation Validity:</span>
+                      <strong className="text-white">Through Dec 2027</strong>
+                    </div>
+                    <div className="flex justify-between p-2 rounded-lg bg-white/5">
+                      <span className="text-slate-400">Cryo-Storage Units:</span>
+                      <strong className="text-emerald-400 font-bold">8 Dedicated Banks</strong>
+                    </div>
+                    <div className="flex justify-between p-2 rounded-lg bg-white/5">
+                      <span className="text-slate-400">Mesh Dispatch Protocol:</span>
+                      <strong className="text-[#38BDF8] font-bold">Priority Hub #1</strong>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
