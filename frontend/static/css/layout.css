@@ -151,11 +151,11 @@
   cursor: pointer;
 }
 
-/* 4. HERO SECTION */
+/* 4. HERO SECTION (EXACT SHOWCASE ALIGNMENT) */
 .hero-section {
   position: relative;
-  padding: 4.5rem 0 5rem;
-  background: var(--gradient-mesh), #ffffff;
+  padding: 3.5rem 0 4.5rem;
+  background: radial-gradient(circle at 80% 20%, #fff1f3 0%, #ffffff 50%, #f8fafc 100%);
   overflow: hidden;
   border-bottom: 1px solid var(--border-light);
 }
@@ -165,90 +165,220 @@
   grid-template-columns: 1.15fr 0.85fr;
   align-items: center;
   gap: 3.5rem;
+  margin-bottom: 3rem;
 }
 
 .hero-badge-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  background-color: var(--crimson-50);
-  border: 1px solid var(--crimson-200);
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-pill);
+  gap: 0.5rem;
+  background-color: #ffe4e8;
+  border: 1px solid #fecdd3;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
   font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--crimson-900);
+  font-weight: 700;
+  color: #e11d48;
   margin-bottom: 1.5rem;
 }
 
 .hero-title {
-  font-size: 3.25rem;
+  font-size: 3.5rem;
   font-weight: 900;
-  line-height: 1.12;
-  letter-spacing: -0.04em;
-  color: var(--slate-950);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: #101b28;
   margin-bottom: 1.35rem;
 }
 
-.hero-title .highlight {
-  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.hero-title .highlight-red {
+  color: #e11d48;
 }
 
 .hero-description {
   font-size: 1.125rem;
   line-height: 1.6;
-  color: var(--slate-600);
-  margin-bottom: 2rem;
-  max-width: 560px;
+  color: #475569;
+  margin-bottom: 2.25rem;
+  max-width: 540px;
 }
 
 .hero-ctas {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2.75rem;
   flex-wrap: wrap;
 }
 
-.hero-stats-row {
+/* Primary Hero Button: Solid Crimson Rounded-Full */
+.btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #e11d48;
+  color: #ffffff;
+  padding: 0.85rem 1.75rem;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.btn-hero-primary:hover {
+  background-color: #be123c;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.45);
+}
+
+/* Secondary Hero Button: Outline Crimson Rounded-Full */
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  color: #e11d48;
+  padding: 0.85rem 1.75rem;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1.5px solid #e11d48;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.btn-hero-secondary:hover {
+  background-color: #fff1f3;
+  color: #be123c;
+  border-color: #be123c;
+  transform: translateY(-2px);
+}
+
+/* HERO ORGANIC VISUAL CONTAINER (DROP / TEAR MASK WITH ACCENT BADGE) */
+.hero-visual-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-organic-mask {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 480px;
+  border-radius: 48% 52% 45% 55% / 55% 45% 55% 45%;
+  background: linear-gradient(135deg, #ffe4e8 0%, #fff1f3 50%, #ffffff 100%);
+  padding: 12px;
+  box-shadow: 0 20px 40px -10px rgba(225, 29, 72, 0.15);
+  border: 1px solid rgba(225, 29, 72, 0.15);
+  overflow: hidden;
+}
+
+.hero-organic-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 46% 54% 43% 57% / 53% 47% 53% 47%;
+}
+
+.hero-ecg-badge {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background-color: #e11d48;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  animation: pulseBadge 2.5s infinite;
+  z-index: 5;
+}
+
+@keyframes pulseBadge {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(225, 29, 72, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+}
+
+/* SHOWCASE 3-CARD STATS BAR (BELOW HERO GRID) */
+.hero-showcase-stats-bar {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid var(--border-light);
+  margin-top: 1rem;
 }
 
-.hero-stat-item h4 {
+.showcase-stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(16, 27, 40, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  transition: all var(--transition-fast);
+}
+
+.showcase-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(16, 27, 40, 0.08);
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.showcase-stat-icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ffe4e8;
+  color: #e11d48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.showcase-stat-details h3 {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--slate-900);
+  color: #101b28;
+  line-height: 1.1;
   letter-spacing: -0.02em;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.2rem;
 }
 
-.hero-stat-item p {
+.showcase-stat-details p {
   font-size: 0.8125rem;
-  color: var(--slate-500);
+  color: #64748b;
   font-weight: 500;
 }
 
-/* HERO VISUAL CARD */
-.hero-visual-card {
-  position: relative;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-xl);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  background-color: var(--white);
+.showcase-synthetic-disclaimer {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
 }
 
-.hero-image {
-  width: 100%;
-  height: 480px;
-  object-fit: cover;
-  display: block;
+.showcase-synthetic-disclaimer svg {
+  color: #e11d48;
 }
 
 .hero-floating-badge {

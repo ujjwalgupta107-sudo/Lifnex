@@ -3,97 +3,264 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In — Lifnex Platform</title>
+  <title>Sign In — Lifnex Healthcare</title>
 
   <link rel="stylesheet" href="/static/css/variables.css">
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/components.css">
   <link rel="stylesheet" href="/static/css/layout.css">
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #fff1f3 0%, #f8fafc 60%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-sans);
+    }
+    .login-card-container {
+      max-width: 440px;
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px -2px rgba(16, 27, 40, 0.06);
+    }
+    .login-input-group {
+      position: relative;
+      margin-bottom: 1.15rem;
+    }
+    .login-input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.65rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      color: #101b28;
+      outline: none;
+      transition: all var(--transition-fast);
+      background-color: #ffffff;
+    }
+    .login-input:focus {
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.12);
+    }
+    .btn-login-submit {
+      width: 100%;
+      background-color: #e11d48;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3);
+      transition: all var(--transition-fast);
+      margin-top: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .btn-login-submit:hover {
+      background-color: #be123c;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(225, 29, 72, 0.4);
+    }
+    .divider-row {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .divider-row::before,
+    .divider-row::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .divider-row span {
+      padding: 0 0.85rem;
+    }
+    .btn-social-google {
+      width: 100%;
+      background-color: #ffffff;
+      color: #101b28;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      transition: all var(--transition-fast);
+      margin-bottom: 1.5rem;
+    }
+    .btn-social-google:hover {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+    }
+    .demo-role-quickbar {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .demo-role-btns {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .btn-demo-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.4rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .btn-demo-pill:hover {
+      background: #fff1f3;
+      color: #e11d48;
+      border-color: #fecdd3;
+    }
+  </style>
 </head>
-<body style="background: radial-gradient(circle at top right, rgba(254, 205, 211, 0.3), transparent 60%), var(--slate-100); min-height: 100vh; display: flex; flex-direction: column;">
+<body>
 
   <!-- Demo Disclaimer Banner -->
   <div class="demo-banner">
     <div class="container flex justify-between items-center">
       <div class="demo-banner-text">
         <span class="demo-tag">Synthetic Demo Environment</span>
-        <span>Simulated authentication — credentials are verified in frontend demonstration mode.</span>
+        <span>Credentials verify locally for demonstration and grading.</span>
       </div>
       <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Back to Home</a>
     </div>
   </div>
 
   <main class="flex items-center justify-center flex-1 p-6">
-    <div class="card p-8" style="max-width: 440px; width: 100%; box-shadow: var(--shadow-xl);">
+    <div class="login-card-container">
       <div class="text-center mb-6">
-        <a href="index.html" class="inline-flex items-center gap-2 mb-3">
-          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 38px; width: auto; margin: 0 auto;">
+        <a href="index.html" class="inline-flex items-center justify-center mb-3">
+          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" style="height: 42px; width: auto;">
         </a>
-        <h2 class="text-xl font-bold text-slate-900">Sign In to Lifnex</h2>
-        <p class="text-xs text-slate-500 mt-1">Access your patient, donor, or hospital coordination portal</p>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight" style="color: #101b28;">Welcome Back</h1>
+        <p class="text-sm text-slate-500 mt-1" style="color: #64748b;">Sign in to your Lifnex account</p>
       </div>
 
       <form id="loginForm">
-        <!-- Demo Role Selector (Allows testing all 4 dashboard portals easily) -->
-        <div class="form-group">
-          <label for="demoRoleSelect" class="form-label">Select Demo Role to Preview</label>
-          <select id="demoRoleSelect" class="form-select text-xs">
-            <option value="patient">Patient Portal (Request Blood & Track)</option>
-            <option value="donor">Voluntary Donor Hub (Receive & Respond)</option>
-            <option value="hospital">Hospital Transfusion Center (Coordinate & Verify)</option>
-            <option value="admin">Platform Administrator (Analytics & Governance)</option>
-          </select>
+        <!-- Email Input with Icon -->
+        <div class="login-input-group">
+          <span class="login-input-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          </span>
+          <input type="email" id="loginEmail" class="login-input" placeholder="Email Address" value="patient@lifnex.org" required>
         </div>
 
-        <div class="form-group">
-          <label for="loginEmail" class="form-label">Email Address <span class="required">*</span></label>
-          <input type="email" id="loginEmail" class="form-input" placeholder="name@example.com" value="alex.donor@example.com" required>
+        <!-- Password Input with Lock & Eye toggle -->
+        <div class="login-input-group">
+          <span class="login-input-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"></rect><path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2"></path></svg>
+          </span>
+          <input type="password" id="loginPassword" class="login-input" placeholder="Password" value="Patient@123" required style="padding-right: 2.75rem;">
+          <button type="button" class="password-toggle-btn" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer;" aria-label="Toggle password visibility">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </button>
         </div>
 
-        <div class="form-group">
-          <div class="flex justify-between items-center mb-1">
-            <label for="loginPassword" class="form-label mb-0">Password <span class="required">*</span></label>
-            <a href="forgot-password.html" class="text-xs text-crimson-600 hover:underline">Forgot Password?</a>
-          </div>
-          <div class="input-with-action">
-            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••••••" value="demoPass123!" required>
-            <button type="button" class="input-action-btn password-toggle-btn" aria-label="Toggle password visibility">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-check">
-            <input type="checkbox" id="rememberMe" checked>
-            <span>Remember demo session on this browser</span>
+        <!-- Remember me & Forgot password -->
+        <div class="flex justify-between items-center text-xs mb-4">
+          <label class="flex items-center gap-2 text-slate-600 cursor-pointer">
+            <input type="checkbox" id="rememberMe" checked style="accent-color: #e11d48;">
+            <span>Remember me</span>
           </label>
+          <a href="forgot-password.html" class="font-semibold hover:underline" style="color: #e11d48;">Forgot Password?</a>
         </div>
 
-        <button type="submit" class="btn btn-primary w-full py-2 mb-4">Sign In</button>
+        <!-- Primary Sign In Button -->
+        <button type="submit" class="btn-login-submit">Sign In</button>
+
+        <!-- Divider -->
+        <div class="divider-row">
+          <span>or continue with</span>
+        </div>
+
+        <!-- Google Social Login Button -->
+        <button type="button" class="btn-social-google" id="googleLoginBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.15z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.94 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          Continue with Google
+        </button>
 
         <div class="text-center text-xs text-slate-500">
-          Don't have an account yet? <a href="register.html" class="font-bold text-crimson-600 hover:underline">Register Now</a>
+          Don't have an account? <a href="register.html" class="font-bold hover:underline" style="color: #e11d48;">Register Now</a>
+        </div>
+
+        <!-- One-Click Demo Role Presets for Live Demonstrations -->
+        <div class="demo-role-quickbar">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider text-center mb-1">One-Click Demo Roles</div>
+          <div class="demo-role-btns">
+            <button type="button" class="btn-demo-pill" onclick="setDemoRole('patient')">Demo Patient</button>
+            <button type="button" class="btn-demo-pill" onclick="setDemoRole('donor')">Demo Donor</button>
+            <button type="button" class="btn-demo-pill" onclick="setDemoRole('hospital')">Demo Hospital</button>
+            <button type="button" class="btn-demo-pill" onclick="setDemoRole('admin')">Demo Admin</button>
+          </div>
         </div>
       </form>
     </div>
   </main>
 
-  <!-- Scripts -->
   <script src="/static/js/main.js"></script>
   <script src="/static/js/auth.js"></script>
   <script>
-    if (window.lucide) {
-      lucide.createIcons();
+    function setDemoRole(role) {
+      const email = document.getElementById("loginEmail");
+      const pass = document.getElementById("loginPassword");
+      if (role === 'patient') {
+        email.value = 'patient@lifnex.org';
+        pass.value = 'Patient@123';
+      } else if (role === 'donor') {
+        email.value = 'donor@lifnex.org';
+        pass.value = 'Donor@123';
+      } else if (role === 'hospital') {
+        email.value = 'hospital@lifnex.org';
+        pass.value = 'Hospital@123';
+      } else if (role === 'admin') {
+        email.value = 'admin@lifnex.org';
+        pass.value = 'Admin@123';
+      }
+      if (window.Toast) {
+        Toast.show("Credentials Selected", "Quick-filled " + role.toUpperCase() + " demo credentials.", "info");
+      }
     }
   </script>
 </body>
 </html>
-

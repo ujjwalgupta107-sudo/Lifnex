@@ -1,101 +1,183 @@
 /**
  * LIFNEX ANALYTICS & CHARTS CONTROLLER
- * Uses Chart.js for dashboard metrics and blood supply trends
+ * Aligned with Lifnex Healthcare UI Showcase specifications.
+ * Uses Chart.js for emergency request trends, status donut, and donor velocity.
  */
 
 const LifnexCharts = {
   initAdminCharts: function() {
     if (typeof Chart === "undefined") return;
 
-    // 1. Blood Group Request Distribution (Doughnut Chart)
-    const bloodDistCanvas = document.getElementById("bloodDistributionChart");
-    if (bloodDistCanvas) {
-      new Chart(bloodDistCanvas, {
-        type: "doughnut",
+    // Register center text plugin for Donut Chart
+    const centerTextPlugin = {
+      id: "centerText",
+      beforeDraw: function(chart) {
+        if (chart.config.type !== "doughnut" || !chart.config.options.plugins.centerText) return;
+        
+        const ctx = chart.ctx;
+        const width = chart.width;
+        const height = chart.chartArea ? chart.chartArea.height + chart.chartArea.top : chart.height;
+        const centerX = chart.chartArea ? (chart.chartArea.left + chart.chartArea.right) / 2 : width / 2;
+        const centerY = chart.chartArea ? (chart.chartArea.top + chart.chartArea.bottom) / 2 : height / 2;
+
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const textOptions = chart.config.options.plugins.centerText;
+        const mainText = textOptions.text || "368";
+        const subText = textOptions.subtext || "Total";
+
+        // Draw main number
+        ctx.font = "bold 26px Inter, -apple-system, sans-serif";
+        ctx.fillStyle = "#101b28";
+        ctx.fillText(mainText, centerX, centerY - 8);
+
+        // Draw subtext
+        ctx.font = "500 12px Inter, -apple-system, sans-serif";
+        ctx.fillStyle = "#64748b";
+        ctx.fillText(subText, centerX, centerY + 14);
+
+        ctx.restore();
+      }
+    };
+
+    try {
+      Chart.register(centerTextPlugin);
+    } catch (e) {
+      // plugin might already be registered
+    }
+
+    // 1. Emergency Requests (Last 30 Days) - Showcase Line Chart
+    const trendCanvas = document.getElementById("emergencyRequestsTrendChart") || document.getElementById("monthlyTrendsChart");
+    if (trendCanvas) {
+      const ctx = trendCanvas.getContext("2d");
+      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0, "rgba(225, 29, 72, 0.22)");
+      gradient.addColorStop(1, "rgba(225, 29, 72, 0.00)");
+
+      new Chart(trendCanvas, {
+        type: "line",
         data: {
-          labels: ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"],
+          labels: ["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"],
           datasets: [{
-            data: [35, 22, 18, 8, 12, 5, 6, 2],
-            backgroundColor: [
-              "#e11d48", "#be123c", "#f43f5e", "#fb7185",
-              "#0284c7", "#0ea5e9", "#10b981", "#8b5cf6"
-            ],
-            borderWidth: 2,
-            borderColor: "#ffffff"
+            label: "Emergency Requests Dispatched",
+            data: [14, 22, 19, 38, 31, 45, 52],
+            borderColor: "#e11d48",
+            borderWidth: 2.5,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: "#ffffff",
+            pointBorderColor: "#e11d48",
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: "bottom",
-              labels: { boxWidth: 12, font: { size: 11 } }
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: "#101b28",
+              titleFont: { size: 12, weight: "bold" },
+              bodyFont: { size: 12 },
+              padding: 10,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.parsed.y} emergency requests`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: "#f1f5f9" },
+              ticks: { color: "#94a3b8", font: { size: 11 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: "#94a3b8", font: { size: 11 } }
             }
           }
         }
       });
     }
 
-    // 2. Monthly Requests vs Fulfilled Donations (Bar / Line Chart)
-    const trendCanvas = document.getElementById("monthlyTrendsChart");
-    if (trendCanvas) {
-      new Chart(trendCanvas, {
-        type: "bar",
+    // 2. Request Status Donut Chart - Showcase Donut Chart (368 Total: 72% Matched, 18% Pending, 10% Cancelled)
+    const statusCanvas = document.getElementById("requestStatusChart") || document.getElementById("bloodDistributionChart");
+    if (statusCanvas) {
+      new Chart(statusCanvas, {
+        type: "doughnut",
         data: {
-          labels: ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov (Demo)"],
-          datasets: [
-            {
-              label: "Emergency Requests Dispatched",
-              data: [65, 84, 92, 110, 145, 168],
-              backgroundColor: "rgba(225, 29, 72, 0.8)",
-              borderRadius: 6
-            },
-            {
-              label: "Verified Blood Donations Completed",
-              data: [58, 76, 85, 102, 138, 155],
-              backgroundColor: "rgba(16, 185, 129, 0.8)",
-              borderRadius: 6
-            }
-          ]
+          labels: ["Matched (72%)", "Pending (18%)", "Cancelled (10%)"],
+          datasets: [{
+            data: [265, 66, 37],
+            backgroundColor: [
+              "#0f9d8a", // Emerald Teal - Matched
+              "#e11d48", // Crimson Red - Pending
+              "#cbd5e1"  // Soft Slate - Cancelled
+            ],
+            borderWidth: 3,
+            borderColor: "#ffffff",
+            hoverOffset: 4
+          }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: "#f1f5f9" }
-            },
-            x: {
-              grid: { display: false }
-            }
-          },
+          cutout: "74%",
           plugins: {
             legend: {
-              position: "top",
-              labels: { boxWidth: 12, font: { size: 12 } }
+              position: "bottom",
+              labels: {
+                boxWidth: 10,
+                boxHeight: 10,
+                padding: 16,
+                usePointStyle: true,
+                pointStyle: "circle",
+                color: "#475569",
+                font: { size: 11, family: "Inter" }
+              }
+            },
+            centerText: {
+              text: "368",
+              subtext: "Total"
+            },
+            tooltip: {
+              backgroundColor: "#101b28",
+              callbacks: {
+                label: function(context) {
+                  const val = context.parsed;
+                  const pct = Math.round((val / 368) * 100);
+                  return ` ${context.label.split(" ")[0]}: ${val} requests (${pct}%)`;
+                }
+              }
             }
           }
         }
       });
     }
 
-    // 3. Response Duration Speed (Radar / Polar Area)
+    // 3. Proximity Latency Response Curve (Fallback / Extra Analytics)
     const speedCanvas = document.getElementById("responseSpeedChart");
     if (speedCanvas) {
       new Chart(speedCanvas, {
         type: "line",
         data: {
-          labels: ["< 15 min", "15-30 min", "30-60 min", "1-2 hrs", "> 2 hrs"],
+          labels: ["< 5 min", "5-15 min", "15-30 min", "30-45 min", "> 45 min"],
           datasets: [{
-            label: "Average Donor Response Distribution (%)",
-            data: [42, 36, 14, 6, 2],
-            borderColor: "#e11d48",
-            backgroundColor: "rgba(225, 29, 72, 0.1)",
+            label: "Response Distribution (%)",
+            data: [48, 34, 12, 4, 2],
+            borderColor: "#0f9d8a",
+            backgroundColor: "rgba(15, 157, 138, 0.12)",
             fill: true,
-            tension: 0.3,
-            pointBackgroundColor: "#e11d48",
+            tension: 0.35,
+            pointBackgroundColor: "#0f9d8a",
             pointRadius: 4
           }]
         },
@@ -106,7 +188,8 @@ const LifnexCharts = {
             legend: { display: false }
           },
           scales: {
-            y: { beginAtZero: true, max: 50 }
+            y: { beginAtZero: true, max: 60, grid: { color: "#f1f5f9" } },
+            x: { grid: { display: false } }
           }
         }
       });
@@ -117,4 +200,3 @@ const LifnexCharts = {
 document.addEventListener("DOMContentLoaded", () => {
   LifnexCharts.initAdminCharts();
 });
-

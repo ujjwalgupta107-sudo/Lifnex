@@ -11,20 +11,22 @@
   <link rel="stylesheet" href="/static/css/layout.css">
   <style>
     .role-selector-card {
-      border: 2px solid var(--border-medium);
-      border-radius: var(--radius-sm);
-      padding: 0.85rem;
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem 0.75rem;
       cursor: pointer;
       transition: all var(--transition-fast);
       text-align: center;
+      background: var(--bg-surface);
     }
     .role-selector-card:hover {
-      border-color: var(--crimson-400);
-      background-color: var(--crimson-50);
+      border-color: var(--primary);
+      background-color: var(--primary-light);
     }
     .role-selector-card.selected {
-      border-color: var(--crimson-600);
-      background-color: var(--crimson-50);
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      box-shadow: 0 0 0 1px var(--primary);
     }
   </style>
   <!-- Google Fonts: Inter & JetBrains Mono -->
@@ -35,7 +37,7 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body style="background: radial-gradient(circle at top right, rgba(254, 205, 211, 0.3), transparent 60%), var(--slate-100); min-height: 100vh; display: flex; flex-direction: column;">
+<body style="background: var(--bg-body); min-height: 100vh; display: flex; flex-direction: column;">
 
   <!-- Demo Disclaimer Banner -->
   <div class="demo-banner">
@@ -49,67 +51,72 @@
   </div>
 
   <main class="flex items-center justify-center flex-1 p-6">
-    <div class="card p-8" style="max-width: 580px; width: 100%; box-shadow: var(--shadow-xl);">
+    <div class="card p-8" style="max-width: 580px; width: 100%; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); border: 1px solid var(--border-light);">
       <div class="text-center mb-6">
-        <a href="index.html" class="inline-flex items-center gap-2 mb-2">
-          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 38px; width: auto; margin: 0 auto;">
+        <a href="index.html" class="inline-flex items-center gap-2 mb-3">
+          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 40px; width: auto; margin: 0 auto;">
         </a>
-        <h2 class="text-xl font-bold text-slate-900">Join the Lifnex Network</h2>
-        <p class="text-xs text-slate-500 mt-1">Select your role to configure your emergency coordination account</p>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--brand-navy); margin: 0;">Join the Lifnex Network</h2>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0.35rem 0 0;">Select your role to configure your emergency coordination account</p>
       </div>
 
       <form id="registrationForm">
         <!-- Role Selection -->
         <input type="hidden" id="selectedRoleInput" value="donor">
-        <div class="form-group">
-          <label class="form-label">I am joining as a:</label>
-          <div class="grid-3 gap-2">
+        <div class="form-group mb-5">
+          <label class="form-label" style="font-weight: 600; font-size: 0.825rem; color: var(--brand-navy); margin-bottom: 0.5rem;">I am joining as a:</label>
+          <div class="grid-3 gap-3">
             <div class="role-selector-card selected" data-role="donor">
-              <div class="text-xl mb-1">🩸</div>
-              <div class="font-bold text-xs text-slate-900">Voluntary Donor</div>
+              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🩸</div>
+              <div class="font-bold text-xs" style="color: var(--brand-navy);">Voluntary Donor</div>
+              <div class="text-[10px]" style="color: var(--text-muted);">Save lives nearby</div>
             </div>
             <div class="role-selector-card" data-role="patient">
-              <div class="text-xl mb-1">🆘</div>
-              <div class="font-bold text-xs text-slate-900">Patient / Family</div>
+              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🆘</div>
+              <div class="font-bold text-xs" style="color: var(--brand-navy);">Patient / Family</div>
+              <div class="text-[10px]" style="color: var(--text-muted);">Request blood</div>
             </div>
             <div class="role-selector-card" data-role="hospital">
-              <div class="text-xl mb-1">🏥</div>
-              <div class="font-bold text-xs text-slate-900">Hospital / Bank</div>
+              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🏥</div>
+              <div class="font-bold text-xs" style="color: var(--brand-navy);">Hospital / Bank</div>
+              <div class="text-[10px]" style="color: var(--text-muted);">Verify matches</div>
             </div>
           </div>
         </div>
 
         <div class="grid-2 gap-4">
           <div class="form-group">
-            <label for="regFullName" class="form-label">Full Name <span class="required">*</span></label>
+            <label for="regFullName" class="form-label" style="font-size: 0.8rem; font-weight: 600;">Full Name <span class="required">*</span></label>
             <input type="text" id="regFullName" class="form-input" placeholder="e.g. Maya Lin" required>
           </div>
           <div class="form-group">
-            <label for="regEmail" class="form-label">Email Address <span class="required">*</span></label>
+            <label for="regEmail" class="form-label" style="font-size: 0.8rem; font-weight: 600;">Email Address <span class="required">*</span></label>
             <input type="email" id="regEmail" class="form-input" placeholder="maya.lin@example.com" required>
           </div>
         </div>
 
         <div class="grid-2 gap-4">
           <div class="form-group">
-            <label for="regPhone" class="form-label">Phone (Optional)</label>
+            <label for="regPhone" class="form-label" style="font-size: 0.8rem; font-weight: 600;">Phone Number</label>
             <input type="tel" id="regPhone" class="form-input" placeholder="+1 (555) 000-0000">
           </div>
           <div class="form-group">
-            <label for="regCity" class="form-label">City / Municipality</label>
+            <label for="regCity" class="form-label" style="font-size: 0.8rem; font-weight: 600;">City / Municipality</label>
             <input type="text" id="regCity" class="form-input" placeholder="Metropolis" value="Metropolis">
           </div>
         </div>
 
         <!-- Conditional Donor Fields -->
-        <div id="donorSpecificFields" class="p-3 bg-rose-50 rounded border border-rose-200 mb-4">
-          <div class="font-bold text-xs text-crimson-700 mb-2">Donor Medical Profile Details</div>
+        <div id="donorSpecificFields" class="p-4 rounded-lg border mb-4" style="background: var(--primary-light); border-color: rgba(225, 29, 72, 0.2);">
+          <div class="font-bold text-xs mb-2" style="color: var(--primary); display: flex; items-center; gap: 0.35rem;">
+            <span>🩸 Donor Medical Profile Details</span>
+          </div>
           <div class="grid-2 gap-3">
             <div class="form-group mb-0">
-              <label for="regBloodGroup" class="form-label text-xs">Blood Group <span class="required">*</span></label>
+              <label for="regBloodGroup" class="form-label text-xs" style="font-weight: 600;">Blood Group <span class="required">*</span></label>
               <select id="regBloodGroup" class="form-select text-xs">
-                <option value="O-">O Negative (O-)</option>
-                <option value="O+">O Positive (O+)</option>
+                <option value="O-">O Negative (O-) • Universal Donor</option>
+                <option value="O+" selected>O Positive (O+)</option>
                 <option value="A-">A Negative (A-)</option>
                 <option value="A+">A Positive (A+)</option>
                 <option value="B-">B Negative (B-)</option>
@@ -119,7 +126,7 @@
               </select>
             </div>
             <div class="form-group mb-0">
-              <label for="regRadius" class="form-label text-xs">Alert Radius (km)</label>
+              <label for="regRadius" class="form-label text-xs" style="font-weight: 600;">Alert Radius (km)</label>
               <select id="regRadius" class="form-select text-xs">
                 <option value="5">Within 5 km</option>
                 <option value="15" selected>Within 15 km (Recommended)</option>
@@ -130,43 +137,45 @@
         </div>
 
         <!-- Conditional Hospital Fields -->
-        <div id="hospitalSpecificFields" class="p-3 bg-blue-50 rounded border border-blue-200 mb-4" style="display:none;">
-          <div class="font-bold text-xs text-blue-800 mb-2">Hospital Accreditation Details</div>
+        <div id="hospitalSpecificFields" class="p-4 rounded-lg border mb-4" style="display:none; background: rgba(14, 165, 233, 0.08); border-color: rgba(14, 165, 233, 0.25);">
+          <div class="font-bold text-xs mb-2" style="color: #0369a1; display: flex; items-center; gap: 0.35rem;">
+            <span>🏥 Hospital Accreditation Details</span>
+          </div>
           <div class="grid-2 gap-3">
             <div class="form-group mb-0">
-              <label for="regHospitalLicense" class="form-label text-xs">Medical License No. <span class="required">*</span></label>
+              <label for="regHospitalLicense" class="form-label text-xs" style="font-weight: 600;">Medical License No. <span class="required">*</span></label>
               <input type="text" id="regHospitalLicense" class="form-input text-xs" placeholder="e.g. MED-LIC-2026-990">
             </div>
             <div class="form-group mb-0">
-              <label for="regHospitalPhone" class="form-label text-xs">24/7 Desk Phone</label>
+              <label for="regHospitalPhone" class="form-label text-xs" style="font-weight: 600;">24/7 Desk Phone</label>
               <input type="text" id="regHospitalPhone" class="form-input text-xs" placeholder="+1 (555) 019-0000">
             </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="regPassword" class="form-label">Create Password <span class="required">*</span></label>
+          <label for="regPassword" class="form-label" style="font-size: 0.8rem; font-weight: 600;">Create Password <span class="required">*</span></label>
           <div class="input-with-action">
             <input type="password" id="regPassword" class="form-input" placeholder="Minimum 8 characters" required>
             <button type="button" class="input-action-btn password-toggle-btn" aria-label="Toggle password visibility">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
             </button>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-check">
-            <input type="checkbox" id="regTerms" required>
-            <span class="text-xs">
+          <label class="form-check" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+            <input type="checkbox" id="regTerms" required style="margin-top: 0.2rem;">
+            <span class="text-xs" style="color: var(--text-muted); line-height: 1.4;">
               I acknowledge that Lifnex is an emergency coordination platform and that medical suitability & compatibility must be certified on-site by healthcare professionals.
             </span>
           </label>
         </div>
 
-        <button type="submit" class="btn btn-primary w-full py-2 mb-4">Complete Registration</button>
+        <button type="submit" class="btn btn-primary w-full py-2 mb-4" style="border-radius: var(--radius-md); font-weight: 600;">Complete Registration</button>
 
-        <div class="text-center text-xs text-slate-500">
-          Already have an account? <a href="login.html" class="font-bold text-crimson-600 hover:underline">Sign In</a>
+        <div class="text-center text-xs" style="color: var(--text-muted);">
+          Already have an account? <a href="login.html" class="font-bold hover:underline" style="color: var(--primary);">Sign In</a>
         </div>
       </form>
     </div>
@@ -181,4 +190,3 @@
   </script>
 </body>
 </html>
-

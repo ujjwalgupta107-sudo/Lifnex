@@ -1,21 +1,23 @@
 /* ==========================================================================
-   LIFNEX DASHBOARD STYLES (UI/UX 2.0 UPGRADE)
-   Patient, Donor, Hospital, and Admin Portals
-   Derived from demo-assests/ui and ux idea 1.png & ui and ux idea 2.png
+   LIFNEX DASHBOARD STYLES v4.0 (EXACT UI SHOWCASE ALIGNMENT)
+   Primary Design Reference: demo-assests/Lifnex Healthcare UI Showcase.png
+   Portals: Patient, Donor, Hospital, and Admin
    ========================================================================== */
 
-/* 1. DASHBOARD WRAPPER & LAYOUT */
+/* 1. DASHBOARD WRAPPER & BASE LAYOUT */
 .dashboard-wrapper {
   display: flex;
   min-height: 100vh;
   background-color: #f8fafc;
+  color: #101b28;
+  font-family: var(--font-sans);
 }
 
-/* 2. SIDEBAR NAVIGATION */
+/* 2. SIDEBAR NAVIGATION (CRISP WHITE SHOWCASE DESIGN) */
 .dashboard-sidebar {
   width: var(--sidebar-width);
-  background-color: #0b1120;
-  color: var(--slate-300);
+  background-color: #ffffff;
+  color: #475569;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -24,7 +26,8 @@
   left: 0;
   z-index: 100;
   transition: transform var(--transition-normal);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid #e2e8f0;
+  box-shadow: 1px 0 3px 0 rgba(16, 27, 40, 0.02);
 }
 
 .sidebar-brand {
@@ -32,73 +35,47 @@
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background-color: #070c18;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #ffffff;
+}
+
+.sidebar-brand .brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+}
+
+.sidebar-brand .brand-logo-img {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.sidebar-brand .brand-title-wrap {
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-brand .brand-name {
-  color: var(--crimson-500);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #101b28;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
-.sidebar-user-badge {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  background-color: rgba(30, 41, 59, 0.25);
-}
-
-.user-avatar-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--crimson-600);
-  color: var(--white);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.05rem;
-  flex-shrink: 0;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.user-avatar-circle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.user-info-text {
-  overflow: hidden;
-}
-
-.user-display-name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--white);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.user-role-tag {
-  font-size: 0.75rem;
-  color: var(--slate-400);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+.sidebar-brand .brand-name .brand-nex {
+  color: #e11d48;
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 1.25rem 0.75rem;
+  padding: 1.25rem 0.85rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .sidebar-item {
@@ -106,8 +83,8 @@
   align-items: center;
   gap: 0.85rem;
   padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  color: var(--slate-400);
+  border-radius: 8px;
+  color: #475569;
   font-size: 0.9375rem;
   font-weight: 500;
   text-decoration: none;
@@ -115,15 +92,21 @@
 }
 
 .sidebar-item:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: var(--white);
+  background-color: #f8fafc;
+  color: #101b28;
 }
 
+/* Active Nav Item: Solid Red Pill matching Showcase */
 .sidebar-item.active {
-  background: var(--gradient-brand);
-  color: var(--white);
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.28);
+}
+
+.sidebar-item.active .sidebar-item-icon {
+  color: #ffffff !important;
 }
 
 .sidebar-item-icon {
@@ -132,26 +115,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  color: #64748b;
+  transition: color var(--transition-fast);
+}
+
+.sidebar-item:hover .sidebar-item-icon {
+  color: #101b28;
 }
 
 .sidebar-footer {
-  padding: 1rem 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 0.85rem;
+  border-top: 1px solid #f1f5f9;
 }
 
-/* 3. MAIN DASHBOARD CONTENT */
+/* 3. MAIN DASHBOARD CONTENT AREA */
 .dashboard-main {
   flex: 1;
   margin-left: var(--sidebar-width);
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background-color: #f8fafc;
 }
 
+/* 4. TOPBAR (PORTAL BADGE, BELL, USER AVATAR) */
 .dashboard-topbar {
   height: var(--header-height);
-  background-color: var(--white);
-  border-bottom: 1px solid var(--border-light);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -172,15 +164,44 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--slate-700);
+  color: #101b28;
   cursor: pointer;
 }
 
-.dashboard-title h2 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--slate-900);
-  letter-spacing: -0.02em;
+/* Portal Role Badges matching Showcase top header */
+.badge-portal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.badge-portal-patient {
+  background-color: #fff1f3;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+}
+
+.badge-portal-donor {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.badge-portal-hospital {
+  background-color: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  color: #7c3aed;
+}
+
+.badge-portal-admin {
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #b45309;
 }
 
 .topbar-right {
@@ -189,234 +210,544 @@
   gap: 1.25rem;
 }
 
+.topbar-bell-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.topbar-bell-btn:hover {
+  background-color: #f8fafc;
+  color: #101b28;
+}
+
+.topbar-bell-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #e11d48;
+  border: 2px solid #ffffff;
+}
+
+.topbar-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e11d48;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+  cursor: pointer;
+}
+
+/* 5. DASHBOARD BODY & GREETING */
 .dashboard-body {
   padding: 2rem;
   flex: 1;
 }
 
-/* 4. METRIC CARDS ROW */
+.dashboard-greeting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-greeting h1,
+.dashboard-greeting h2 {
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: #101b28;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-greeting p {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 6. SHOWCASE 4-STAT KPI METRIC ROW */
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
 .metric-card {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 1.35rem 1.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px 0 rgba(16, 27, 40, 0.05);
   display: flex;
-  align-items: center;
-  gap: 1.15rem;
+  flex-direction: column;
+  justify-content: center;
   transition: all var(--transition-fast);
 }
 
 .metric-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px 0 rgba(16, 27, 40, 0.08);
+  border-color: #cbd5e1;
   transform: translateY(-2px);
 }
 
-.metric-icon-box {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
+.metric-val {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.val-crimson { color: #e11d48; }
+.val-teal    { color: #0f9d8a; }
+.val-navy    { color: #101b28; }
+.val-amber   { color: #f59e0b; }
+
+.metric-lbl {
+  font-size: 0.8125rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 7. FULL-WIDTH EMERGENCY BUTTON (PATIENT DASHBOARD) */
+.btn-emergency-action {
+  width: 100%;
+  background-color: #e11d48;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px 0 rgba(225, 29, 72, 0.35);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  margin-bottom: 2rem;
+}
+
+.btn-emergency-action:hover {
+  background-color: #be123c;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px 0 rgba(225, 29, 72, 0.45);
+}
+
+/* 8. SHOWCASE MY REQUESTS CARD & STEPPER */
+.showcase-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(16, 27, 40, 0.05);
+  margin-bottom: 1.75rem;
+}
+
+.showcase-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.showcase-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #101b28;
+}
+
+.showcase-view-all {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e11d48;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.showcase-view-all:hover {
+  text-decoration: underline;
+}
+
+/* Request item detail row */
+.request-item-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.request-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.request-item-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.blood-drop-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #fff1f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e11d48;
+  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
-.icon-crimson { background-color: var(--crimson-50); color: var(--crimson-600); }
-.icon-emerald { background-color: #ecfdf5; color: #059669; }
-.icon-blue    { background-color: #eff6ff; color: #2563eb; }
-.icon-amber   { background-color: #fffbeb; color: #d97706; }
-
-.metric-info h3 {
-  font-size: 1.65rem;
+.request-item-text h4 {
+  font-size: 1.05rem;
   font-weight: 800;
-  color: var(--slate-900);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  color: #101b28;
+  margin-bottom: 0.15rem;
 }
 
-.metric-info p {
+.request-item-text p {
   font-size: 0.8125rem;
-  color: var(--slate-500);
-  font-weight: 500;
-  margin-top: 0.2rem;
+  color: #64748b;
 }
 
-/* 5. AI TRIAGE ASSISTANT CARD */
-.ai-assistant-card {
-  background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%);
-  border: 1px solid #fecdd3;
-  border-radius: var(--radius-xl);
-  padding: 1.5rem 1.75rem;
-  box-shadow: var(--shadow-sm);
+/* Status Pill Badges */
+.badge-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
 }
 
-.ai-assistant-header {
+.badge-status-matched {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-status-progress {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+/* 9. 4-STEP PROGRESS STEPPER (SHOWCASE VERIFIED) */
+.stepper-container {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 1.15rem;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 1.5rem;
+  padding: 0 1rem;
 }
 
-.ai-assistant-avatar {
-  width: 36px;
-  height: 36px;
+.stepper-track-line {
+  position: absolute;
+  top: 14px;
+  left: 3rem;
+  right: 3rem;
+  height: 2px;
+  background-color: #0f9d8a;
+  z-index: 1;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.stepper-circle {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: var(--gradient-brand);
-  color: var(--white);
-  font-weight: 800;
-  font-size: 0.8125rem;
+  background-color: #0f9d8a;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.4);
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(15, 157, 138, 0.2);
 }
 
-/* 6. SWITCH TOGGLE (DONOR AVAILABILITY) */
-.switch-container {
+.stepper-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #101b28;
+  white-space: nowrap;
+}
+
+/* 10. DONOR DASHBOARD AVAILABLE TOGGLE SWITCH */
+.donor-availability-widget {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  background-color: var(--slate-50);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
-  padding: 0.35rem 1rem 0.35rem 0.5rem;
+  gap: 0.75rem;
 }
 
-.switch {
+.donor-availability-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #101b28;
+}
+
+.toggle-switch-wrapper {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 48px;
+  height: 26px;
 }
 
-.switch input {
+.toggle-switch-wrapper input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-.slider {
+.toggle-slider {
   position: absolute;
   cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--slate-300);
-  transition: .3s;
-  border-radius: 24px;
+  background-color: #cbd5e1;
+  transition: 0.25s;
+  border-radius: 9999px;
 }
 
-.slider:before {
+.toggle-slider:before {
   position: absolute;
   content: "";
-  height: 18px;
-  width: 18px;
+  height: 20px;
+  width: 20px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
-  transition: .3s;
+  background-color: #ffffff;
+  transition: 0.25s;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-input:checked + .slider {
-  background-color: var(--status-success);
+input:checked + .toggle-slider {
+  background-color: #0f9d8a;
 }
 
-input:checked + .slider:before {
-  transform: translateX(20px);
+input:checked + .toggle-slider:before {
+  transform: translateX(22px);
 }
 
-/* 7. NOTIFICATIONS DROPDOWN */
-.notifications-trigger {
-  position: relative;
-  background: none;
+/* 11. DONOR URGENT REQUEST CARD WITH ACTIONS */
+.donor-urgent-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.donor-urgent-left {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.donor-urgent-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-teal-action {
+  background-color: #0f9d8a;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  color: var(--slate-600);
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.btn-teal-action:hover {
+  background-color: #0d8575;
+}
+
+.btn-decline-action {
+  background-color: #ffffff;
+  color: #e11d48;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #fecdd3;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-decline-action:hover {
+  background-color: #fff1f3;
+}
+
+/* 12. HOSPITAL HEADER CARD & RECENT REQUESTS TABLE */
+.hospital-header-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.hospital-building-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  background-color: #eff6ff;
+  color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--transition-fast);
+  font-size: 1.75rem;
+  flex-shrink: 0;
 }
 
-.notifications-trigger:hover {
-  background-color: var(--slate-100);
-  color: var(--slate-900);
-}
-
-.unread-bubble {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  min-width: 18px;
-  height: 18px;
-  background-color: var(--crimson-600);
-  color: var(--white);
-  border-radius: 50%;
-  font-size: 0.65rem;
-  font-weight: 800;
-  display: none;
+.hospital-title-row {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  border: 2px solid var(--white);
+  gap: 0.5rem;
 }
 
-.notifications-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 2rem;
-  width: 360px;
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  z-index: 60;
-  display: none;
-  overflow: hidden;
+.hospital-title-row h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #101b28;
 }
 
-.notifications-dropdown.open,
-.notifications-dropdown.active {
-  display: block;
-  animation: toastSlideIn 0.25s ease;
+.verified-blue-badge {
+  color: #2563eb;
+  font-size: 1rem;
 }
 
-.notif-item {
-  padding: 0.85rem 1.15rem;
-  border-bottom: 1px solid var(--border-light);
-  transition: background-color var(--transition-fast);
+.hospital-subtitle {
+  font-size: 0.8125rem;
+  color: #64748b;
+  font-weight: 500;
 }
 
-.notif-item:hover {
-  background-color: var(--slate-50);
+/* Table styles */
+.showcase-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
 }
 
-.notif-item.unread {
-  background-color: #fff1f2;
+.showcase-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.8125rem;
 }
 
-/* 8. RESPONSIVE DASHBOARD BREAKPOINTS */
+.showcase-table td {
+  padding: 0.85rem 1rem;
+  color: #101b28;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.text-urgency-critical { color: #e11d48; font-weight: 700; }
+.text-urgency-high     { color: #f59e0b; font-weight: 700; }
+.text-urgency-medium   { color: #101b28; font-weight: 500; }
+
+/* 13. ADMIN DASHBOARD ANALYTICS GRID */
+.admin-charts-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(16, 27, 40, 0.05);
+}
+
+.chart-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #101b28;
+  margin-bottom: 1.25rem;
+}
+
+/* 14. RESPONSIVE BREAKPOINTS */
 @media (max-width: 1024px) {
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .admin-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
   .dashboard-sidebar {
     transform: translateX(-100%);
   }
-  .dashboard-sidebar.open,
-  .dashboard-sidebar.sidebar-open {
+  .dashboard-sidebar.mobile-open {
     transform: translateX(0);
   }
   .dashboard-main {
@@ -426,22 +757,9 @@ input:checked + .slider:before {
     display: block;
   }
   .metrics-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-topbar {
-    padding: 0 1rem;
-  }
-  .dashboard-body {
-    padding: 1.25rem 1rem;
-  }
-  .metrics-row {
     grid-template-columns: 1fr;
   }
-  .notifications-dropdown {
-    right: 1rem;
-    width: calc(100vw - 2rem);
+  .dashboard-body {
+    padding: 1.25rem;
   }
 }
