@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../../services/api';
+import { Mini3DDroplet } from '../../components/3d/Mini3DDroplet';
+import { User, Mail, Lock, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const [role, setRole] = useState<'patient' | 'donor'>('patient');
@@ -18,7 +20,7 @@ export const RegisterPage: React.FC = () => {
     setError('');
 
     try {
-      const data = await api.register({
+      const res = await api.register({
         email,
         password,
         full_name: fullName,
@@ -26,12 +28,15 @@ export const RegisterPage: React.FC = () => {
         blood_group: bloodGroup,
       });
 
-      if (data.token) {
-        localStorage.setItem('lifnex_token', data.token);
-        localStorage.setItem('lifnex_user', JSON.stringify(data.user));
+      const token = res.data?.session?.access_token || res.token || res.access_token;
+      const user = res.data?.user || res.user;
+
+      if (token && user) {
+        localStorage.setItem('lifnex_token', token);
+        localStorage.setItem('lifnex_user', JSON.stringify(user));
         navigate(role === 'donor' ? '/dashboard/donor' : '/dashboard/patient');
       } else {
-        setError(data.message || 'Registration failed');
+        setError(res.error?.message || res.message || 'Registration failed');
       }
     } catch (err: any) {
       setError(err.message || 'Network error');
@@ -41,71 +46,100 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[85vh] p-6">
-      <div className="card w-full max-w-[480px] p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Create Account</h1>
-        <p className="text-sm text-slate-400 mb-6">Join the Lifnex Emergency Blood Mesh</p>
+    <div className="min-h-[82vh] flex items-center justify-center py-6 px-4">
+      {/* Compact 440px Centered Registration Card */}
+      <div className="card w-full max-w-[460px] p-6 sm:p-7 relative border border-white/10 shadow-2xl bg-[#0B1120]/90 backdrop-blur-xl">
+        
+        {/* Subtle 3D Droplet Header */}
+        <div className="text-center mb-4">
+          <Mini3DDroplet />
+          <h1 className="text-2xl font-black text-white tracking-tight mt-1">Create Account</h1>
+          <p className="text-xs text-slate-400 mt-0.5">Join the Lifnex Emergency Blood Mesh</p>
+        </div>
 
-        {error && <div className="badge badge-primary w-full p-2 mb-4 text-center">{error}</div>}
+        {error && (
+          <div className="mb-3 p-2.5 rounded-lg bg-red-950/50 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
+            <AlertCircle className="text-[#FF2E54] shrink-0" size={15} />
+            <span>{error}</span>
+          </div>
+        )}
 
-        <div className="flex gap-2 mb-6">
+        {/* Role Toggle Selector */}
+        <div className="grid grid-cols-2 gap-2 mb-4 p-1 bg-slate-950/60 rounded-xl border border-white/10">
           <button
             type="button"
-            className={`btn btn-block ${role === 'patient' ? 'btn-primary' : 'btn-secondary'}`}
+            className={`py-2 text-xs font-bold rounded-lg transition-all ${
+              role === 'patient'
+                ? 'bg-[#FF2E54] text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
             onClick={() => setRole('patient')}
           >
             I Need Blood (Patient)
           </button>
           <button
             type="button"
-            className={`btn btn-block ${role === 'donor' ? 'btn-primary' : 'btn-secondary'}`}
+            className={`py-2 text-xs font-bold rounded-lg transition-all ${
+              role === 'donor'
+                ? 'bg-[#FF2E54] text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
             onClick={() => setRole('donor')}
           >
             I Can Donate (Donor)
           </button>
         </div>
 
-        <form onSubmit={handleRegister}>
-          <div className="form-group mb-4">
-            <label className="form-label text-sm text-slate-300">Full Name</label>
-            <input
-              type="text"
-              className="form-control"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="e.g. Rahul Sharma"
-              required
-            />
+        <form onSubmit={handleRegister} className="space-y-3">
+          <div className="form-group mb-0">
+            <label className="form-label text-xs font-semibold text-slate-300">Full Name</label>
+            <div className="relative">
+              <input
+                type="text"
+                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="e.g. Rahul Sharma"
+                required
+              />
+              <User className="absolute left-3 top-2.5 text-slate-500" size={14} />
+            </div>
           </div>
 
-          <div className="form-group mb-4">
-            <label className="form-label text-sm text-slate-300">Email Address</label>
-            <input
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="rahul@example.com"
-              required
-            />
+          <div className="form-group mb-0">
+            <label className="form-label text-xs font-semibold text-slate-300">Email Address</label>
+            <div className="relative">
+              <input
+                type="email"
+                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="rahul@example.com"
+                required
+              />
+              <Mail className="absolute left-3 top-2.5 text-slate-500" size={14} />
+            </div>
           </div>
 
-          <div className="form-group mb-4">
-            <label className="form-label text-sm text-slate-300">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+          <div className="form-group mb-0">
+            <label className="form-label text-xs font-semibold text-slate-300">Password</label>
+            <div className="relative">
+              <input
+                type="password"
+                className="form-control text-sm py-2 px-3 pl-9 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+              <Lock className="absolute left-3 top-2.5 text-slate-500" size={14} />
+            </div>
           </div>
 
-          <div className="form-group mb-6">
-            <label className="form-label text-sm text-slate-300">Blood Group</label>
+          <div className="form-group mb-0">
+            <label className="form-label text-xs font-semibold text-slate-300">Blood Group</label>
             <select
-              className="form-control"
+              className="form-control text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
               value={bloodGroup}
               onChange={(e) => setBloodGroup(e.target.value)}
             >
@@ -115,16 +149,32 @@ export const RegisterPage: React.FC = () => {
             </select>
           </div>
 
-          <button type="submit" className="btn btn-primary w-full btn-lg mb-4" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Complete Registration →'}
+          <button
+            type="submit"
+            className="btn btn-primary w-full py-2.5 text-sm font-bold shadow-md mt-4 flex items-center justify-center gap-2"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>Creating Account...</span>
+              </>
+            ) : (
+              <>
+                <span>Complete Registration</span>
+                <ArrowRight size={15} />
+              </>
+            )}
           </button>
 
-          <div className="text-center text-xs text-slate-400">
-            Already have an account? <Link to="/login" className="text-[#FF2E54] font-bold">Sign In</Link>
+          <div className="text-center text-xs text-slate-400 pt-2">
+            Already have an account?{' '}
+            <Link to="/login" className="text-[#FF2E54] font-semibold hover:underline">
+              Sign In
+            </Link>
           </div>
         </form>
       </div>
     </div>
   );
 };
-
