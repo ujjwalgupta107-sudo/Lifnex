@@ -1,9 +1,9 @@
 /* ==========================================================================
-   LIFNEX DASHBOARDS v5.0 — CYBER-MED DARK & EXECUTIVE GLASS
+   LIFNEX DASHBOARDS v5.1 — UNIFIED CYBER-MED DARK DASHBOARDS & COMPATIBILITY
    ========================================================================== */
 
 /* 1. DASHBOARD WRAPPER & SHELL */
-.dashboard-layout {
+.dashboard-layout, .dashboard-wrapper {
   display: flex;
   min-height: 100vh;
   background-color: var(--bg-body);
@@ -25,27 +25,22 @@
   transition: transform var(--transition-normal);
 }
 
-.sidebar-header {
-  padding: 1.75rem 1.5rem;
+.sidebar-header, .sidebar-brand {
+  padding: 1.5rem;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-}
-
-.sidebar-brand img {
-  height: 34px;
+.sidebar-brand img, .brand-logo-img {
+  height: 34px !important;
+  width: auto !important;
+  object-fit: contain;
 }
 
 .sidebar-nav {
-  padding: 1.5rem 1rem;
+  padding: 1.25rem 1rem;
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -55,11 +50,11 @@
   margin: 0;
 }
 
-.sidebar-item a, .sidebar-btn {
+.sidebar-item {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 1rem;
   color: var(--slate-400);
   text-decoration: none;
   font-weight: 600;
@@ -73,21 +68,23 @@
   cursor: pointer;
 }
 
-.sidebar-item a:hover, .sidebar-btn:hover {
+.sidebar-item:hover {
   color: #FFFFFF;
   background: rgba(255, 255, 255, 0.05);
 }
 
-.sidebar-item.active a, .sidebar-btn.active {
-  color: #FFFFFF;
-  background: linear-gradient(135deg, rgba(255, 46, 84, 0.25) 0%, rgba(225, 29, 72, 0.1) 100%);
+.sidebar-item.active {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, rgba(255, 46, 84, 0.25) 0%, rgba(225, 29, 72, 0.1) 100%) !important;
   border: 1px solid rgba(255, 46, 84, 0.4);
   box-shadow: 0 4px 15px rgba(255, 46, 84, 0.2);
 }
 
-.sidebar-item.active a svg, .sidebar-btn.active svg {
-  color: var(--primary);
-  filter: drop-shadow(0 0 8px rgba(255, 46, 84, 0.6));
+.sidebar-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
 }
 
 .sidebar-footer {
@@ -95,15 +92,59 @@
   border-top: 1px solid var(--border-subtle);
 }
 
-.user-profile-badge {
+/* 2. MAIN DASHBOARD CONTENT AREA */
+.dashboard-main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 2rem 2.5rem;
+  min-height: 100vh;
   display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.user-avatar {
-  width: 42px;
-  height: 42px;
+.dashboard-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.topbar-left, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topbar-bell-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--slate-300);
+  cursor: pointer;
+  position: relative;
+}
+
+.topbar-bell-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #FF2E54;
+  border-radius: var(--radius-full);
+}
+
+.topbar-user-avatar {
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-full);
   background: linear-gradient(135deg, #FF2E54, #38BDF8);
   display: flex;
@@ -111,143 +152,201 @@
   justify-content: center;
   color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 0 15px rgba(255, 46, 84, 0.4);
-}
-
-.user-info {
-  flex: 1;
-  overflow: hidden;
-}
-
-.user-name {
   font-size: 0.9375rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.user-role {
-  font-size: 0.75rem;
-  color: var(--slate-400);
-  text-transform: capitalize;
-}
-
-/* 2. MAIN CONTENT AREA */
-.dashboard-main {
-  flex: 1;
-  margin-left: 280px;
-  padding: 2.5rem;
-  min-height: 100vh;
-}
-
-.dashboard-topbar {
+.dashboard-greeting-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.page-title {
-  font-size: 1.85rem;
-  font-weight: 800;
+.dashboard-greeting h1 {
+  font-size: 2rem;
+  font-weight: 900;
   color: #FFFFFF;
   letter-spacing: -0.02em;
 }
 
-.page-subtitle {
-  font-size: 0.9375rem;
+.dashboard-greeting p {
   color: var(--slate-400);
+  font-size: 0.9375rem;
   margin-top: 0.25rem;
 }
 
-/* 3. METRICS STATS GRID */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+/* Donor Availability Widget */
+.donor-availability-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 1.25rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
 }
 
-.stat-card {
+.donor-availability-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--slate-300);
+}
+
+.toggle-switch-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch-wrapper input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: #10B981;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* 3. SHOWCASE METRICS ROW & STATS GRID (COMPATIBLE WITH HTML & REACT) */
+.metrics-row, .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card, .stat-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding: 1.4rem;
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   box-shadow: var(--shadow-glass);
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
+  flex-direction: column;
+  justify-content: center;
   transition: transform var(--transition-normal), border-color var(--transition-normal);
 }
 
-.stat-card:hover {
+.metric-card:hover, .stat-card:hover {
   transform: translateY(-3px);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.stat-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-
-.stat-icon.red {
-  background: rgba(255, 46, 84, 0.15);
-  color: #FF2E54;
-  border: 1px solid rgba(255, 46, 84, 0.3);
-}
-
-.stat-icon.cyan {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38BDF8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.stat-icon.emerald {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.stat-icon.amber {
-  background: rgba(245, 158, 11, 0.15);
-  color: #F59E0B;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.stat-value {
+.metric-val, .stat-value {
   font-size: 1.85rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #FFFFFF;
   line-height: 1.1;
+  margin-bottom: 0.35rem;
 }
 
-.stat-label {
+.metric-lbl, .stat-label {
   font-size: 0.8125rem;
   color: var(--slate-400);
-  margin-top: 0.35rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-/* 4. DASHBOARD CONTENT GRID */
-.dashboard-grid-2 {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.75rem;
+.val-crimson { color: #FF2E54 !important; }
+.val-teal { color: #38BDF8 !important; }
+.val-navy { color: #F8FAFC !important; }
+
+/* 4. DONOR MATCHING & ACTIVE REQUEST CARDS */
+.donor-urgent-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  backdrop-filter: blur(16px);
 }
 
-@media (max-width: 1200px) {
-  .dashboard-grid-2 {
-    grid-template-columns: 1fr;
+.donor-urgent-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.donor-urgent-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-teal-action {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-teal-action:hover {
+  background: #10B981;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-decline-action {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--slate-300);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-decline-action:hover {
+  background: rgba(255, 46, 84, 0.15);
+  color: #FF2E54;
+  border-color: rgba(255, 46, 84, 0.3);
+}
+
+/* 5. RESPONSIVE BREAKPOINTS */
+@media (max-width: 1100px) {
+  .metrics-row, .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -255,11 +354,22 @@
   .dashboard-sidebar {
     transform: translateX(-100%);
   }
-  .dashboard-sidebar.open {
+  .dashboard-sidebar.mobile-open, .dashboard-sidebar.open {
     transform: translateX(0);
   }
   .dashboard-main {
     margin-left: 0;
     padding: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .metrics-row, .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .donor-urgent-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 }
