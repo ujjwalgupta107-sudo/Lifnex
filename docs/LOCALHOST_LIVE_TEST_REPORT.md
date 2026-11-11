@@ -125,3 +125,4 @@ npm run build
 * **Deployment Blockers:** 0
 * **Visual Fidelity:** Perfectly aligned to `Lifnex Healthcare UI Showcase.png`
 * **Local Development Servers:** Actively running on `http://127.0.0.1:5000` and `http://localhost:5173`.
+
