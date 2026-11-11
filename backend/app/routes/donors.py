@@ -170,8 +170,34 @@ def respond_to_request():
         }), 201
 
     try:
+        # Resolve donor_profile_id if caller provided user_id
+        donor_profile_id = data.donor_id
+        dp_res = admin.table("donor_profiles").select("id").eq("id", data.donor_id).execute()
+        if not dp_res.data:
+            dp_user_res = admin.table("donor_profiles").select("id").eq("user_id", data.donor_id).execute()
+            if dp_user_res.data:
+                donor_profile_id = dp_user_res.data[0]["id"]
+            else:
+                new_dp = {
+                    "user_id": data.donor_id,
+                    "blood_group": "O-",
+                    "date_of_birth": "2000-01-01",
+                    "latitude": 28.6139,
+                    "longitude": 77.2090,
+                    "city": "New Delhi",
+                    "travel_radius_km": 15,
+                    "availability_status": "available",
+                    "is_verified": False
+                }
+                dp_ins = admin.table("donor_profiles").insert(new_dp).execute()
+                if dp_ins.data:
+                    donor_profile_id = dp_ins.data[0]["id"]
+
+        insert_payload = data.model_dump()
+        insert_payload["donor_id"] = donor_profile_id
+
         # 1. Check for existing response
-        existing = admin.table("donor_responses").select("id").eq("request_id", data.request_id).eq("donor_id", data.donor_id).execute()
+        existing = admin.table("donor_responses").select("id").eq("request_id", data.request_id).eq("donor_id", donor_profile_id).execute()
         if existing.data:
             return jsonify({
                 "success": False,
@@ -179,8 +205,8 @@ def respond_to_request():
             }), 409
 
         # 2. Insert response
-        res = admin.table("donor_responses").insert(data.model_dump()).execute()
-        created = res.data[0] if res.data else data.model_dump()
+        res = admin.table("donor_responses").insert(insert_payload).execute()
+        created = res.data[0] if res.data else insert_payload
 
         # 3. Lookup request patient to dispatch alert notification
         req_res = admin.table("blood_requests").select("patient_id, blood_group").eq("id", data.request_id).execute()

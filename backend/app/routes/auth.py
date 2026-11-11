@@ -40,6 +40,16 @@ def register():
             }
         }), 400
 
+    # Strict security boundary: Public registration cannot provision admin or hospital accounts
+    if data.role not in ("patient", "donor"):
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "FORBIDDEN",
+                "message": "Public registration is strictly permitted only for Patient and Donor roles."
+            }
+        }), 403
+
     admin = get_supabase_admin()
     anon = get_supabase_anon()
 
@@ -133,7 +143,7 @@ def register():
             "phone_number": data.phone_number,
             "role": data.role,
             "is_active": True,
-            "is_demo": True
+            "is_demo": False
         }
         admin.table("users").upsert(user_record).execute()
 

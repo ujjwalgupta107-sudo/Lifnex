@@ -87,6 +87,9 @@ def create_blood_request():
     if g.user.get("role") == "patient":
         payload["patient_id"] = g.user.get("id")
 
+    # Security boundary: Client cannot toggle demo mode via payload
+    payload["is_demo"] = bool(g.user.get("is_demo", False))
+
     try:
         req_data = BloodRequestCreate(**payload)
     except ValidationError as err:

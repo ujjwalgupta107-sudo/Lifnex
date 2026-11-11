@@ -124,3 +124,4 @@ All 12 pages reference local assets located in `demo-assests/` and `public/`. Ev
 ## 7. Conclusion
 
 The Lifnex frontend has undergone a complete visual transformation. It now presents as a modern, high-tier healthcare technology platform suitable for clinical presentation, investor demonstration, and academic evaluation.
+

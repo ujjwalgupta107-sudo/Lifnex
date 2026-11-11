@@ -107,3 +107,4 @@ All 12 pages return HTTP 200 with proper HTML rendering, CSS stylesheets, JavaSc
 - `/donor-dashboard.html`: 200 OK
 - `/hospital-dashboard.html`: 200 OK
 - `/admin-dashboard.html`: 200 OK
+
