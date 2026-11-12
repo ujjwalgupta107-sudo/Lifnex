@@ -102,7 +102,7 @@
         <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required style="padding: 0.6rem 0.8rem; font-size: 0.85rem;">
       </div>
 
-      <div class="form-group" style="margin-bottom: 1.25rem;">
+      <div class="form-group" id="bloodGroupGroup" style="margin-bottom: 1.25rem; display: none;">
         <label class="form-label" style="font-size: 0.78rem;">Blood Group</label>
         <select id="regBloodGroup" class="form-control" style="padding: 0.6rem 0.8rem; font-size: 0.85rem;">
           <option value="A+">A+</option>
@@ -116,8 +116,8 @@
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem; font-size: 0.9rem; font-weight: 700;">
-        Complete Registration &rarr;
+      <button type="submit" id="btnSubmitRegister" class="btn btn-primary btn-block" style="padding: 0.75rem; font-size: 0.9rem; font-weight: 700;">
+        Continue / Send OTP &rarr;
       </button>
 
       <div style="text-align: center; margin-top: 1.25rem; font-size: 0.8rem; color: var(--slate-400);">
@@ -131,12 +131,15 @@
   <script>
     function selectRole(role) {
       document.getElementById('selectedRoleInput').value = role;
+      const bgGroup = document.getElementById('bloodGroupGroup');
       if (role === 'patient') {
         document.getElementById('btnRolePatient').classList.add('active');
         document.getElementById('btnRoleDonor').classList.remove('active');
+        if (bgGroup) bgGroup.style.display = 'none';
       } else {
         document.getElementById('btnRoleDonor').classList.add('active');
         document.getElementById('btnRolePatient').classList.remove('active');
+        if (bgGroup) bgGroup.style.display = 'block';
       }
     }
   </script>

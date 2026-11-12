@@ -25,8 +25,28 @@ export const RegisterPage: React.FC = () => {
         password,
         full_name: fullName,
         role,
-        blood_group: bloodGroup,
+        blood_group: role === 'donor' ? bloodGroup : undefined,
       });
+
+      // When OTP verification is required (standard real flow)
+      if (res.otp_required || res.success) {
+        sessionStorage.setItem('lifnex_pending_email', email);
+        sessionStorage.setItem('lifnex_pending_role', role);
+        sessionStorage.setItem('lifnex_pending_name', fullName);
+        if (role === 'donor') {
+          sessionStorage.setItem('lifnex_pending_blood_group', bloodGroup);
+        }
+        
+        navigate('/verify-otp', {
+          state: {
+            email,
+            role,
+            fullName,
+            bloodGroup: role === 'donor' ? bloodGroup : undefined,
+          }
+        });
+        return;
+      }
 
       const token = res.data?.session?.access_token || res.token || res.access_token;
       const user = res.data?.user || res.user;
@@ -163,18 +183,21 @@ export const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-group mb-0">
-            <label className="form-label text-xs font-semibold text-slate-300">Blood Group</label>
-            <select
-              className="form-control text-xs sm:text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
-              value={bloodGroup}
-              onChange={(e) => setBloodGroup(e.target.value)}
-            >
-              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
-                <option key={bg} value={bg}>{bg}</option>
-              ))}
-            </select>
-          </div>
+          {/* Blood group selector only shown for Donors */}
+          {role === 'donor' && (
+            <div className="form-group mb-0 animate-fadeIn">
+              <label className="form-label text-xs font-semibold text-slate-300">Blood Group</label>
+              <select
+                className="form-control text-xs sm:text-sm py-2 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                value={bloodGroup}
+                onChange={(e) => setBloodGroup(e.target.value)}
+              >
+                {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
+                  <option key={bg} value={bg}>{bg}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <button
             type="submit"
@@ -184,11 +207,11 @@ export const RegisterPage: React.FC = () => {
             {loading ? (
               <>
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                <span>Creating Account...</span>
+                <span>Sending Verification Code...</span>
               </>
             ) : (
               <>
-                <span>Complete Registration</span>
+                <span>Continue / Send OTP</span>
                 <ArrowRight size={15} />
               </>
             )}

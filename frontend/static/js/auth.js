@@ -46,6 +46,26 @@ const LifnexAuth = {
     return await res.json();
   },
 
+  // API Call: Verify OTP
+  verifyOtp: async function(email, otp) {
+    const res = await fetch("/api/v1/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp })
+    });
+    return await res.json();
+  },
+
+  // API Call: Resend OTP
+  resendOtp: async function(email) {
+    const res = await fetch("/api/v1/auth/resend-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    return await res.json();
+  },
+
   // API Call: Login User
   login: async function(email, password) {
     const res = await fetch("/api/v1/auth/login", {
@@ -250,7 +270,27 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const resp = await LifnexAuth.register(payload);
         if (resp.success) {
-          if (resp.data.session) {
+          if (resp.otp_required) {
+            Toast.show("Verification Code Dispatched", "A 6-digit verification OTP was sent to " + email, "info", 4000);
+            const userOtp = prompt("Enter the 6-digit verification OTP sent to " + email + ":");
+            if (userOtp) {
+              const vResp = await LifnexAuth.verifyOtp(email, userOtp.trim());
+              if (vResp.success) {
+                LifnexAuth.setSession(vResp.data.session.access_token, vResp.data.user, true);
+                Toast.show("Email Verified!", "Account activated successfully.", "success", 2000);
+                setTimeout(() => {
+                  if (role === "donor") window.location.href = "donor-dashboard.html";
+                  else window.location.href = "patient-dashboard.html";
+                }, 1000);
+                return;
+              } else {
+                Toast.show("Verification Error", vResp.error?.message || "Invalid or expired OTP.", "error");
+                return;
+              }
+            }
+            return;
+          }
+          if (resp.data && resp.data.session) {
             LifnexAuth.setSession(resp.data.session.access_token, resp.data.user, true);
           }
           Toast.show("Registration Complete!", "Your account has been initialized.", "success", 2000);

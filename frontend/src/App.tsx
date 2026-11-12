@@ -11,6 +11,7 @@ import { HospitalsPage } from './pages/public/HospitalsPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { VerifyOtpPage } from './pages/auth/VerifyOtpPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { PatientDashboard } from './pages/dashboards/PatientDashboard';
 import { DonorDashboard } from './pages/dashboards/DonorDashboard';
@@ -31,6 +32,7 @@ export const App: React.FC = () => {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-otp" element={<VerifyOtpPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/dashboard/patient" element={<PatientDashboard />} />
             <Route path="/dashboard/donor" element={<DonorDashboard />} />

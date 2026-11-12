@@ -47,3 +47,13 @@ class UserProfileUpdate(BaseModel):
     phone_number: Optional[str] = None
     city: Optional[str] = None
 
+class VerifyOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(..., min_length=6, max_length=8)
+    type: Optional[str] = "signup"
+
+class ResendOtpRequest(BaseModel):
+    email: EmailStr
+    type: Optional[str] = "signup"
+
+
