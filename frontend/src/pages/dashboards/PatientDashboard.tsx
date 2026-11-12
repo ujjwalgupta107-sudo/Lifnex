@@ -590,114 +590,74 @@ export const PatientDashboard: React.FC = () => {
       )}
 
       {/* ======================================================== */}
-      {/* TAB 2 CONTENT: NEW EMERGENCY REQUEST FORM (2-COLUMN GRID) */}
+      {/* TAB 2 CONTENT: NEW EMERGENCY REQUEST FORM (CLEAN & MODERN) */}
       {/* ======================================================== */}
       {activeTab === 'create' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start max-w-6xl mx-auto">
           
-          {/* Left Column: Requisition Form (8 cols on lg) */}
-          <div className="lg:col-span-8">
+          {/* Left Column: Requisition Form (7 cols on lg) */}
+          <div className="lg:col-span-7">
             <div 
-              className="card"
               style={{
                 padding: '2rem',
-                background: 'rgba(15, 23, 42, 0.92)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '18px',
-                boxShadow: '0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 46, 84, 0.08)',
+                background: 'rgba(11, 17, 32, 0.95)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 46, 84, 0.06)',
                 backdropFilter: 'blur(20px)',
               }}
             >
               {/* Form Card Header */}
-              <div className="mb-6 pb-4 border-b border-white/10 flex items-start justify-between">
+              <div className="mb-6 pb-4 border-b border-white/10 flex items-center justify-between">
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#FF2E54]/15 text-[#FF2E54] border border-[#FF2E54]/30 mb-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse"></span>
-                    Instant Geospatial Broadcast
-                  </div>
-                  <h2 className="text-xl font-bold text-white tracking-tight">Submit Emergency Blood Requisition</h2>
-                  <p className="text-xs text-slate-400 mt-1">Coordinates and blood specifications will immediately broadcast to voluntary donors</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                    Emergency Blood Requisition
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Broadcast critical blood requirements to nearby voluntary donors
+                  </p>
                 </div>
                 <button 
                   type="button" 
                   onClick={() => setActiveTab('requests')}
-                  className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/5"
-                  title="Return to My Requests"
+                  className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
+                  title="Close and return to My Requests"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Quick Preset Buttons */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="text-[#FF2E54]">⚡</span>
-                    Quick-Fill Requisition Presets
-                  </span>
-                  <span className="text-[10px] text-slate-400">Click to auto-populate form</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => applyPreset('O-', 2, 'critical', 'Urgent cardiac trauma bypass procedure in OT-3.')}
-                    className={`p-3 rounded-xl text-left border transition-all cursor-pointer ${
-                      bloodGroup === 'O-' && units === 2 && urgency === 'critical'
-                        ? 'bg-[#FF2E54]/15 border-[#FF2E54] shadow-[0_0_12px_rgba(255,46,84,0.25)]'
-                        : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
-                    }`}
-                  >
-                    <div className="text-xs font-bold text-white flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">🚨 Trauma OT</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-950/80 text-red-300 border border-red-500/30 font-bold">2U</span>
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
-                      <span>Group: <strong className="text-white">O-</strong></span>
-                      <span className="text-red-400 font-semibold text-[10px] uppercase">Critical</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => applyPreset('A+', 2, 'critical', 'Accident resuscitation priority in Emergency ICU.')}
-                    className={`p-3 rounded-xl text-left border transition-all cursor-pointer ${
-                      bloodGroup === 'A+' && units === 2 && urgency === 'critical'
-                        ? 'bg-[#FF2E54]/15 border-[#FF2E54] shadow-[0_0_12px_rgba(255,46,84,0.25)]'
-                        : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
-                    }`}
-                  >
-                    <div className="text-xs font-bold text-white flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">⚡ Accident ICU</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-950/80 text-red-300 border border-red-500/30 font-bold">2U</span>
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
-                      <span>Group: <strong className="text-white">A+</strong></span>
-                      <span className="text-red-400 font-semibold text-[10px] uppercase">Critical</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => applyPreset('B+', 1, 'urgent', 'Post-operative obstetric support transfusion.')}
-                    className={`p-3 rounded-xl text-left border transition-all cursor-pointer ${
-                      bloodGroup === 'B+' && units === 1 && urgency === 'urgent'
-                        ? 'bg-amber-500/15 border-amber-500/70 shadow-[0_0_12px_rgba(245,158,11,0.25)]'
-                        : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
-                    }`}
-                  >
-                    <div className="text-xs font-bold text-white flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">🩺 Maternity</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-500/30 font-bold">1U</span>
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
-                      <span>Group: <strong className="text-white">B+</strong></span>
-                      <span className="text-amber-400 font-semibold text-[10px] uppercase">Urgent</span>
-                    </div>
-                  </button>
+              {/* Minimal Clean Presets */}
+              <div className="mb-4">
+                <span className="text-[11px] font-semibold text-slate-400 block mb-1.5 uppercase tracking-wider">
+                  Quick Presets
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: 'Trauma OT', group: 'O-', u: 2, urg: 'critical', note: 'Urgent cardiac trauma bypass procedure in OT-3.' },
+                    { label: 'Accident ICU', group: 'A+', u: 2, urg: 'critical', note: 'Accident resuscitation priority in Emergency ICU.' },
+                    { label: 'Maternity', group: 'B+', u: 1, urg: 'urgent', note: 'Post-operative obstetric support transfusion.' }
+                  ].map(p => {
+                    const isSelected = bloodGroup === p.group && units === p.u && urgency === p.urg;
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => applyPreset(p.group, p.u, p.urg as any, p.note)}
+                        className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-all ${
+                          isSelected
+                            ? 'bg-[#FF2E54]/20 border-[#FF2E54] text-white shadow-sm'
+                            : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                        }`}
+                      >
+                        {p.label} <span className="text-[#FF2E54] font-bold">({p.group} • {p.u}U)</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              <form onSubmit={handleCreateRequest} className="space-y-5">
+              <form onSubmit={handleCreateRequest} className="space-y-4">
                 {/* Blood Group and Units Required */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="form-group mb-0">
@@ -705,22 +665,22 @@ export const PatientDashboard: React.FC = () => {
                       Blood Group Required <span className="text-[#FF2E54]">*</span>
                     </label>
                     <select 
-                      className="form-control text-sm py-2.5 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                      className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                       value={bloodGroup} 
                       onChange={(e) => setBloodGroup(e.target.value)}
                     >
                       {['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'].map(g => (
-                        <option key={g} value={g}>{g} Compatibility</option>
+                        <option key={g} value={g}>{g}</option>
                       ))}
                     </select>
                   </div>
 
                   <div className="form-group mb-0">
                     <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                      Units Required (Whole Blood / RBC) <span className="text-[#FF2E54]">*</span>
+                      Units Required <span className="text-[#FF2E54]">*</span>
                     </label>
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center bg-slate-950/70 border border-white/10 rounded-lg overflow-hidden flex-1">
+                      <div className="flex items-center bg-slate-950/80 border border-white/10 rounded-lg overflow-hidden flex-1">
                         <button
                           type="button"
                           onClick={() => setUnits(Math.max(1, units - 1))}
@@ -728,15 +688,9 @@ export const PatientDashboard: React.FC = () => {
                         >
                           -
                         </button>
-                        <input 
-                          type="number" 
-                          min={1} 
-                          max={8} 
-                          className="w-full text-center bg-transparent border-0 text-white text-sm font-bold focus:outline-none py-2" 
-                          value={units} 
-                          onChange={(e) => setUnits(Math.max(1, Math.min(8, Number(e.target.value) || 1)))} 
-                          required 
-                        />
+                        <span className="w-full text-center text-white text-sm font-bold py-2 select-none">
+                          {units} {units === 1 ? 'Unit' : 'Units'}
+                        </span>
                         <button
                           type="button"
                           onClick={() => setUnits(Math.min(8, units + 1))}
@@ -753,8 +707,8 @@ export const PatientDashboard: React.FC = () => {
                             onClick={() => setUnits(u)}
                             className={`text-xs px-2.5 py-2 rounded-lg border font-bold transition-all ${
                               units === u 
-                                ? 'bg-[#FF2E54] border-[#FF2E54] text-white shadow-md' 
-                                : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                ? 'bg-[#FF2E54] border-[#FF2E54] text-white shadow-sm' 
+                                : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
                             }`}
                           >
                             {u}U
@@ -768,13 +722,13 @@ export const PatientDashboard: React.FC = () => {
                 {/* Urgency Classification */}
                 <div className="form-group mb-0">
                   <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                    Urgency Classification <span className="text-[#FF2E54]">*</span>
+                    Urgency Level <span className="text-[#FF2E54]">*</span>
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 gap-2.5">
                     {[
-                      { id: 'critical', label: 'Critical', desc: 'Immediate surgery / Trauma', dot: '#FF2E54', border: 'border-[#FF2E54]', bg: 'bg-[#FF2E54]/15' },
-                      { id: 'urgent', label: 'Urgent', desc: 'Within 2–4 hours window', dot: '#F59E0B', border: 'border-amber-500', bg: 'bg-amber-500/15' },
-                      { id: 'routine', label: 'Routine', desc: 'Scheduled / Next 24 hours', dot: '#38BDF8', border: 'border-sky-500', bg: 'bg-sky-500/15' },
+                      { id: 'critical', label: 'Critical', desc: 'Immediate surgery', dot: '#FF2E54', activeClass: 'bg-[#FF2E54]/20 border-[#FF2E54] text-white' },
+                      { id: 'urgent', label: 'Urgent', desc: 'Within 2–4 hours', dot: '#F59E0B', activeClass: 'bg-amber-500/20 border-amber-500 text-white' },
+                      { id: 'routine', label: 'Routine', desc: 'Scheduled / 24h', dot: '#38BDF8', activeClass: 'bg-sky-500/20 border-sky-500 text-white' },
                     ].map(item => {
                       const isSelected = urgency === item.id;
                       return (
@@ -782,22 +736,17 @@ export const PatientDashboard: React.FC = () => {
                           key={item.id}
                           type="button"
                           onClick={() => setUrgency(item.id as any)}
-                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                          className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                             isSelected 
-                              ? `${item.bg} ${item.border} shadow-md` 
-                              : 'bg-white/5 border-white/10 hover:border-white/20'
+                              ? `${item.activeClass} shadow-sm` 
+                              : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white'
                           }`}
                         >
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="flex items-center gap-2 text-xs font-bold text-white">
-                              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.dot, display: 'inline-block' }}></span>
-                              {item.label}
-                            </span>
-                            {isSelected && (
-                              <span className="text-[10px] text-white font-bold bg-white/20 px-1.5 py-0.5 rounded-full">Active</span>
-                            )}
+                          <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: item.dot, display: 'inline-block' }}></span>
+                            <span className="text-xs font-bold">{item.label}</span>
                           </div>
-                          <span className="text-[11px] text-slate-400 block">{item.desc}</span>
+                          <span className="text-[10px] opacity-75 block">{item.desc}</span>
                         </button>
                       );
                     })}
@@ -810,12 +759,12 @@ export const PatientDashboard: React.FC = () => {
                     <label className="text-xs font-semibold text-slate-300">
                       Receiving Hospital Facility
                     </label>
-                    <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-semibold">
+                    <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
                       <Check size={12} /> Accredited Center
                     </span>
                   </div>
                   <select 
-                    className="form-control text-sm py-2.5 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                    className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
                     value={hospitalId} 
                     onChange={(e) => setHospitalId(e.target.value)}
                   >
@@ -839,11 +788,11 @@ export const PatientDashboard: React.FC = () => {
                     Clinical Notes & Surgical Bed <span className="text-[#FF2E54]">*</span>
                   </label>
                   <textarea 
-                    className="form-control text-sm py-2.5 px-3 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
-                    rows={3} 
+                    className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
+                    rows={2} 
                     value={notes} 
                     onChange={(e) => setNotes(e.target.value)} 
-                    placeholder="Include ward number, attending physician name, and patient clinical urgency..."
+                    placeholder="Ward number, surgical procedure, or attending clinician notes..."
                     required 
                   />
                 </div>
@@ -852,23 +801,23 @@ export const PatientDashboard: React.FC = () => {
                 <div className="pt-2 flex items-center gap-3">
                   <button 
                     type="submit" 
-                    className="btn btn-primary flex-1 py-3 font-bold text-sm shadow-xl flex items-center justify-center gap-2 rounded-xl"
+                    className="btn btn-primary flex-1 py-2.5 font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 rounded-xl"
                     style={{
                       background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-                      boxShadow: '0 4px 18px rgba(255, 46, 84, 0.45)',
+                      boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)',
                       cursor: submitting ? 'not-allowed' : 'pointer',
                     }}
                     disabled={submitting}
                   >
                     {submitting ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        <span>Broadcasting Requisition to Mesh...</span>
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span>Broadcasting to Mesh...</span>
                       </>
                     ) : (
                       <>
                         <span>Dispatch Emergency Broadcast</span>
-                        <Send size={15} />
+                        <Send size={14} />
                       </>
                     )}
                   </button>
@@ -876,7 +825,7 @@ export const PatientDashboard: React.FC = () => {
                   <button 
                     type="button" 
                     onClick={() => setActiveTab('requests')}
-                    className="btn btn-secondary py-3 px-5 text-xs font-semibold rounded-xl"
+                    className="btn btn-secondary py-2.5 px-4 text-xs font-semibold rounded-xl"
                   >
                     Cancel
                   </button>
@@ -885,49 +834,48 @@ export const PatientDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Live Dispatch Intelligence & Hospital Status (4 cols on lg) */}
-          <div className="lg:col-span-4 space-y-4">
-            {/* Live Triage Summary Card */}
+          {/* Right Column: Clean Live Summary (5 cols on lg) */}
+          <div className="lg:col-span-5">
             <div 
-              className="card"
               style={{
-                padding: '1.5rem',
-                background: 'rgba(15, 23, 42, 0.9)',
+                padding: '1.75rem',
+                background: 'rgba(11, 17, 32, 0.95)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-                boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(20px)',
               }}
             >
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
                 <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                   <Radio size={14} className="text-[#FF2E54] animate-pulse" />
-                  Dispatch Radar
+                  Live Dispatch Preview
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                  LIVE MESH
+                  ACTIVE
                 </span>
               </div>
 
               {/* Dynamic Compatibility Highlight */}
-              <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 space-y-2 mb-3">
+              <div className="p-3 rounded-xl bg-slate-950/80 border border-white/5 space-y-2 mb-4">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Target Group:</span>
-                  <span className="font-extrabold text-[#FF2E54] text-sm">{bloodGroup}</span>
+                  <span className="text-slate-400">Target Blood Group</span>
+                  <span className="font-extrabold text-[#FF2E54] text-base">{bloodGroup}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Requisition Units:</span>
-                  <span className="font-bold text-white">{units} Whole Blood ({units * 450} ml)</span>
+                  <span className="text-slate-400">Requisition Volume</span>
+                  <span className="font-bold text-white">{units} {units === 1 ? 'Unit' : 'Units'} ({units * 450} ml)</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Urgency Level:</span>
+                  <span className="text-slate-400">Priority Window</span>
                   <span className="font-bold capitalize" style={{ color: urgency === 'critical' ? '#FF2E54' : urgency === 'urgent' ? '#F59E0B' : '#38BDF8' }}>
-                    {urgency} Priority
+                    {urgency}
                   </span>
                 </div>
               </div>
 
               {/* Network Readiness Stats */}
-              <div className="space-y-2 text-xs">
+              <div className="space-y-2 text-xs mb-4">
                 <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
                   <span className="text-slate-400 flex items-center gap-1.5">
                     <User size={13} className="text-slate-400" />
@@ -939,7 +887,7 @@ export const PatientDashboard: React.FC = () => {
                 <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
                   <span className="text-slate-400 flex items-center gap-1.5">
                     <Clock size={13} className="text-slate-400" />
-                    Estimated Mesh ETA
+                    Estimated Arrival Window
                   </span>
                   <strong className="text-[#38BDF8] font-bold">15–25 mins</strong>
                 </div>
@@ -947,14 +895,14 @@ export const PatientDashboard: React.FC = () => {
                 <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
                   <span className="text-slate-400 flex items-center gap-1.5">
                     <Building2 size={13} className="text-slate-400" />
-                    Receiving Facility
+                    Receiving Hospital
                   </span>
-                  <strong className="text-white truncate max-w-[120px]">City Care Hospital</strong>
+                  <strong className="text-white truncate max-w-[140px]">City Care Hospital</strong>
                 </div>
               </div>
 
               {/* Protocol Security Badge */}
-              <div className="mt-4 pt-3 border-t border-white/10 text-[11px] text-slate-400 space-y-1.5">
+              <div className="pt-3 border-t border-white/10 text-[11px] text-slate-400 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                   <Check size={12} /> NBTC Blood Safety Guidelines Enforced
                 </div>
