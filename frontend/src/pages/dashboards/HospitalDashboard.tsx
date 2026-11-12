@@ -840,57 +840,53 @@ export const HospitalDashboard: React.FC = () => {
                     return (
                       <div 
                         key={group}
-                        className="p-4 rounded-xl border relative transition-all hover:border-white/20"
+                        className="p-3.5 rounded-xl border relative transition-all hover:border-white/20"
                         style={{
-                          background: isCritical ? 'rgba(239, 68, 68, 0.08)' : 'rgba(15, 23, 42, 0.95)',
-                          borderColor: isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.1)',
-                          boxShadow: isCritical ? '0 0 15px rgba(239, 68, 68, 0.12)' : 'none',
+                          background: isCritical ? 'rgba(239, 68, 68, 0.06)' : 'rgba(15, 23, 42, 0.85)',
+                          borderColor: isCritical ? 'rgba(239, 68, 68, 0.35)' : 'rgba(255, 255, 255, 0.08)',
+                          boxShadow: isCritical ? '0 0 15px rgba(239, 68, 68, 0.1)' : 'none',
                         }}
                       >
-                        <div className="flex justify-between items-center mb-3">
-                          <div className="flex items-center gap-2">
-                            <span 
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '36px',
-                                height: '28px',
-                                borderRadius: '8px',
-                                fontWeight: 900,
-                                fontSize: '0.95rem',
-                                color: '#FFFFFF',
-                                background: isCritical ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'rgba(255, 255, 255, 0.1)',
-                                border: isCritical ? '1px solid #FF2E54' : '1px solid rgba(255, 255, 255, 0.15)',
-                              }}
-                            >
-                              {group}
-                            </span>
-                            <span className="text-xs font-semibold text-slate-300">Blood Bank</span>
-                          </div>
+                        <div className="flex justify-between items-center mb-2.5">
                           <span 
                             style={{
-                              fontSize: '0.68rem',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '3px 10px',
+                              borderRadius: '6px',
+                              fontWeight: 900,
+                              fontSize: '0.9rem',
+                              color: '#FFFFFF',
+                              background: isCritical ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'rgba(255, 255, 255, 0.1)',
+                              border: isCritical ? '1px solid #FF2E54' : '1px solid rgba(255, 255, 255, 0.15)',
+                            }}
+                          >
+                            {group}
+                          </span>
+                          <span 
+                            style={{
+                              fontSize: '0.65rem',
                               fontWeight: 700,
-                              padding: '0.2rem 0.6rem',
+                              padding: '0.15rem 0.5rem',
                               borderRadius: '9999px',
-                              background: isCritical ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.15)',
+                              background: isCritical ? 'rgba(239, 68, 68, 0.18)' : 'rgba(16, 185, 129, 0.15)',
                               color: isCritical ? '#F87171' : '#34D399',
-                              border: `1px solid ${isCritical ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.3)'}`,
+                              border: `1px solid ${isCritical ? 'rgba(239, 68, 68, 0.35)' : 'rgba(16, 185, 129, 0.25)'}`,
                             }}
                           >
                             {isCritical ? 'LOW RESERVE' : 'ADEQUATE'}
                           </span>
                         </div>
 
-                        <div className="my-3">
-                          <div className="text-3xl font-black text-white flex items-baseline gap-1.5">
+                        <div className="my-2.5">
+                          <div className="text-2xl font-black text-white flex items-baseline gap-1.5">
                             <span>{qty}</span>
                             <span className="text-xs font-normal text-slate-400">Units ({qty * 450} ml)</span>
                           </div>
                           
                           {/* Mini visual reserve meter */}
-                          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2">
+                          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1.5">
                             <div 
                               className="h-full rounded-full transition-all duration-300"
                               style={{ 
@@ -901,22 +897,28 @@ export const HospitalDashboard: React.FC = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-                          <button
-                            type="button"
-                            onClick={() => handleInventoryChange(group, 1)}
-                            className="btn btn-secondary flex-1 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-emerald-500/50 hover:text-emerald-300 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                          >
-                            <span>+ Add Unit</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleInventoryChange(group, -1)}
-                            className="btn btn-secondary flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 border border-white/10 hover:border-red-500/50 hover:text-red-300 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                            disabled={qty <= 0}
-                          >
-                            <span>- Dispense</span>
-                          </button>
+                        <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs">
+                          <span className="text-slate-400 text-[11px]">Adjust Stock:</span>
+                          <div className="flex items-center gap-1.5 bg-slate-950/80 border border-white/10 rounded-lg p-0.5">
+                            <button
+                              type="button"
+                              onClick={() => handleInventoryChange(group, -1)}
+                              className="w-6 h-6 rounded text-slate-400 hover:text-white hover:bg-white/10 flex items-center justify-center font-bold text-xs transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                              disabled={qty <= 0}
+                              title="Dispense 1 Unit"
+                            >
+                              -
+                            </button>
+                            <span className="w-5 text-center font-bold text-white text-xs">{qty}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleInventoryChange(group, 1)}
+                              className="w-6 h-6 rounded text-slate-400 hover:text-white hover:bg-white/10 flex items-center justify-center font-bold text-xs transition-colors cursor-pointer"
+                              title="Add 1 Unit"
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1022,9 +1024,9 @@ export const HospitalDashboard: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="sm:text-right shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5 flex justify-end">
+                      <div className="shrink-0 w-full sm:w-auto pt-2 sm:pt-0 flex justify-end">
                         {hs.status === 'fulfilled' ? (
-                          <span className="px-3 py-1.5 rounded-xl bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5">
+                          <span className="px-3 py-1.5 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5">
                             <Check size={14} />
                             INTAKE CONFIRMED
                           </span>
@@ -1032,8 +1034,13 @@ export const HospitalDashboard: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleConfirmHandshake(hs.id)}
-                            className="btn btn-primary text-xs py-2.5 px-4 rounded-xl font-bold flex items-center gap-1.5 shadow-md cursor-pointer w-full sm:w-auto justify-center"
-                            style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.35)' }}
+                            className="text-xs py-2 px-4 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer border hover:bg-emerald-500/25"
+                            style={{ 
+                              background: 'rgba(16, 185, 129, 0.15)', 
+                              borderColor: 'rgba(16, 185, 129, 0.4)',
+                              color: '#34D399',
+                              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)' 
+                            }}
                           >
                             <Check size={14} />
                             <span>Confirm Intake</span>
@@ -1047,130 +1054,110 @@ export const HospitalDashboard: React.FC = () => {
             </div>
           )}
 
-          {/* ======================================================== */}
-          {/* TAB 6: CLINICAL ACCREDITATION & VERIFICATION             */}
-          {/* ======================================================== */}
+          {/* TAB 6: CLINICAL ACCREDITATION & VERIFICATION (UNIFIED & CLEAN) */}
           {activeTab === 'accreditation' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Left Column: Official License Records */}
-              <div className="lg:col-span-7">
-                <div 
-                  className="card"
-                  style={{
-                    padding: '2rem',
-                    background: 'rgba(15, 23, 42, 0.88)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '18px',
-                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                    <ShieldCheck size={28} className="text-[#10B981]" />
-                    <div>
-                      <h2 className="text-lg font-bold text-white tracking-tight">National Accreditation & Certification</h2>
-                      <p className="text-xs text-slate-400">Verified by National Blood Transfusion Council (NBTC)</p>
-                    </div>
+            <div 
+              style={{
+                padding: '2rem',
+                background: 'rgba(11, 17, 32, 0.95)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck size={26} className="text-[#10B981]" />
+                  <div>
+                    <h2 className="text-lg font-bold text-white tracking-tight">National Accreditation & Certification</h2>
+                    <p className="text-xs text-slate-400 mt-0.5">Verified by National Blood Transfusion Council (NBTC)</p>
+                  </div>
+                </div>
+                <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
+                  ACCREDITED FACILITY
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                {/* Left 7 cols: License Details */}
+                <div className="lg:col-span-7 space-y-3 text-xs sm:text-sm">
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 flex justify-between items-center">
+                    <span className="text-slate-400">Hospital Facility License</span>
+                    <span className="font-mono text-white font-bold text-xs">HOSP-DELHI-2026-001</span>
                   </div>
 
-                  <div className="space-y-3.5 text-xs sm:text-sm">
-                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
-                      <span className="text-slate-400">Hospital Facility License:</span>
-                      <span className="font-mono text-white font-bold text-xs">HOSP-DELHI-2026-001</span>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
-                      <span className="text-slate-400">Clinical Verification Level:</span>
-                      <span className="text-[#10B981] font-bold text-xs flex items-center gap-1">
-                        <Check size={13} /> Level-1 Trauma & Critical Care
-                      </span>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
-                      <span className="text-slate-400">Blood Bank License Registration:</span>
-                      <span className="font-mono text-white text-xs">DL-BB-2024-9844</span>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
-                      <span className="text-slate-400">Cryo-Storage Certification:</span>
-                      <span className="text-[#38BDF8] font-bold text-xs">Compliant (ISO 15189)</span>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 flex justify-between items-center">
-                      <span className="text-slate-400">Chief Medical Officer:</span>
-                      <span className="text-white font-semibold text-xs">Dr. Arthur Vance, MD, FRCEM</span>
-                    </div>
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 flex justify-between items-center">
+                    <span className="text-slate-400">Clinical Verification Level</span>
+                    <span className="text-[#10B981] font-bold text-xs flex items-center gap-1">
+                      <Check size={13} /> Level-1 Trauma & Critical Care
+                    </span>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-white/10">
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 flex justify-between items-center">
+                    <span className="text-slate-400">Blood Bank License</span>
+                    <span className="font-mono text-white text-xs">DL-BB-2024-9844</span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 flex justify-between items-center">
+                    <span className="text-slate-400">Cryo-Storage Certification</span>
+                    <span className="text-[#38BDF8] font-bold text-xs">Compliant (ISO 15189)</span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 flex justify-between items-center">
+                    <span className="text-slate-400">Chief Medical Officer</span>
+                    <span className="text-white font-medium text-xs">Dr. Arthur Vance, MD, FRCEM</span>
+                  </div>
+
+                  <div className="pt-2">
                     <button
                       type="button"
                       onClick={() => {
                         setFeedback({ type: 'success', message: 'Hospital accreditation certificate downloaded.' });
                         setTimeout(() => setFeedback(null), 3000);
                       }}
-                      className="btn btn-secondary text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 font-semibold border border-white/10 hover:border-emerald-500/40 text-white cursor-pointer"
+                      className="btn btn-secondary text-xs py-2 px-4 rounded-xl flex items-center gap-2 font-semibold border border-white/10 hover:border-emerald-500/40 text-white cursor-pointer"
                     >
-                      <ShieldCheck size={15} className="text-emerald-400" />
+                      <ShieldCheck size={14} className="text-emerald-400" />
                       <span>Download Verified Certificate (PDF)</span>
                     </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Right Column: Accreditation Seal Card */}
-              <div className="lg:col-span-5 space-y-4">
-                <div 
-                  className="card"
-                  style={{
-                    padding: '1.75rem',
-                    background: 'rgba(15, 23, 42, 0.9)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '18px',
-                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
-                    <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <Building2 size={15} className="text-[#FF2E54]" />
-                      Accreditation Status
-                    </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                      ACCREDITED
-                    </span>
-                  </div>
-
-                  <div className="text-center py-4">
+                {/* Right 5 cols: Seal & Status */}
+                <div className="lg:col-span-5 p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-4">
+                  <div className="text-center py-2">
                     <div 
                       style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '16px',
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '14px',
                         background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        margin: '0 auto 1rem',
-                        boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
+                        margin: '0 auto 0.75rem',
+                        boxShadow: '0 0 16px rgba(16, 185, 129, 0.35)',
                         color: '#FFFFFF',
                       }}
                     >
-                      <ShieldCheck size={32} />
+                      <ShieldCheck size={26} />
                     </div>
-                    <h3 className="text-base font-bold text-white">City Care Super Specialty</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Level-1 Trauma & Emergency Surgery Center</p>
+                    <h3 className="text-sm font-bold text-white">City Care Super Specialty</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Level-1 Trauma & Emergency Surgery Center</p>
                   </div>
 
                   <div className="space-y-2 text-xs pt-2 border-t border-white/5">
                     <div className="flex justify-between p-2 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Accreditation Validity:</span>
+                      <span className="text-slate-400">Accreditation Validity</span>
                       <strong className="text-white">Through Dec 2027</strong>
                     </div>
                     <div className="flex justify-between p-2 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Cryo-Storage Units:</span>
+                      <span className="text-slate-400">Cryo-Storage Units</span>
                       <strong className="text-emerald-400 font-bold">8 Dedicated Banks</strong>
                     </div>
                     <div className="flex justify-between p-2 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Mesh Dispatch Protocol:</span>
+                      <span className="text-slate-400">Mesh Dispatch Protocol</span>
                       <strong className="text-[#38BDF8] font-bold">Priority Hub #1</strong>
                     </div>
                   </div>

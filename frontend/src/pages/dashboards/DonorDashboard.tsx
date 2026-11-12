@@ -669,204 +669,69 @@ export const DonorDashboard: React.FC = () => {
           {/* TAB 4: DONATION HISTORY */}
           {/* TAB 4: DONATION HISTORY */}
           {activeTab === 'history' && (
-            <div className="space-y-6">
-              {/* Top Impact Metrics Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div 
-                  className="p-4 rounded-xl flex items-center gap-3.5"
-                  style={{
-                    background: 'rgba(15, 23, 42, 0.88)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#FF2E54]/15 border border-[#FF2E54]/30 flex items-center justify-center text-[#FF2E54] shrink-0">
-                    <Droplets size={22} />
-                  </div>
-                  <div>
-                    <div className="text-xl font-extrabold text-white">1,350 ml</div>
-                    <div className="text-[11px] text-slate-400 font-medium">Total Blood Donated</div>
-                  </div>
+            <div 
+              style={{
+                padding: '2rem',
+                background: 'rgba(11, 17, 32, 0.95)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-white tracking-tight">Verified Donation Record</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Officially logged donations verified by participating hospitals</p>
                 </div>
-
-                <div 
-                  className="p-4 rounded-xl flex items-center gap-3.5"
-                  style={{
-                    background: 'rgba(15, 23, 42, 0.88)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                    <Heart size={22} />
-                  </div>
-                  <div>
-                    <div className="text-xl font-extrabold text-white">~9 Patients</div>
-                    <div className="text-[11px] text-slate-400 font-medium">Estimated Lives Saved</div>
-                  </div>
-                </div>
-
-                <div 
-                  className="p-4 rounded-xl flex items-center gap-3.5"
-                  style={{
-                    background: 'rgba(15, 23, 42, 0.88)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <div className="w-11 h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
-                    <ShieldCheck size={22} />
-                  </div>
-                  <div>
-                    <div className="text-xl font-extrabold text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Eligible Today
-                    </div>
-                    <div className="text-[11px] text-slate-400 font-medium">Next Cooldown: 0 Days</div>
-                  </div>
-                </div>
+                <span className="text-emerald-400 font-bold text-sm">3 Logged</span>
               </div>
 
-              {/* Main Verified Donation Record Card */}
-              <div 
-                className="card"
-                style={{
-                  padding: '1.75rem',
-                  background: 'rgba(15, 23, 42, 0.88)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '18px',
-                  boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-                }}
-              >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-4 border-b border-white/10">
-                  <div>
-                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                      <Droplets className="text-[#FF2E54]" size={18} />
-                      <span>Verified Clinical Donation Record</span>
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">Officially logged transfusions verified by accredited hospital blood banks</p>
-                  </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    3 Verified Transfusions
-                  </span>
-                </div>
-
-                {/* Clean Donation Record Cards */}
-                <div className="space-y-3.5">
-                  {[
-                    {
-                      id: 'don-1',
-                      title: 'Whole Blood Donation',
-                      volume: '1 Unit • 450 ml',
-                      hospital: 'City Care Super Specialty Hospital',
-                      city: 'New Delhi',
-                      clinician: 'Dr. Arthur Vance (MD Transfusion)',
-                      date: '14 Oct 2026',
-                      certId: 'LFX-2026-WB450',
-                      meshType: 'Emergency Bypass Requisition',
-                      icon: Droplets,
-                      iconBg: 'bg-[#FF2E54]/15',
-                      iconBorder: 'border-[#FF2E54]/30',
-                      iconColor: 'text-[#FF2E54]',
-                    },
-                    {
-                      id: 'don-2',
-                      title: 'Packed Red Blood Cells (PRBC)',
-                      volume: '1 Unit • 300 ml',
-                      hospital: 'KGMU Trauma Center',
-                      city: 'Lucknow',
-                      clinician: 'Dr. R. K. Mishra (Head of Trauma)',
-                      date: '22 Jun 2026',
-                      certId: 'LFX-2026-RBC300',
-                      meshType: 'Trauma Mesh Alert Match',
-                      icon: Activity,
-                      iconBg: 'bg-cyan-500/15',
-                      iconBorder: 'border-cyan-500/30',
-                      iconColor: 'text-cyan-400',
-                    },
-                    {
-                      id: 'don-3',
-                      title: 'Platelet Apheresis Single Donor (SDP)',
-                      volume: '1 Therapeutic Dose',
-                      hospital: 'Metropolitan Regional Blood Bank',
-                      city: 'Gurugram',
-                      clinician: 'Dr. S. Nair (Oncology Division)',
-                      date: '05 Jan 2026',
-                      certId: 'LFX-2026-PLT250',
-                      meshType: 'Platelet Emergency Support',
-                      icon: Heart,
-                      iconBg: 'bg-purple-500/15',
-                      iconBorder: 'border-purple-500/30',
-                      iconColor: 'text-purple-400',
-                    },
-                  ].map((rec) => {
-                    const Icon = rec.icon;
-                    return (
-                      <div 
-                        key={rec.id}
-                        className="p-4 rounded-xl bg-slate-950/70 border border-white/10 hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              <div className="divide-y divide-white/5">
+                {[
+                  {
+                    id: 'don-1',
+                    title: 'Whole Blood Donation (1 Unit • 450 ml)',
+                    hospital: 'City Care Super Specialty Hospital • Verified by Dr. Arthur Vance',
+                    date: '14 Oct 2026',
+                  },
+                  {
+                    id: 'don-2',
+                    title: 'Packed Red Blood Cells (1 Unit)',
+                    hospital: 'KGMU Trauma Center • Emergency Dispatch Mesh',
+                    date: '22 Jun 2026',
+                  },
+                  {
+                    id: 'don-3',
+                    title: 'Platelet Apheresis Single Donor',
+                    hospital: 'Metropolitan Regional Blood Bank • Oncology Support',
+                    date: '05 Jan 2026',
+                  },
+                ].map((rec) => (
+                  <div key={rec.id} className="py-4 flex justify-between items-center gap-4">
+                    <div>
+                      <div className="text-sm font-bold text-white">{rec.title}</div>
+                      <div className="text-xs text-slate-400 mt-0.5">{rec.hospital}</div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span 
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.65rem',
+                          borderRadius: '9999px',
+                          border: '1px solid rgba(16, 185, 129, 0.35)',
+                          background: 'rgba(16, 185, 129, 0.1)',
+                          color: '#34D399',
+                          fontWeight: 700,
+                          display: 'inline-block',
+                        }}
                       >
-                        <div className="flex items-start gap-3.5">
-                          <div className={`w-11 h-11 rounded-xl ${rec.iconBg} border ${rec.iconBorder} flex items-center justify-center ${rec.iconColor} shrink-0 mt-0.5`}>
-                            <Icon size={20} />
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="font-bold text-white text-sm">{rec.title}</h3>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-mono font-bold">
-                                {rec.volume}
-                              </span>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1">
-                                <CheckCircle2 size={11} />
-                                VERIFIED
-                              </span>
-                            </div>
-                            
-                            <div className="text-xs text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
-                              <span className="flex items-center gap-1 text-slate-300">
-                                <Building2 size={12} className="text-slate-400" />
-                                {rec.hospital} ({rec.city})
-                              </span>
-                              <span>•</span>
-                              <span className="text-slate-400">
-                                Verified by <strong className="text-slate-200">{rec.clinician}</strong>
-                              </span>
-                            </div>
-
-                            <div className="text-[11px] text-slate-500 font-mono">
-                              Cert ID: <span className="text-slate-400">{rec.certId}</span> • {rec.meshType}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="sm:text-right shrink-0 flex sm:flex-col justify-between items-center sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
-                          <div className="flex items-center gap-1.5 text-xs text-slate-300 font-semibold">
-                            <Calendar size={13} className="text-slate-400" />
-                            <span>{rec.date}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setFeedback({ type: 'success', message: `Downloaded digital verification certificate ${rec.certId}.` });
-                              setTimeout(() => setFeedback(null), 3000);
-                            }}
-                            className="text-[11px] font-bold text-[#FF2E54] hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-[#FF2E54]/20 border border-white/10 cursor-pointer"
-                          >
-                            <Download size={11} />
-                            <span>Certificate</span>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Clinical Safety & Verification Badge */}
-                <div className="mt-5 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
-                    <span>All records validated under National Blood Transfusion Council (NBTC) clinical protocols.</span>
+                        VERIFIED
+                      </span>
+                      <div className="text-xs text-slate-400 mt-1">{rec.date}</div>
+                    </div>
                   </div>
-                  <span className="text-[11px] text-slate-500 font-mono">Audit Hash: 0x8F4E...C91B</span>
-                </div>
+                ))}
               </div>
             </div>
           )}
@@ -930,225 +795,84 @@ export const DonorDashboard: React.FC = () => {
 
           {/* TAB 6: DONOR PROFILE */}
           {activeTab === 'profile' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Left Column: Editable Profile Form */}
-              <div className="lg:col-span-7">
-                <div 
-                  className="card"
-                  style={{
-                    padding: '2rem',
-                    background: 'rgba(15, 23, 42, 0.88)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '18px',
-                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  <div className="mb-6 pb-4 border-b border-white/10 flex items-start justify-between">
-                    <div>
-                      <h2 className="text-lg font-bold text-white mb-1 tracking-tight flex items-center gap-2">
-                        <User className="text-[#FF2E54]" size={18} />
-                        <span>Donor Profile Information</span>
-                      </h2>
-                      <p className="text-xs text-slate-400">Manage your contact information and verified blood group identity</p>
-                    </div>
-                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      ACTIVE PROFILE
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-4 text-sm">
-                    {/* Full Name */}
-                    <div>
-                      <label className="text-xs text-slate-300 font-semibold block mb-1.5">Full Name</label>
-                      <div className="relative flex items-center">
-                        <input 
-                          type="text" 
-                          className="form-control text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
-                          style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
-                          value={fullName} 
-                          onChange={(e) => setFullName(e.target.value)} 
-                          placeholder="e.g. Anita Desai"
-                        />
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
-                      </div>
-                    </div>
-
-                    {/* Phone Number */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1.5">
-                        <label className="text-xs text-slate-300 font-semibold">Phone Number</label>
-                        <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-semibold">
-                          <ShieldCheck size={12} /> Protected via Supabase RLS
-                        </span>
-                      </div>
-                      <div className="relative flex items-center">
-                        <input 
-                          type="text" 
-                          className="form-control text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
-                          style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
-                          value={phone} 
-                          onChange={(e) => setPhone(e.target.value)} 
-                          placeholder="+91 98765 43210"
-                        />
-                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
-                      </div>
-                    </div>
-
-                    {/* City / Operating Zone */}
-                    <div>
-                      <label className="text-xs text-slate-300 font-semibold block mb-1.5">City / Operating Zone</label>
-                      <div className="relative flex items-center">
-                        <input 
-                          type="text" 
-                          className="form-control text-sm py-2.5 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
-                          style={{ paddingLeft: '2.75rem', paddingRight: '0.85rem' }}
-                          value={city} 
-                          onChange={(e) => setCity(e.target.value)} 
-                          placeholder="e.g. New Delhi"
-                        />
-                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
-                      </div>
-                    </div>
-
-                    {/* Blood Group Verified Card */}
-                    <div>
-                      <label className="text-xs text-slate-300 font-semibold block mb-1.5">
-                        Clinical Blood Group (Locked)
-                      </label>
-                      <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/10 flex items-center gap-4">
-                        <div 
-                          style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '12px',
-                            background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#FFFFFF',
-                            fontWeight: 900,
-                            fontSize: '1.2rem',
-                            boxShadow: '0 4px 14px rgba(255, 46, 84, 0.4)',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {bloodGroup}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold text-white flex items-center gap-2">
-                            <span>Clinical Laboratory Certified</span>
-                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                              NBTC VERIFIED
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
-                            Locked for emergency transfusion safety. Contact clinical administrator to re-certify.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="pt-3">
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          setFeedback({ type: 'success', message: 'Donor profile information saved successfully.' });
-                          setTimeout(() => setFeedback(null), 3000);
-                        }} 
-                        className="btn btn-primary w-full py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                        style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)', boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)' }}
-                      >
-                        <Check size={16} />
-                        <span>Save Profile Changes</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            <div 
+              style={{
+                padding: '2rem',
+                background: 'rgba(11, 17, 32, 0.95)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              <div className="mb-6">
+                <h2 className="text-lg font-bold text-white tracking-tight">Donor Profile Information</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Manage your contact information and verified blood group identity</p>
               </div>
 
-              {/* Right Column: Digital Donor Accreditation Card */}
-              <div className="lg:col-span-5 space-y-4">
-                <div 
-                  className="card"
-                  style={{
-                    padding: '1.75rem',
-                    background: 'rgba(15, 23, 42, 0.9)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '18px',
-                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
-                    <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <ShieldCheck size={15} className="text-emerald-400" />
-                      Digital Donor ID
+              <div className="space-y-4 max-w-2xl">
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">Full Name</label>
+                  <input 
+                    type="text" 
+                    className="form-control text-sm py-2.5 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] w-full" 
+                    value={fullName} 
+                    onChange={(e) => setFullName(e.target.value)} 
+                    placeholder="Anita Desai (Demo Donor)"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <label className="text-xs text-slate-300 font-semibold">Phone Number</label>
+                    <span className="text-[11px] text-emerald-400 font-medium">(Protected via Supabase RLS)</span>
+                  </div>
+                  <input 
+                    type="text" 
+                    className="form-control text-sm py-2.5 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] w-full" 
+                    value={phone} 
+                    onChange={(e) => setPhone(e.target.value)} 
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">City / Operating Zone</label>
+                  <input 
+                    type="text" 
+                    className="form-control text-sm py-2.5 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] w-full" 
+                    value={city} 
+                    onChange={(e) => setCity(e.target.value)} 
+                    placeholder="New Delhi"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">
+                    Blood Group (Verified)
+                  </label>
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-2.5 py-1 rounded bg-[#FF2E54]/20 border border-[#FF2E54]/40 text-[#FF2E54] font-bold text-xs">
+                      {bloodGroup}
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                      VERIFIED
+                    <span className="text-xs text-slate-400">
+                      Clinical laboratory verified. Contact admin to re-certify.
                     </span>
                   </div>
+                </div>
 
-                  {/* Profile ID Card Presentation */}
-                  <div className="flex items-center gap-3.5 mb-4 p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div 
-                      style={{
-                        width: '46px',
-                        height: '46px',
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#FFFFFF',
-                        fontWeight: 900,
-                        fontSize: '1.25rem',
-                        boxShadow: '0 0 15px rgba(255, 46, 84, 0.4)',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {fullName.charAt(0) || 'A'}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-white truncate">{fullName}</div>
-                      <div className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                        <span>Level 3 Lifesaver • {city}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Quick Profile Summary */}
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Donor Serial ID:</span>
-                      <strong className="text-white font-mono font-bold">LFX-DN-9941</strong>
-                    </div>
-
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Blood Group Match:</span>
-                      <strong className="text-[#FF2E54] font-bold">{bloodGroup} (Universal Rh+)</strong>
-                    </div>
-
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Verified Transfusions:</span>
-                      <strong className="text-emerald-400 font-bold">3 Completed</strong>
-                    </div>
-
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                      <span className="text-slate-400">Active Geofence:</span>
-                      <strong className="text-[#38BDF8] font-bold">{travelRadius} km Radius</strong>
-                    </div>
-                  </div>
-
-                  {/* Privacy Protocol Notice */}
-                  <div className="mt-4 pt-3 border-t border-white/10 text-[11px] text-slate-400 space-y-1.5">
-                    <div className="flex items-start gap-1.5 text-slate-300">
-                      <ShieldCheck size={14} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Phone & exact location are protected under Supabase RLS encryption and only shared after handshake acceptance.</span>
-                    </div>
-                  </div>
+                <div className="pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setFeedback({ type: 'success', message: 'Donor profile information saved successfully.' });
+                      setTimeout(() => setFeedback(null), 3000);
+                    }} 
+                    className="btn btn-primary py-2.5 px-6 rounded-xl font-bold shadow-md cursor-pointer text-xs"
+                    style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)', boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)' }}
+                  >
+                    Save Profile Changes
+                  </button>
                 </div>
               </div>
             </div>
@@ -1156,136 +880,94 @@ export const DonorDashboard: React.FC = () => {
 
           {/* TAB 7: SETTINGS & GEOFENCE */}
           {activeTab === 'settings' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              <div className="lg:col-span-8">
-                <div 
-                  className="card"
-                  style={{
-                    padding: '2rem',
-                    background: 'rgba(15, 23, 42, 0.88)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '18px',
-                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  <div className="mb-6 pb-4 border-b border-white/10">
-                    <h2 className="text-lg font-bold text-white mb-1 tracking-tight flex items-center gap-2">
-                      <Sliders className="text-[#FF2E54]" size={18} />
-                      <span>Geofence & Alert Settings</span>
-                    </h2>
-                    <p className="text-xs text-slate-400">Configure dispatch travel radius and notification preferences</p>
-                  </div>
-
-                  <div className="space-y-6 text-sm">
-                    {/* Travel Radius */}
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                          <MapPin size={14} className="text-[#FF2E54]" />
-                          Emergency Dispatch Travel Radius
-                        </label>
-                        <span className="text-xs font-bold text-[#FF2E54] bg-[#FF2E54]/10 px-2.5 py-0.5 rounded-full border border-[#FF2E54]/30 font-mono">
-                          {travelRadius} km
-                        </span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min={5} 
-                        max={50} 
-                        step={1} 
-                        value={travelRadius} 
-                        onChange={(e) => setTravelRadius(Number(e.target.value))} 
-                        className="w-full accent-[#FF2E54] cursor-pointer" 
-                      />
-                      <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-                        <span>5 km (Local neighborhood)</span>
-                        <span>25 km (Citywide)</span>
-                        <span>50 km (Regional)</span>
-                      </div>
-                    </div>
-
-                    {/* Alert Toggles */}
-                    <div className="space-y-3 pt-3 border-t border-white/10">
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                        <div>
-                          <div className="text-xs font-semibold text-white">Emergency Push Alerts</div>
-                          <div className="text-[11px] text-slate-400">Receive instant audio chime on critical local matches</div>
-                        </div>
-                        <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
-                          <input 
-                            type="checkbox" 
-                            checked={pushAlerts} 
-                            onChange={() => setPushAlerts(!pushAlerts)} 
-                          />
-                          <span className="toggle-slider"></span>
-                        </label>
-                      </div>
-
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                        <div>
-                          <div className="text-xs font-semibold text-white">SMS Triage Notification</div>
-                          <div className="text-[11px] text-slate-400">Receive backup SMS dispatch route when app is backgrounded</div>
-                        </div>
-                        <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
-                          <input 
-                            type="checkbox" 
-                            checked={smsAlerts} 
-                            onChange={() => setSmsAlerts(!smsAlerts)} 
-                          />
-                          <span className="toggle-slider"></span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          setFeedback({ type: 'success', message: 'Geofence radius and dispatch preferences updated.' });
-                          setTimeout(() => setFeedback(null), 3000);
-                        }} 
-                        className="btn btn-primary text-xs py-3 px-6 rounded-xl font-bold shadow-md cursor-pointer"
-                        style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)', boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)' }}
-                      >
-                        Save Preferences
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            <div 
+              style={{
+                padding: '2rem',
+                background: 'rgba(11, 17, 32, 0.95)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              <div className="mb-6">
+                <h2 className="text-lg font-bold text-white tracking-tight">Geofence & Alert Settings</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Configure dispatch travel radius and notification preferences</p>
               </div>
 
-              {/* Settings Right Column: Mesh Coverage Info */}
-              <div className="lg:col-span-4 space-y-4">
-                <div 
-                  className="card"
-                  style={{
-                    padding: '1.75rem',
-                    background: 'rgba(15, 23, 42, 0.9)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '18px',
-                  }}
-                >
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <Radio size={14} className="text-[#FF2E54] animate-pulse" />
-                    Geofence Coverage
-                  </h3>
-                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 text-xs space-y-2 mb-3">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Current Zone:</span>
-                      <strong className="text-white">{city} Metro</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Radial Range:</span>
-                      <strong className="text-[#FF2E54] font-bold">{travelRadius} km</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Hospitals in Range:</span>
-                      <strong className="text-emerald-400 font-bold">14 Facilities</strong>
-                    </div>
+              <div className="space-y-5 max-w-2xl">
+                {/* Travel Radius Slider */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
+                      <MapPin size={14} className="text-[#FF2E54]" />
+                      <span>Emergency Dispatch Travel Radius</span>
+                    </label>
+                    <span className="text-xs font-bold text-[#FF2E54] font-mono">
+                      {travelRadius} km
+                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
-                    Requests outside your configured travel radius will not trigger audible notifications unless elevated to platform-wide mass casualty status.
-                  </p>
+                  <input 
+                    type="range" 
+                    min={5} 
+                    max={50} 
+                    step={1} 
+                    value={travelRadius} 
+                    onChange={(e) => setTravelRadius(Number(e.target.value))} 
+                    className="w-full accent-[#FF2E54] cursor-pointer" 
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                    <span>5 km (Local neighborhood)</span>
+                    <span>25 km (Citywide)</span>
+                    <span>50 km (Regional)</span>
+                  </div>
+                </div>
+
+                {/* Alert Toggles */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950/70 border border-white/5">
+                    <div>
+                      <div className="text-xs font-semibold text-white">Emergency Push Alerts</div>
+                      <div className="text-[11px] text-slate-400">Receive instant audio chime on critical local matches</div>
+                    </div>
+                    <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={pushAlerts} 
+                        onChange={() => setPushAlerts(!pushAlerts)} 
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950/70 border border-white/5">
+                    <div>
+                      <div className="text-xs font-semibold text-white">SMS Triage Notification</div>
+                      <div className="text-[11px] text-slate-400">Receive backup SMS dispatch route when app is backgrounded</div>
+                    </div>
+                    <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={smsAlerts} 
+                        onChange={() => setSmsAlerts(!smsAlerts)} 
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setFeedback({ type: 'success', message: 'Geofence radius and dispatch preferences updated.' });
+                      setTimeout(() => setFeedback(null), 3000);
+                    }} 
+                    className="btn btn-primary text-xs py-2.5 px-6 rounded-xl font-bold shadow-md cursor-pointer"
+                    style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)', boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)' }}
+                  >
+                    Save Preferences
+                  </button>
                 </div>
               </div>
             </div>

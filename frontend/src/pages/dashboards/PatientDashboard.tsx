@@ -593,326 +593,234 @@ export const PatientDashboard: React.FC = () => {
       {/* TAB 2 CONTENT: NEW EMERGENCY REQUEST FORM (CLEAN & MODERN) */}
       {/* ======================================================== */}
       {activeTab === 'create' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start max-w-6xl mx-auto">
-          
-          {/* Left Column: Requisition Form (7 cols on lg) */}
-          <div className="lg:col-span-7">
-            <div 
-              style={{
-                padding: '2rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 46, 84, 0.06)',
-                backdropFilter: 'blur(20px)',
-              }}
-            >
-              {/* Form Card Header */}
-              <div className="mb-6 pb-4 border-b border-white/10 flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    Emergency Blood Requisition
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Broadcast critical blood requirements to nearby voluntary donors
-                  </p>
+        <div className="max-w-2xl mx-auto">
+          <div 
+            style={{
+              padding: '2rem',
+              background: 'rgba(11, 17, 32, 0.95)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '16px',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 46, 84, 0.06)',
+              backdropFilter: 'blur(20px)',
+            }}
+          >
+            {/* Form Card Header */}
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FF2E54]/15 text-[#FF2E54] border border-[#FF2E54]/25">
+                ● INSTANT GEOSPATIAL BROADCAST
+              </span>
+              <button 
+                type="button" 
+                onClick={() => setActiveTab('requests')}
+                className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Submit Emergency Blood Requisition
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Coordinates and blood specifications will immediately broadcast to voluntary donors
+              </p>
+            </div>
+
+            {/* Clean Presets */}
+            <div className="mb-4">
+              <span className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">
+                ⚡ QUICK-FILL REQUISITION PRESETS
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {[
+                  { label: 'Trauma OT', group: 'O-', u: 2, urg: 'critical', note: 'Immediate trauma surgery blood transfusion required.' },
+                  { label: 'Accident ICU', group: 'A+', u: 2, urg: 'critical', note: 'Accident resuscitation priority in Emergency ICU.' },
+                  { label: 'Maternity', group: 'B+', u: 1, urg: 'urgent', note: 'Post-operative obstetric support transfusion.' }
+                ].map(p => {
+                  const isSelected = bloodGroup === p.group && units === p.u && urgency === p.urg;
+                  return (
+                    <button
+                      key={p.label}
+                      type="button"
+                      onClick={() => applyPreset(p.group, p.u, p.urg as any, p.note)}
+                      className={`text-xs p-2 rounded-xl border text-left transition-all ${
+                        isSelected
+                          ? 'bg-[#FF2E54]/20 border-[#FF2E54] text-white'
+                          : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                      }`}
+                    >
+                      <div className="font-bold flex items-center justify-between">
+                        <span>{p.label}</span>
+                        <span className="text-[#FF2E54] font-extrabold">{p.u}U</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">{p.group} • {p.urg}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <form onSubmit={handleCreateRequest} className="space-y-4">
+              {/* Blood Group and Units Required */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="form-group mb-0">
+                  <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                    Blood Group Required <span className="text-[#FF2E54]">*</span>
+                  </label>
+                  <select 
+                    className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                    value={bloodGroup} 
+                    onChange={(e) => setBloodGroup(e.target.value)}
+                  >
+                    {['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'].map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
                 </div>
-                <button 
-                  type="button" 
-                  onClick={() => setActiveTab('requests')}
-                  className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
-                  title="Close and return to My Requests"
-                >
-                  <X size={18} />
-                </button>
+
+                <div className="form-group mb-0">
+                  <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                    Units Required (Whole Blood / RBC) <span className="text-[#FF2E54]">*</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input 
+                      type="number"
+                      min={1}
+                      max={10}
+                      className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] flex-1"
+                      value={units}
+                      onChange={(e) => setUnits(Math.max(1, parseInt(e.target.value) || 1))}
+                    />
+                    <div className="flex gap-1">
+                      {[1, 2, 4].map(u => (
+                        <button
+                          key={u}
+                          type="button"
+                          onClick={() => setUnits(u)}
+                          className={`text-xs px-2.5 py-2 rounded-lg border font-bold transition-all ${
+                            units === u 
+                              ? 'bg-[#FF2E54] border-[#FF2E54] text-white shadow-sm' 
+                              : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          {u}U
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Minimal Clean Presets */}
-              <div className="mb-4">
-                <span className="text-[11px] font-semibold text-slate-400 block mb-1.5 uppercase tracking-wider">
-                  Quick Presets
-                </span>
-                <div className="flex flex-wrap gap-2">
+              {/* Urgency Classification */}
+              <div className="form-group mb-0">
+                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                  Urgency Level <span className="text-[#FF2E54]">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-2.5">
                   {[
-                    { label: 'Trauma OT', group: 'O-', u: 2, urg: 'critical', note: 'Urgent cardiac trauma bypass procedure in OT-3.' },
-                    { label: 'Accident ICU', group: 'A+', u: 2, urg: 'critical', note: 'Accident resuscitation priority in Emergency ICU.' },
-                    { label: 'Maternity', group: 'B+', u: 1, urg: 'urgent', note: 'Post-operative obstetric support transfusion.' }
-                  ].map(p => {
-                    const isSelected = bloodGroup === p.group && units === p.u && urgency === p.urg;
+                    { id: 'critical', label: 'Critical', desc: 'Immediate surgery', dot: '#FF2E54', activeClass: 'bg-[#FF2E54]/20 border-[#FF2E54] text-white' },
+                    { id: 'urgent', label: 'Urgent', desc: 'Within 2–4 hours', dot: '#F59E0B', activeClass: 'bg-amber-500/20 border-amber-500 text-white' },
+                    { id: 'routine', label: 'Routine', desc: 'Scheduled', dot: '#38BDF8', activeClass: 'bg-sky-500/20 border-sky-500 text-white' },
+                  ].map(item => {
+                    const isSelected = urgency === item.id;
                     return (
                       <button
-                        key={p.label}
+                        key={item.id}
                         type="button"
-                        onClick={() => applyPreset(p.group, p.u, p.urg as any, p.note)}
-                        className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-all ${
-                          isSelected
-                            ? 'bg-[#FF2E54]/20 border-[#FF2E54] text-white shadow-sm'
-                            : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                        onClick={() => setUrgency(item.id as any)}
+                        className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                          isSelected 
+                            ? `${item.activeClass} shadow-sm` 
+                            : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white'
                         }`}
                       >
-                        {p.label} <span className="text-[#FF2E54] font-bold">({p.group} • {p.u}U)</span>
+                        <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: item.dot, display: 'inline-block' }}></span>
+                          <span className="text-xs font-bold">{item.label}</span>
+                        </div>
+                        <span className="text-[10px] opacity-75 block">{item.desc}</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              <form onSubmit={handleCreateRequest} className="space-y-4">
-                {/* Blood Group and Units Required */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="form-group mb-0">
-                    <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                      Blood Group Required <span className="text-[#FF2E54]">*</span>
-                    </label>
-                    <select 
-                      className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
-                      value={bloodGroup} 
-                      onChange={(e) => setBloodGroup(e.target.value)}
-                    >
-                      {['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'].map(g => (
-                        <option key={g} value={g}>{g}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group mb-0">
-                    <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                      Units Required <span className="text-[#FF2E54]">*</span>
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center bg-slate-950/80 border border-white/10 rounded-lg overflow-hidden flex-1">
-                        <button
-                          type="button"
-                          onClick={() => setUnits(Math.max(1, units - 1))}
-                          className="px-3 py-2 text-slate-400 hover:text-white hover:bg-white/10 text-sm font-bold transition-colors"
-                        >
-                          -
-                        </button>
-                        <span className="w-full text-center text-white text-sm font-bold py-2 select-none">
-                          {units} {units === 1 ? 'Unit' : 'Units'}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setUnits(Math.min(8, units + 1))}
-                          className="px-3 py-2 text-slate-400 hover:text-white hover:bg-white/10 text-sm font-bold transition-colors"
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div className="flex gap-1">
-                        {[1, 2, 4].map(u => (
-                          <button
-                            key={u}
-                            type="button"
-                            onClick={() => setUnits(u)}
-                            className={`text-xs px-2.5 py-2 rounded-lg border font-bold transition-all ${
-                              units === u 
-                                ? 'bg-[#FF2E54] border-[#FF2E54] text-white shadow-sm' 
-                                : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
-                            }`}
-                          >
-                            {u}U
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Urgency Classification */}
-                <div className="form-group mb-0">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                    Urgency Level <span className="text-[#FF2E54]">*</span>
-                  </label>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    {[
-                      { id: 'critical', label: 'Critical', desc: 'Immediate surgery', dot: '#FF2E54', activeClass: 'bg-[#FF2E54]/20 border-[#FF2E54] text-white' },
-                      { id: 'urgent', label: 'Urgent', desc: 'Within 2–4 hours', dot: '#F59E0B', activeClass: 'bg-amber-500/20 border-amber-500 text-white' },
-                      { id: 'routine', label: 'Routine', desc: 'Scheduled / 24h', dot: '#38BDF8', activeClass: 'bg-sky-500/20 border-sky-500 text-white' },
-                    ].map(item => {
-                      const isSelected = urgency === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setUrgency(item.id as any)}
-                          className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
-                            isSelected 
-                              ? `${item.activeClass} shadow-sm` 
-                              : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white'
-                          }`}
-                        >
-                          <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: item.dot, display: 'inline-block' }}></span>
-                            <span className="text-xs font-bold">{item.label}</span>
-                          </div>
-                          <span className="text-[10px] opacity-75 block">{item.desc}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Receiving Hospital */}
-                <div className="form-group mb-0">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-xs font-semibold text-slate-300">
-                      Receiving Hospital Facility
-                    </label>
-                    <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
-                      <Check size={12} /> Accredited Center
-                    </span>
-                  </div>
-                  <select 
-                    className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
-                    value={hospitalId} 
-                    onChange={(e) => setHospitalId(e.target.value)}
-                  >
-                    {hospitals.length > 0 ? (
-                      hospitals.map(h => (
-                        <option key={h.id} value={h.id}>
-                          {h.name} — {h.city || 'Verified Facility'}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11">
-                        City Care Super Specialty Hospital (New Delhi)
+              {/* Receiving Hospital */}
+              <div className="form-group mb-0">
+                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                  Receiving Hospital
+                </label>
+                <select 
+                  className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                  value={hospitalId} 
+                  onChange={(e) => setHospitalId(e.target.value)}
+                >
+                  {hospitals.length > 0 ? (
+                    hospitals.map(h => (
+                      <option key={h.id} value={h.id}>
+                        {h.name} ({h.city || 'New Delhi'})
                       </option>
-                    )}
-                  </select>
-                </div>
+                    ))
+                  ) : (
+                    <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11">
+                      City Care Super Specialty Hospital (New Delhi)
+                    </option>
+                  )}
+                </select>
+              </div>
 
-                {/* Clinical Notes */}
-                <div className="form-group mb-0">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                    Clinical Notes & Surgical Bed <span className="text-[#FF2E54]">*</span>
-                  </label>
-                  <textarea 
-                    className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
-                    rows={2} 
-                    value={notes} 
-                    onChange={(e) => setNotes(e.target.value)} 
-                    placeholder="Ward number, surgical procedure, or attending clinician notes..."
-                    required 
-                  />
-                </div>
+              {/* Clinical Notes */}
+              <div className="form-group mb-0">
+                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                  Clinical Notes & Surgical Bed <span className="text-[#FF2E54]">*</span>
+                </label>
+                <textarea 
+                  className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
+                  rows={2} 
+                  value={notes} 
+                  onChange={(e) => setNotes(e.target.value)} 
+                  placeholder="Immediate trauma surgery blood transfusion required."
+                  required 
+                />
+              </div>
 
-                {/* Action Buttons */}
-                <div className="pt-2 flex items-center gap-3">
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary flex-1 py-2.5 font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 rounded-xl"
-                    style={{
-                      background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-                      boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)',
-                      cursor: submitting ? 'not-allowed' : 'pointer',
-                    }}
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        <span>Broadcasting to Mesh...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Dispatch Emergency Broadcast</span>
-                        <Send size={14} />
-                      </>
-                    )}
-                  </button>
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center gap-3">
+                <button 
+                  type="submit" 
+                  className="btn btn-primary flex-1 py-2.5 font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 rounded-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
+                    boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)',
+                    cursor: submitting ? 'not-allowed' : 'pointer',
+                  }}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      <span>Broadcasting to Mesh...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Dispatch Emergency Broadcast</span>
+                      <Send size={14} />
+                    </>
+                  )}
+                </button>
 
-                  <button 
-                    type="button" 
-                    onClick={() => setActiveTab('requests')}
-                    className="btn btn-secondary py-2.5 px-4 text-xs font-semibold rounded-xl"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
+                <button 
+                  type="button" 
+                  onClick={() => setActiveTab('requests')}
+                  className="btn btn-secondary py-2.5 px-4 text-xs font-semibold rounded-xl"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-
-          {/* Right Column: Clean Live Summary (5 cols on lg) */}
-          <div className="lg:col-span-5">
-            <div 
-              style={{
-                padding: '1.75rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                backdropFilter: 'blur(20px)',
-              }}
-            >
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
-                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <Radio size={14} className="text-[#FF2E54] animate-pulse" />
-                  Live Dispatch Preview
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
-                  ACTIVE
-                </span>
-              </div>
-
-              {/* Dynamic Compatibility Highlight */}
-              <div className="p-3 rounded-xl bg-slate-950/80 border border-white/5 space-y-2 mb-4">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Target Blood Group</span>
-                  <span className="font-extrabold text-[#FF2E54] text-base">{bloodGroup}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Requisition Volume</span>
-                  <span className="font-bold text-white">{units} {units === 1 ? 'Unit' : 'Units'} ({units * 450} ml)</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Priority Window</span>
-                  <span className="font-bold capitalize" style={{ color: urgency === 'critical' ? '#FF2E54' : urgency === 'urgent' ? '#F59E0B' : '#38BDF8' }}>
-                    {urgency}
-                  </span>
-                </div>
-              </div>
-
-              {/* Network Readiness Stats */}
-              <div className="space-y-2 text-xs mb-4">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                  <span className="text-slate-400 flex items-center gap-1.5">
-                    <User size={13} className="text-slate-400" />
-                    Available Standby Donors
-                  </span>
-                  <strong className="text-emerald-400 font-bold">{matchingDonors.length || 17} Donors</strong>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                  <span className="text-slate-400 flex items-center gap-1.5">
-                    <Clock size={13} className="text-slate-400" />
-                    Estimated Arrival Window
-                  </span>
-                  <strong className="text-[#38BDF8] font-bold">15–25 mins</strong>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5">
-                  <span className="text-slate-400 flex items-center gap-1.5">
-                    <Building2 size={13} className="text-slate-400" />
-                    Receiving Hospital
-                  </span>
-                  <strong className="text-white truncate max-w-[140px]">City Care Hospital</strong>
-                </div>
-              </div>
-
-              {/* Protocol Security Badge */}
-              <div className="pt-3 border-t border-white/10 text-[11px] text-slate-400 space-y-1.5">
-                <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <Check size={12} /> NBTC Blood Safety Guidelines Enforced
-                </div>
-                <div className="flex items-center gap-1.5 text-slate-400">
-                  <span className="text-[#FF2E54]">⚡</span> Instant SMS + Geofenced Push Dispatched
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
       )}
     </div>
