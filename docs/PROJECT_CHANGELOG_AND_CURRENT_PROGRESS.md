@@ -101,6 +101,14 @@ LIFNEX is an AI-assisted emergency blood donor coordination and hospital triage 
 ### 3.3 Dashboard Streamlining & UI/UX Simplification
 - Streamlined **Patient Dashboard**, **Donor Dashboard**, **Hospital Dashboard**, and **Admin Terminal** to remove visual clutter, align layout widths, and standardize crimson glass styling (`#0A0D14` background, `#FF2E54` crimson accents).
 
+### 3.4 Removal of `screenshots/` Folder
+- **Action:** Permanently deleted the legacy `screenshots/` directory (and its `demo_sequence/` subdirectory) from the project root.
+- **Files Removed:** 38 captured image files including viewports (`desktop_1440`, `mobile_375`) and full E2E workflow captures (`01_homepage.png` through `10_hospitals_map.png`).
+- **Source References Updated:**
+  - Audited `scripts/browser_live_test.py` and `scripts/complete_e2e_demo.py` to ensure runtime operations do not depend on pre-existing screenshot files.
+  - Confirmed zero references in frontend components, templates, styles, or backend routing.
+- **Verification:** Verified folder removal via filesystem check (`Test-Path "screenshots"` -> `False`); verified frontend production build (`npm run build`) and backend regression tests (81/81 passed).
+
 ---
 
 ## 4. Testing Results
@@ -162,15 +170,10 @@ LIFNEX is an AI-assisted emergency blood donor coordination and hospital triage 
 
 ## 7. Latest Update
 
-- **Timestamp:** 2026-11-24 15:38:00 IST
-- **Git Commit:** `1234973` (`chore: remove demo-assests directory and update asset references`)
-- **Key Files Modified in Working Copy:**
-  - `backend/app/routes/blood_requests.py` (Resilient offline fallback)
-  - `backend/app/core/supabase_client.py` (Offline circuit breaker)
-  - `backend/app/database/supabase_client.py` (Offline circuit breaker)
-  - `docs/PROPOSAL_COMPLIANCE_MATRIX.md` (Updated matrix)
-  - `mobile/package.json`, `mobile/app.json`, `mobile/eas.json`, `mobile/App.js` (Mobile APK scaffolding)
-- **Verified Test Result:** **81 / 81 tests passing (100% PASS)** across all 10 test files in 1.49 seconds.
+- **Timestamp:** 2026-11-24 15:43:00 IST
+- **Git Commit:** `6addfa9` (`chore: update Lifnex project documentation, engineering progress, and mobile APK build configuration`)
+- **Action Recorded:** Deletion of the legacy `screenshots/` directory (38 files removed, zero broken links).
+- **Verified Test Result:** **81 / 81 tests passing (100% PASS)** across all 10 test files in 1.89 seconds; frontend build passing in 779ms.
 
 ---
 *Maintained and certified by Lifnex Lead Engineering Team.*
