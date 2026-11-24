@@ -1,40 +1,9 @@
 """
-LIFNEX CORE CONFIGURATION
-Handles environment variables, Supabase connection endpoints, and security flags
+LIFNEX CORE CONFIGURATION REDIRECT
+Authoritative source is backend.app.config
+This module re-exports Config to guarantee single-source-of-truth configuration.
 """
 
-import os
-from dotenv import load_dotenv
+from backend.app.config import Config
 
-# Load .env file
-load_dotenv()
-
-class Config:
-    # Flask Settings
-    SECRET_KEY = os.getenv("SECRET_KEY", "lifnex-dev-secret-key-2026")
-    FLASK_ENV = os.getenv("FLASK_ENV", "development")
-    DEBUG = os.getenv("FLASK_DEBUG", "1") == "1"
-
-    # Supabase Configuration
-    SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ygbprigcrooveopipkcl.supabase.co")
-    SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY", "")
-    SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "")
-    SUPABASE_JWKS_URL = os.getenv("SUPABASE_JWKS_URL", "")
-
-    # Google Gemini AI Settings
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-
-    # CORS
-    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
-
-    @classmethod
-    def is_supabase_configured(cls) -> bool:
-        """Returns True if the Supabase keys are populated with non-empty values"""
-        return bool(
-            cls.SUPABASE_URL
-            and cls.SUPABASE_PUBLISHABLE_KEY
-            and cls.SUPABASE_SECRET_KEY
-            and cls.SUPABASE_PUBLISHABLE_KEY != "sb_publishable_anon_key_here"
-            and cls.SUPABASE_SECRET_KEY != "sb_secret_service_role_key_here"
-        )
-
+__all__ = ["Config"]

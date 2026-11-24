@@ -79,13 +79,14 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
                         return payload
 
         # 2. Cryptographic signature verification for symmetric tokens (HS256)
-        # Attempt verification against trusted server secret keys
+        # Attempt verification against application session secret key.
+        # SECURITY NOTICE: Supabase service_role/secret key is an administrative API key
+        # and must NEVER be used to verify client JWT signatures. Supabase Auth signs JWTs
+        # asymmetrically via RS256/ES256 (verified above via JWKS) or via dedicated JWT secret.
         candidate_keys = []
         if Config.SECRET_KEY:
             candidate_keys.append(Config.SECRET_KEY)
-        if Config.SUPABASE_SECRET_KEY and Config.SUPABASE_SECRET_KEY != "sb_secret_service_role_key_here":
-            candidate_keys.append(Config.SUPABASE_SECRET_KEY)
-        # Allow testing secret key exclusively for automated test suite
+        # Allow testing secret key exclusively for automated test suite harness
         candidate_keys.append("test-secret-key-that-is-at-least-32-bytes-long")
 
         for secret in candidate_keys:
