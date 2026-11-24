@@ -7,9 +7,31 @@
 
 ---
 
-## 1. Most Recent Git Commit Details (`1d8793b`)
+## 1. Most Recent Git Commit Details (`f2df485`)
 
 The latest commit successfully pushed and verified on the remote repository is:
+
+- **Commit Hash:** `f2df4850fa979bc6101416e91cfca52fb38e833f` (Short: `f2df485`)
+- **Author:** `ujjwalgupta107-sudo <ujjwalgupta107@gmail.com>`
+- **Date:** `Tue Nov 24 16:07:18 2026 +0530`
+- **Branch:** `main` (Tracked at `origin/main`)
+- **Commit Message:** `docs: consolidate documentation to 4 root files, remove redundant docs, and harden auth config`
+- **Remote Push Confirmation:** `1d8793b..f2df485 main -> main` (Synchronized cleanly with `origin/main`).
+
+### 1.1 Files Added & Modified in `f2df485`
+- **Documentation Consolidation:**
+  - Consolidated all project documentation into 4 root primary files: `CURRENT_PROGRESS.md`, `PREVIOUS_COMMIT.md`, `PROJECT_PROPOSAL.md`, and `README.md`.
+  - Removed 16 redundant root `.md` files and 61 redundant files under `docs/` (including `docs/LIFNEX_COMPLETE_PROJECT_PROPOSAL.pdf`).
+- **Backend Architecture & Security Hardening:**
+  - Hardened JWT verification in `backend/app/utils/auth_guard.py` to prevent candidate key misconfiguration with Supabase secret keys.
+  - Re-exported canonical `backend.app.config.Config` inside `backend/app/core/config.py` to ensure a single authoritative configuration source.
+- **Verification:**
+  - Full automated pytest suite passing: 81/81 tests passed (100% PASS).
+  - Production build clean: `npm run build` succeeded in 998ms.
+
+---
+
+## 2. Prior Commit: Documentation & Git LFS Baseline (`1d8793b`)
 
 - **Commit Hash:** `1d8793b6f65d54543159055d6812cebf7411db15` (Short: `1d8793b`)
 - **Author:** `ujjwalgupta107-sudo <ujjwalgupta107@gmail.com>`
@@ -17,23 +39,6 @@ The latest commit successfully pushed and verified on the remote repository is:
 - **Branch:** `main` (Tracked at `origin/main`)
 - **Commit Message:** `docs: add CURRENT_PROGRESS, PREVIOUS_COMMIT, PROJECT_PROPOSAL, update README, and configure Git LFS tracking`
 - **Remote Push Confirmation:** `ac8b97e..1d8793b main -> main` (Zero push rejections or conflicts).
-
-### 1.1 Files Added & Modified in `1d8793b`
-- **Root Primary Documents Created:**
-  - `CURRENT_PROGRESS.md`
-  - `PREVIOUS_COMMIT.md`
-  - `PROJECT_PROPOSAL.md`
-  - `README.md` (Updated and expanded)
-- **Git LFS Configuration:**
-  - `.gitattributes` added tracking `*.pdf`, `*.png`, `*.jpg`, `*.jpeg`.
-  - 10 LFS binary objects uploaded (7.8 MB).
-  - 22 repository media assets transitioned to LFS pointers (`git lfs ls-files`).
-- **Audit Reports Added to `docs/`:**
-  - `docs/DATABASE_SCHEMA_AUDIT.md`
-  - `docs/INTEGRATION_IMPLEMENTATION_PLAN.md`
-  - `docs/PROJECT_PROPOSAL_COMPLIANCE.md`
-  - `docs/SUPABASE_INTEGRATION_GUIDE.md`
-  - `docs/SYSTEM_ARCHITECTURE_AUDIT.md`
 
 ---
 
