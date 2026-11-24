@@ -7,34 +7,29 @@
 
 ---
 
-## 1. Most Recent Git Commit Details (`6f7c989`)
+## 1. Most Recent Git Commit Details (`0f56843`)
 
 The latest commit successfully pushed and verified on the remote repository is:
 
-- **Commit Hash:** `6f7c989d3995648bf19d06031d6bab5a02fa9a06` (Short: `6f7c989`)
+- **Commit Hash:** `0f56843`
 - **Author:** `ujjwalgupta107-sudo <ujjwalgupta107@gmail.com>`
-- **Date:** `Tue Nov 24 16:17:47 2026 +0530`
+- **Date:** `Tue Nov 24 17:55:00 2026 +0530`
 - **Branch:** `main` (Tracked at `origin/main`)
-- **Commit Message:** `docs: add Supabase credential verification report and update progress logs`
-- **Remote Push Confirmation:** `f2df485..6f7c989 main -> main` (Cleanly synchronized with `origin/main`).
+- **Commit Message:** `feat(email-auth): integrate Resend SMTP, add email templates, test suite, and project documentation`
+- **Remote Push Confirmation:** `6f7c989..0f56843 main -> main` (Cleanly synchronized with `origin/main`).
 
-### 1.1 Development Since `6f7c989` (Current Working Tree Changes)
-- **Real SMTP & Authentication Completion:**
-  - Integrated Resend SMTP (`smtp.resend.com`) support in `backend/app/config.py` and `backend/app/services/email_service.py`.
-  - Added support for `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, and `SMTP_USE_SSL`.
-  - Enforced mutual exclusivity between STARTTLS (port 587) and SSL (port 465).
-  - Built 4 responsive, cyber-medical Lifnex branded HTML email templates:
-    1. Account Email Verification OTP (`generate_otp_email_html`)
-    2. Password Reset (`generate_password_reset_email_html`)
-    3. Emergency Blood Donor Match Alert (`generate_blood_request_alert_email_html`) - zero sensitive patient PII
-    4. Hospital Verification Notice (`generate_hospital_verification_email_html`)
-  - Enhanced frontend `LoginPage.tsx` with one-click direct verification link on `EMAIL_NOT_VERIFIED`.
-  - Created unit and mock test suite `backend/tests/test_email_service.py` (10 tests, 100% pass).
-  - Expanded total automated test suite to **94 passed tests** (100% PASS).
-  - Created comprehensive documentation:
-    - `docs/SMTP_IMPLEMENTATION_REPORT.md`
-    - `docs/EMAIL_AUTHENTICATION_TEST_REPORT.md`
-    - `docs/EMAIL_PROVIDER_SETUP_GUIDE.md`
+### 1.1 Development Since `0f56843` (Current Working Tree Changes)
+- **Supabase Native Email OTP Implementation:**
+  - Refactored `/api/v1/auth/register` to natively call `anon.auth.sign_up(...)` via the Supabase Auth SDK.
+  - Removed custom server-side OTP generation and external SMTP relay dispatch from the live registration path.
+  - Implemented direct OTP verification via `anon.auth.verify_otp({ email, token, type: 'signup' })`.
+  - Implemented native resend operations via `anon.auth.resend({ type: 'signup', email })`.
+  - Extended multi-role registration to support `patient`, `donor`, and `hospital`, with `admin` role escalation strictly blocked.
+  - Updated frontend registration and verification UI to support hospital registration and routing.
+  - Expanded test suite to **95 passed tests (100% PASS)**.
+  - Created new technical documentation:
+    - `docs/SUPABASE_NATIVE_EMAIL_OTP_REPORT.md`
+    - `docs/EMAIL_OTP_TEST_REPORT.md`
 - **Supabase Staging Integration:**
   - Upgraded active staging project to `jejnuespiisksqfgqwsg` (`Lifnex-Staging`).
   - Successfully verified execution of Migration 001 (9 tables) and Migration 002 (36 RLS policies, 17 functions, 4 triggers, 2 views).

@@ -62,7 +62,7 @@ def test_valid_donor_registration(client):
     assert data["data"]["user"]["role"] == "donor"
 
 def test_role_escalation_registration_blocked(client):
-    """Verifies that users CANNOT register directly as Admin or Hospital via public API"""
+    """Verifies that users CANNOT register directly as Admin via public API"""
     # Attempt Admin
     admin_payload = {
         "email": "hacker@example.com",
@@ -74,16 +74,19 @@ def test_role_escalation_registration_blocked(client):
     assert res.status_code == 400
     assert res.get_json()["success"] is False
 
-    # Attempt Hospital
+def test_valid_hospital_registration(client):
+    """Verifies that legitimate hospitals can submit registration with unverified initial state"""
     hosp_payload = {
-        "email": "fake.hospital@example.com",
+        "email": "apollo.hospital@example.com",
         "password": "Password123!",
-        "full_name": "Fake Hospital",
+        "full_name": "Apollo Multi-Specialty Hospital",
         "role": "hospital"
     }
-    res2 = client.post("/api/v1/auth/register", json=hosp_payload)
-    assert res2.status_code == 400
-    assert res2.get_json()["success"] is False
+    res = client.post("/api/v1/auth/register", json=hosp_payload)
+    assert res.status_code == 201
+    data = res.get_json()
+    assert data["success"] is True
+    assert data["data"]["user"]["role"] == "hospital"
 
 def test_invalid_registration_data(client):
     """Verifies rejection of short passwords, invalid emails, and missing fields"""

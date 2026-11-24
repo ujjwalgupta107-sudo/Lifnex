@@ -149,7 +149,9 @@ export const VerifyOtpPage: React.FC = () => {
 
           setTimeout(() => {
             const role = user.role || stateRole;
-            navigate(role === 'donor' ? '/dashboard/donor' : '/dashboard/patient');
+            if (role === 'donor') navigate('/dashboard/donor');
+            else if (role === 'hospital') navigate('/dashboard/hospital');
+            else navigate('/dashboard/patient');
           }, 1200);
         } else {
           // If session not returned directly, send to login

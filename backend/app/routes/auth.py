@@ -56,13 +56,13 @@ def register():
             }
         }), 400
 
-    # Strict security boundary: Public registration cannot provision admin or hospital accounts
-    if data.role not in ("patient", "donor"):
+    # Strict security boundary: Public registration cannot provision admin accounts
+    if data.role == "admin" or data.role not in ("patient", "donor", "hospital"):
         return jsonify({
             "success": False,
             "error": {
                 "code": "FORBIDDEN",
-                "message": "Public registration is strictly permitted only for Patient and Donor roles."
+                "message": "Public registration is permitted only for Patient, Donor, and Hospital roles."
             }
         }), 403
 
@@ -74,7 +74,7 @@ def register():
         mock_id = f"demo-user-{data.role}-uuid"
         token = generate_token(user_id=mock_id, email=data.email, role=data.role)
         
-        # Also store test OTP session for end-to-end OTP test suite
+        # Also store test OTP session for testing harness
         raw_otp = generate_and_store_otp(
             email=data.email,
             user_id=mock_id,
@@ -133,11 +133,11 @@ def register():
         except Exception as list_err:
             logger.warning(f"Notice during duplicate email scan: {list_err}")
 
-        # 2. Provision unconfirmed user in Supabase Auth via generate_link
+        # 2. Register user natively with Supabase Auth
+        # Supabase Auth dispatches its configured email template with numeric OTP {{ .Token }}
         user_id = None
         try:
-            link_resp = admin.auth.admin.generate_link({
-                "type": "signup",
+            signup_resp = anon.auth.sign_up({
                 "email": data.email,
                 "password": data.password,
                 "options": {
@@ -145,14 +145,14 @@ def register():
                         "full_name": data.full_name,
                         "role": data.role,
                         "blood_group": data.blood_group
-                    }
+                    },
+                    "email_redirect_to": "http://localhost:5173/verify-otp"
                 }
             })
-            if link_resp and link_resp.user:
-                user_id = str(link_resp.user.id)
-        except Exception as link_err:
-            logger.info(f"Supabase generate_link notice: {link_err}; verifying existing unconfirmed identity.")
-            # If user already existed unconfirmed, retrieve their ID
+            if signup_resp and signup_resp.user:
+                user_id = str(signup_resp.user.id)
+        except Exception as signup_err:
+            logger.info(f"Supabase native sign_up notice: {signup_err}; checking for existing identity.")
             try:
                 existing_check = admin.table("users").select("id").eq("email", data.email).execute()
                 if existing_check.data:
@@ -160,7 +160,7 @@ def register():
             except Exception:
                 pass
             if not user_id:
-                raise link_err
+                raise signup_err
 
         if not user_id:
             return jsonify({
@@ -171,7 +171,7 @@ def register():
                 }
             }), 400
 
-        # 3. Synchronize to public.users table (is_active=False until OTP verified)
+        # 3. Synchronize to public.users table (is_active=False until OTP verified by Supabase)
         user_record = {
             "id": user_id,
             "email": data.email,
@@ -198,55 +198,43 @@ def register():
             }
             admin.table("donor_profiles").upsert(donor_record).execute()
 
-        # 5. Generate secure 6-digit cryptographic OTP and store hash in session cache
-        raw_otp = generate_and_store_otp(
-            email=data.email,
-            user_id=user_id,
-            metadata={
-                "role": data.role,
-                "full_name": data.full_name,
-                "blood_group": data.blood_group
+        # 5. If role is hospital, prepare corresponding hospitals record
+        if data.role == "hospital":
+            hospital_record = {
+                "user_id": user_id,
+                "name": getattr(data, "hospital_name", None) or data.full_name,
+                "license_number": getattr(data, "license_number", None) or f"HOSP-LIC-{user_id[:8].upper()}",
+                "city": data.city or "Metropolis",
+                "latitude": data.latitude or 28.6139,
+                "longitude": data.longitude or 77.2090,
+                "is_verified": False
             }
-        )
+            admin.table("hospitals").upsert(hospital_record).execute()
 
-        # 6. Dispatch real email with 6-digit OTP
-        email_sent, delivery_msg = send_otp_email(data.email, raw_otp, data.full_name)
-
-        # 7. Log audit event (NEVER log password or raw OTP)
+        # 6. Log audit event (Supabase Auth natively dispatches email verification OTP)
         log_audit_event(
-            action="USER_REGISTER_OTP_DISPATCHED",
+            action="USER_REGISTER_SUPABASE_OTP_DISPATCHED",
             entity_type="users",
             entity_id=user_id,
             actor_id=user_id,
             client_ip=request.remote_addr,
-            new_values={"email": data.email, "role": data.role, "delivery": delivery_msg}
+            new_values={"email": data.email, "role": data.role, "provider": "supabase_native"}
         )
-
-        # Generate temporary token for seamless onboarding state
-        temp_token = generate_token(user_id=user_id, email=data.email, role=data.role, expires_in_seconds=3600)
 
         resp_data = {
             "user": user_record,
-            "session": {
-                "access_token": temp_token,
-                "token_type": "bearer",
-                "expires_in": 3600
-            },
             "email": data.email,
             "role": data.role,
             "otp_required": True,
-            "expires_in": 600,
-            "email_delivery": delivery_msg
+            "expires_in": 3600,
+            "email_delivery": "SUPABASE_NATIVE_EMAIL"
         }
-        if Config.IS_DEV:
-            resp_data["dev_otp"] = raw_otp
 
         return jsonify({
             "success": True,
             "otp_required": True,
-            "dev_otp": raw_otp if Config.IS_DEV else None,
             "data": resp_data,
-            "message": f"Verification code dispatched to {data.email}. Please verify to activate your account."
+            "message": f"Verification code dispatched to {data.email} via Supabase Auth email. Please verify with the OTP to activate your account."
         }), 201
 
     except Exception as e:
@@ -321,10 +309,28 @@ def verify_otp():
             }
         }), 200
 
-    # Live verification
-    success, err_code, session_data = verify_otp_code(data.email, data.otp)
-    if not success:
-        if err_code == "EXPIRED_OTP":
+    # Live verification using Supabase Auth native verify_otp
+    anon = get_supabase_anon()
+    admin = get_supabase_admin()
+    if not anon or not admin:
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "AUTH_CONFIG_ERROR",
+                "message": "Supabase client not initialized."
+            }
+        }), 500
+
+    otp_type = getattr(data, "type", "signup") or "signup"
+    try:
+        verify_resp = anon.auth.verify_otp({
+            "email": data.email,
+            "token": data.otp,
+            "type": otp_type
+        })
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "expired" in err_msg:
             return jsonify({
                 "success": False,
                 "error": {
@@ -332,12 +338,12 @@ def verify_otp():
                     "message": "Verification code has expired. Please click 'Resend OTP' to request a new code."
                 }
             }), 400
-        elif err_code == "TOO_MANY_ATTEMPTS":
+        elif "rate limit" in err_msg or "too many" in err_msg:
             return jsonify({
                 "success": False,
                 "error": {
                     "code": "TOO_MANY_ATTEMPTS",
-                    "message": "Too many failed attempts. For your security, this verification code has been revoked. Please request a new code."
+                    "message": "Too many failed attempts. For your security, please wait before requesting another code."
                 }
             }), 429
         else:
@@ -349,37 +355,40 @@ def verify_otp():
                 }
             }), 400
 
-    user_id = session_data.get("user_id")
-    metadata = session_data.get("metadata", {})
+    if not verify_resp or not verify_resp.user:
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "INVALID_OTP",
+                "message": "Incorrect verification code. Please check your email and try again."
+            }
+        }), 400
+
+    user_id = str(verify_resp.user.id)
+    metadata = verify_resp.user.user_metadata or {}
     role = metadata.get("role", "patient")
-    admin = get_supabase_admin()
 
-    # 1. Activate user in Supabase Auth (mark email confirmed)
-    if admin and user_id:
-        try:
-            admin.auth.admin.update_user_by_id(user_id, {"email_confirm": True})
-            logger.info(f"Supabase Auth email confirmed for user_id={user_id}")
-        except Exception as e:
-            logger.warning(f"Notice confirming email in Supabase Auth: {e}")
+    # 1. Activate public.users record
+    try:
+        admin.table("users").update({"is_active": True}).eq("id", user_id).execute()
+        logger.info(f"public.users activated for user_id={user_id}")
+    except Exception as e:
+        logger.warning(f"Notice activating public.users: {e}")
 
-        # 2. Activate public.users record
-        try:
-            admin.table("users").update({"is_active": True}).eq("id", user_id).execute()
-        except Exception as e:
-            logger.warning(f"Notice activating public.users: {e}")
-
-    # 3. Log audit event
+    # 2. Log audit event
     log_audit_event(
-        action="USER_EMAIL_VERIFIED",
+        action="USER_EMAIL_VERIFIED_NATIVE_SUPABASE",
         entity_type="users",
-        entity_id=user_id or data.email,
-        actor_id=user_id or data.email,
+        entity_id=user_id,
+        actor_id=user_id,
         client_ip=request.remote_addr,
-        new_values={"email": data.email, "is_verified": True}
+        new_values={"email": data.email, "is_verified": True, "provider": "supabase_native"}
     )
 
-    # 4. Generate production-grade JWT session
-    token = generate_token(user_id or f"user-{data.email}", data.email, role)
+    # 3. Session access token from Supabase Auth or fallback
+    access_token = verify_resp.session.access_token if verify_resp.session else generate_token(user_id, data.email, role)
+    expires_in = verify_resp.session.expires_in if verify_resp.session else 86400
+
     user_record = {
         "id": user_id,
         "email": data.email,
@@ -394,9 +403,9 @@ def verify_otp():
         "data": {
             "user": user_record,
             "session": {
-                "access_token": token,
+                "access_token": access_token,
                 "token_type": "bearer",
-                "expires_in": 86400
+                "expires_in": expires_in
             }
         }
     }), 200
@@ -404,7 +413,7 @@ def verify_otp():
 @auth_bp.route("/resend-otp", methods=["POST"])
 def resend_otp():
     """
-    Resends a new 6-digit OTP verification email, strictly enforcing a 60-second cooldown timer.
+    Resends a new verification code using Supabase Auth's native resend operation.
     """
     body = request.get_json() or {}
     try:
@@ -432,59 +441,70 @@ def resend_otp():
             }), 429
         return jsonify({
             "success": True,
-            "message": f"A new verification code has been dispatched to {data.email}.",
+            "message": f"A new verification code has been dispatched to {data.email} via Supabase Auth.",
             "data": {"email": data.email, "cooldown_seconds": 60}
         }), 200
 
-    # Check 60-second resend cooldown
-    allowed, remaining = can_resend_otp(data.email, cooldown_seconds=60)
-    if not allowed:
+    anon = get_supabase_anon()
+    if not anon:
         return jsonify({
             "success": False,
             "error": {
-                "code": "RATE_LIMITED",
-                "message": f"Please wait {remaining} seconds before requesting another verification code.",
-                "retry_after": remaining
+                "code": "AUTH_CONFIG_ERROR",
+                "message": "Supabase client not initialized."
             }
-        }), 429
+        }), 500
 
-    admin = get_supabase_admin()
-    user_id = None
-    user_meta = {}
-    if admin:
-        try:
-            res = admin.table("users").select("*").eq("email", data.email).execute()
-            if res.data:
-                user_rec = res.data[0]
-                user_id = user_rec.get("id")
-                user_meta = {
-                    "role": user_rec.get("role", "patient"),
-                    "full_name": user_rec.get("full_name", "User")
-                }
-        except Exception as e:
-            logger.warning(f"Error querying user for resend: {e}")
-
-    raw_otp = generate_and_store_otp(data.email, user_id or "pending-user", user_meta)
-    email_sent, delivery_msg = send_otp_email(data.email, raw_otp, user_meta.get("full_name"))
-
-    log_audit_event(
-        action="USER_OTP_RESENT",
-        entity_type="users",
-        entity_id=user_id or data.email,
-        actor_id=user_id or data.email,
-        client_ip=request.remote_addr,
-        new_values={"email": data.email, "delivery": delivery_msg}
-    )
-
-    return jsonify({
-        "success": True,
-        "message": f"A new verification code has been dispatched to {data.email}.",
-        "data": {
+    otp_type = getattr(data, "type", "signup") or "signup"
+    try:
+        anon.auth.resend({
+            "type": otp_type,
             "email": data.email,
-            "cooldown_seconds": 60,
-            "delivery": delivery_msg
-        }
-    }), 200
+            "options": {
+                "email_redirect_to": "http://localhost:5173/verify-otp"
+            }
+        })
+
+        log_audit_event(
+            action="USER_NATIVE_OTP_RESENT",
+            entity_type="users",
+            entity_id=data.email,
+            actor_id=data.email,
+            client_ip=request.remote_addr,
+            new_values={"email": data.email, "delivery": "SUPABASE_NATIVE_RESEND"}
+        )
+
+        return jsonify({
+            "success": True,
+            "message": f"A new verification code has been dispatched to {data.email} via Supabase Auth.",
+            "data": {
+                "email": data.email,
+                "cooldown_seconds": 60
+            }
+        }), 200
+
+    except Exception as e:
+        err_msg = str(e)
+        import re
+        match = re.search(r"after (\d+) seconds", err_msg)
+        seconds = int(match.group(1)) if match else 60
+        if "security purposes" in err_msg.lower() or "rate limit" in err_msg.lower() or "over_email" in err_msg.lower():
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "RATE_LIMITED",
+                    "message": f"Please wait {seconds} seconds before requesting another verification code.",
+                    "retry_after": seconds
+                }
+            }), 429
+
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "RESEND_FAILED",
+                "message": f"Could not resend verification code: {err_msg}"
+            }
+        }), 400
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -665,7 +685,7 @@ def logout():
 @auth_bp.route("/forgot-password", methods=["POST"])
 def forgot_password():
     """
-    Sends password recovery instructions via Supabase Auth or configured SMTP relay
+    Sends password recovery instructions exclusively via Supabase Auth native email delivery
     """
     body = request.get_json() or {}
     try:
@@ -676,28 +696,14 @@ def forgot_password():
             "error": {"code": "VALIDATION_ERROR", "message": "Valid email address required."}
         }), 400
 
-    admin = get_supabase_admin()
     anon = get_supabase_anon()
-    delivery_status = "DISPATCHED"
-
-    if is_smtp_configured():
-        full_name = "Lifnex User"
-        if admin:
-            try:
-                user_res = admin.table("users").select("full_name").eq("email", data.email).execute()
-                if user_res.data:
-                    full_name = user_res.data[0].get("full_name", "Lifnex User")
-            except Exception:
-                pass
-        reset_url = "https://lifnex.space/auth/reset-password"
-        sent, d_msg = send_password_reset_email(data.email, reset_url, full_name)
-        delivery_status = d_msg if sent else "FALLBACK_SUPABASE"
-
-    if not is_smtp_configured() and anon:
+    if anon:
         try:
-            anon.auth.reset_password_for_email(data.email)
+            anon.auth.reset_password_for_email(data.email, {
+                "redirect_to": "http://localhost:5173/reset-password"
+            })
         except Exception as e:
-            logger.warning(f"Supabase reset password: {e}")
+            logger.warning(f"Supabase native reset password notice: {e}")
 
     log_audit_event(
         action="USER_PASSWORD_RESET_REQUESTED",
@@ -705,13 +711,13 @@ def forgot_password():
         entity_id=data.email,
         actor_id=data.email,
         client_ip=request.remote_addr,
-        new_values={"email": data.email, "delivery": delivery_status}
+        new_values={"email": data.email, "provider": "supabase_native"}
     )
 
     return jsonify({
         "success": True,
-        "message": f"If an account matches {data.email}, password recovery instructions have been dispatched.",
-        "delivery": delivery_status
+        "message": f"If an account matches {data.email}, password recovery instructions have been dispatched by Supabase Auth.",
+        "delivery": "SUPABASE_NATIVE_RECOVERY"
     }), 200
 
 @auth_bp.route("/reset-password", methods=["POST"])

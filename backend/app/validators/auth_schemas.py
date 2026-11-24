@@ -6,8 +6,8 @@ from typing import Optional, Literal
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from backend.app.validators.schemas import BloodGroupType, DonorAvailabilityType
 
-# Allowed registration roles (Hospital and Admin cannot register publicly)
-PublicRegistrationRole = Literal["patient", "donor"]
+# Allowed registration roles (Patient, Donor, Hospital - Admin cannot self-register)
+PublicRegistrationRole = Literal["patient", "donor", "hospital"]
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -24,11 +24,15 @@ class RegisterRequest(BaseModel):
     latitude: Optional[float] = Field(28.6139, ge=-90.0, le=90.0)
     longitude: Optional[float] = Field(77.2090, ge=-180.0, le=180.0)
 
+    # Conditional Hospital fields
+    hospital_name: Optional[str] = None
+    license_number: Optional[str] = None
+
     @field_validator("role")
     @classmethod
     def validate_public_role(cls, v):
-        if v not in ("patient", "donor"):
-            raise ValueError("Public registration is allowed only for Patient and Donor.")
+        if v not in ("patient", "donor", "hospital"):
+            raise ValueError("Registration is permitted only for Patient, Donor, and Hospital roles.")
         return v
 
 class LoginRequest(BaseModel):

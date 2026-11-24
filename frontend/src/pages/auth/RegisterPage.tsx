@@ -5,7 +5,7 @@ import { Mini3DDroplet } from '../../components/3d/Mini3DDroplet';
 import { User, Mail, Lock, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
-  const [role, setRole] = useState<'patient' | 'donor'>('patient');
+  const [role, setRole] = useState<'patient' | 'donor' | 'hospital'>('patient');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -26,6 +26,7 @@ export const RegisterPage: React.FC = () => {
         full_name: fullName,
         role,
         blood_group: role === 'donor' ? bloodGroup : undefined,
+        hospital_name: role === 'hospital' ? fullName : undefined,
       });
 
       // When OTP verification is required (standard real flow)
@@ -54,7 +55,9 @@ export const RegisterPage: React.FC = () => {
       if (token && user) {
         localStorage.setItem('lifnex_token', token);
         localStorage.setItem('lifnex_user', JSON.stringify(user));
-        navigate(role === 'donor' ? '/dashboard/donor' : '/dashboard/patient');
+        if (role === 'donor') navigate('/dashboard/donor');
+        else if (role === 'hospital') navigate('/dashboard/hospital');
+        else navigate('/dashboard/patient');
       } else {
         setError(res.error?.message || res.message || 'Registration failed');
       }
@@ -109,7 +112,7 @@ export const RegisterPage: React.FC = () => {
         )}
 
         {/* Role Toggle Selector */}
-        <div className="grid grid-cols-2 gap-1.5 mb-3.5 p-1 bg-slate-950/60 rounded-xl border border-white/10">
+        <div className="grid grid-cols-3 gap-1 mb-3.5 p-1 bg-slate-950/60 rounded-xl border border-white/10">
           <button
             type="button"
             className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
@@ -119,7 +122,7 @@ export const RegisterPage: React.FC = () => {
             }`}
             onClick={() => setRole('patient')}
           >
-            I Need Blood (Patient)
+            Patient
           </button>
           <button
             type="button"
@@ -130,7 +133,18 @@ export const RegisterPage: React.FC = () => {
             }`}
             onClick={() => setRole('donor')}
           >
-            I Can Donate (Donor)
+            Donor
+          </button>
+          <button
+            type="button"
+            className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
+              role === 'hospital'
+                ? 'bg-[#FF2E54] text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+            onClick={() => setRole('hospital')}
+          >
+            Hospital
           </button>
         </div>
 

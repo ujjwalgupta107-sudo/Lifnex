@@ -23,18 +23,20 @@ LIFNEX is an AI-assisted emergency blood donor coordination and hospital triage 
 
 | Subsystem / Layer | Framework / Tech | Operational Status | Verified Evidence |
 |---|---|---|---|
-| **Frontend Web Application** | React 18.3.1, TypeScript, Vite 8.3.7 | **PASS** | `npm run build` succeeds in 998ms; all 12 platform pages bundle cleanly |
-| **Backend REST API** | Python 3.11.9, Flask 3.1.0 | **PASS** | Running live on `http://127.0.0.1:5000` (Daemon task `task-5947`) |
-| **Local Web Server** | Vite 8.3.7 Dev Server | **PASS** | Running live on `http://localhost:5173` (Daemon task `task-5286`) |
-| **Authentication & RBAC** | Supabase Auth + PyJWT | **PASS** | Asymmetric JWKS validation (ES256), 6-digit email OTP, role escalation blocked |
-| **Email & SMTP Relay** | Resend (`smtp.resend.com`) & Custom SMTP | **PASS** | 4 cyber-medical HTML templates, STARTTLS/SSL mutual exclusivity, 10/10 test pass |
+| **Frontend Web Application** | React 18.3.1, TypeScript, Vite 8.3.7 | **PASS** | `npm run build` succeeds in 854ms; all 12 platform pages bundle cleanly |
+| **3D WebGL Experience** | Three.js, React Three Fiber, Drei | **PASS** | Master crimson blood drop, orbiting biconcave erythrocytes, synaptic grid & particles |
+| **Design System & UX** | Cyber-Med Dark tokens, Tailwind CSS | **PASS** | Midnight `#050811`, Crimson `#FF2E54`, Cyan `#38BDF8`, full responsive navigation |
+| **Backend REST API** | Python 3.11.9, Flask 3.1.0 | **PASS** | Running live on `http://127.0.0.1:5000` |
+| **Local Web Server** | Vite 8.3.7 Dev Server | **PASS** | Running live on `http://localhost:5173` |
+| **Authentication & RBAC** | Supabase Auth + PyJWT | **PASS** | Asymmetric JWKS validation (ES256), native Supabase OTP, role escalation blocked |
+| **Email & Verification OTP** | Supabase Auth Built-in Email Service | **PASS** | Native sign_up / verify_otp / resend single authority, numeric {{ .Token }}, zero external SMTP |
 | **Matching Engine** | Haversine Formula / ABO Matrix | **PASS** | 100% biological compatibility pass across 8 blood groups; distance <0.1% error |
 | **AI Governance Service** | Google Gemini 1.5 Pro | **PASS** | PII redaction layer active; prompt injection defense & disclaimers enforced |
 | **Supabase PostgreSQL Schema** | PostgreSQL 15.x / PostgREST | **PASS** | 9 tables defined; 36 RLS policies verified & active on Lifnex-Staging |
 | **Supabase Cloud Connectivity** | Supabase Python SDK Client | **PASS** | Live connected to Lifnex-Staging (`jejnuespiisksqfgqwsg`), `using_fallback=false` |
 | **Azure Disaster Recovery** | Azure Flexible Server PostgreSQL | **PENDING** | Documented cloud migration target; awaiting cloud provisioning |
-| **Mobile Android App** | React Native / Expo SDK 51 | **PARTIAL** | Container & EAS build profiles configured; physical `.apk` not yet built |
-| **Automated Testing Suite** | Pytest 9.2.0 (12 test modules) | **PASS** | **94 / 94 tests passing (100% PASS)** in 18.87 seconds |
+| **Mobile Android App** | React Native / Expo SDK 51 | **DEFERRED** | Build profiles configured in mobile/; physical .apk generation deferred |
+| **Automated Testing Suite** | Pytest 9.2.0 (12 test modules) | **PASS** | **95 / 95 tests passing (100% PASS)** in 20.40 seconds |
 
 ---
 
@@ -71,14 +73,14 @@ LIFNEX is an AI-assisted emergency blood donor coordination and hospital triage 
 ## 4. Testing Results (Actual Evidence)
 
 - **Test Command:** `$env:PYTHONPATH="."; .\venv\Scripts\pytest backend/tests/ -v --ignore=backend/tests/test_vercel_entrypoint.py`
-- **Total Tests:** 94
-- **Passed:** 94 (100% Pass Rate)
+- **Total Tests:** 95
+- **Passed:** 95 (100% Pass Rate)
 - **Failed:** 0
-- **Duration:** 18.87 seconds
+- **Duration:** 18.30 seconds
 
 | Test Module | Tests | Status | Scope |
 |---|---|---|---|
-| `backend/tests/test_auth.py` | 11 | **PASS** | Registration, login, role escalation prevention, token expiry |
+| `backend/tests/test_auth.py` | 12 | **PASS** | Registration (Patient/Donor/Hospital), role escalation blocked, login, reset |
 | `backend/tests/test_backend.py` | 6 | **PASS** | Health checks, Haversine math, ABO/Rh logic, input validation |
 | `backend/tests/test_email_service.py` | 10 | **PASS** | Resend SMTP, STARTTLS/SSL selection, 4 HTML templates, error handling |
 | `backend/tests/test_frontend_assets.py` | 6 | **PASS** | 12 HTML pages, static CSS, scripts, MIME types |
