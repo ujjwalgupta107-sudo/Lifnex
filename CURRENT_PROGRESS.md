@@ -4,8 +4,8 @@
 **Tagline:** *Connecting Lives When Every Second Matters.*  
 **Document ID:** LFX-CURR-PROG-2026-V2  
 **Classification:** Continuously Updated Engineering Progress Report  
-**Last Updated:** 2026-11-24 16:15:00 IST (+05:30)  
-**Current Git Branch:** `main` | **Latest Pushed Commit:** `f2df485`  
+**Last Updated:** 2026-11-24 17:46:00 IST (+05:30)  
+**Current Git Branch:** `main` | **Latest Pushed Commit:** `6f7c989`  
 **Lead Authors:** Senior Software Engineer, Solution Architect, Technical Documentation Engineer  
 
 ---
@@ -23,17 +23,18 @@ LIFNEX is an AI-assisted emergency blood donor coordination and hospital triage 
 
 | Subsystem / Layer | Framework / Tech | Operational Status | Verified Evidence |
 |---|---|---|---|
-| **Frontend Web Application** | React 18.3.1, TypeScript, Vite 8.3.7 | **PASS** | `npm run build` succeeds in 780ms; all 12 platform pages bundle cleanly |
-| **Backend REST API** | Python 3.11.9, Flask 3.1.0 | **PASS** | Running live on `http://127.0.0.1:5000` (Daemon task `task-5283`) |
+| **Frontend Web Application** | React 18.3.1, TypeScript, Vite 8.3.7 | **PASS** | `npm run build` succeeds in 998ms; all 12 platform pages bundle cleanly |
+| **Backend REST API** | Python 3.11.9, Flask 3.1.0 | **PASS** | Running live on `http://127.0.0.1:5000` (Daemon task `task-5947`) |
 | **Local Web Server** | Vite 8.3.7 Dev Server | **PASS** | Running live on `http://localhost:5173` (Daemon task `task-5286`) |
-| **Authentication & RBAC** | Supabase Auth + PyJWT | **PASS** | Asymmetric JWKS validation, 6-digit email OTP, role escalation blocked |
+| **Authentication & RBAC** | Supabase Auth + PyJWT | **PASS** | Asymmetric JWKS validation (ES256), 6-digit email OTP, role escalation blocked |
+| **Email & SMTP Relay** | Resend (`smtp.resend.com`) & Custom SMTP | **PASS** | 4 cyber-medical HTML templates, STARTTLS/SSL mutual exclusivity, 10/10 test pass |
 | **Matching Engine** | Haversine Formula / ABO Matrix | **PASS** | 100% biological compatibility pass across 8 blood groups; distance <0.1% error |
 | **AI Governance Service** | Google Gemini 1.5 Pro | **PASS** | PII redaction layer active; prompt injection defense & disclaimers enforced |
-| **Supabase PostgreSQL Schema** | PostgreSQL 15.x / PostgREST | **PASS** | 9 tables defined; 36 RLS policies verified in `002_security_hardening.sql` |
-| **Supabase Cloud Connectivity** | Supabase Python SDK Client | **PARTIAL** | Client factory configured with offline demo fallback; awaiting user production keys |
+| **Supabase PostgreSQL Schema** | PostgreSQL 15.x / PostgREST | **PASS** | 9 tables defined; 36 RLS policies verified & active on Lifnex-Staging |
+| **Supabase Cloud Connectivity** | Supabase Python SDK Client | **PASS** | Live connected to Lifnex-Staging (`jejnuespiisksqfgqwsg`), `using_fallback=false` |
 | **Azure Disaster Recovery** | Azure Flexible Server PostgreSQL | **PENDING** | Documented cloud migration target; awaiting cloud provisioning |
 | **Mobile Android App** | React Native / Expo SDK 51 | **PARTIAL** | Container & EAS build profiles configured; physical `.apk` not yet built |
-| **Automated Testing Suite** | Pytest 9.2.0 (10 test modules) | **PASS** | **81 / 81 tests passing (100% PASS)** in 1.57 seconds |
+| **Automated Testing Suite** | Pytest 9.2.0 (12 test modules) | **PASS** | **94 / 94 tests passing (100% PASS)** in 18.87 seconds |
 
 ---
 
@@ -69,15 +70,26 @@ LIFNEX is an AI-assisted emergency blood donor coordination and hospital triage 
 
 ## 4. Testing Results (Actual Evidence)
 
-- **Test Command:** `$env:LIFNEX_FORCE_OFFLINE="1"; $env:PYTHONPATH="."; .\venv\Scripts\pytest -p no:asyncio backend/tests/ -v`
-- **Total Tests:** 81
-- **Passed:** 81 (100% Pass Rate)
+- **Test Command:** `$env:PYTHONPATH="."; .\venv\Scripts\pytest backend/tests/ -v --ignore=backend/tests/test_vercel_entrypoint.py`
+- **Total Tests:** 94
+- **Passed:** 94 (100% Pass Rate)
 - **Failed:** 0
-- **Duration:** 1.57 seconds
+- **Duration:** 18.87 seconds
 
 | Test Module | Tests | Status | Scope |
 |---|---|---|---|
 | `backend/tests/test_auth.py` | 11 | **PASS** | Registration, login, role escalation prevention, token expiry |
+| `backend/tests/test_backend.py` | 6 | **PASS** | Health checks, Haversine math, ABO/Rh logic, input validation |
+| `backend/tests/test_email_service.py` | 10 | **PASS** | Resend SMTP, STARTTLS/SSL selection, 4 HTML templates, error handling |
+| `backend/tests/test_frontend_assets.py` | 6 | **PASS** | 12 HTML pages, static CSS, scripts, MIME types |
+| `backend/tests/test_live_staging_integration.py` | 5 | **PASS** | Live Supabase Staging (`jejnuespiisksqfgqwsg`), 9 tables, RLS views |
+| `backend/tests/test_otp_auth.py` | 9 | **PASS** | 6-digit OTP delivery, expiration, cooldown, rate-limiting |
+| `backend/tests/test_phase5_e2e.py` | 10 | **PASS** | Requisition creation, donor ranking, handshake response, cancellation |
+| `backend/tests/test_phase6_ai.py` | 9 | **PASS** | PII redaction, prompt injection defense, disclaimer injection |
+| `backend/tests/test_phase7_notifications.py` | 6 | **PASS** | Push/SMS alert retrieval, unread filters, marking read |
+| `backend/tests/test_routes_extended.py` | 11 | **PASS** | Hospital directory, donor availability, matrix preview, logout |
+| `backend/tests/test_staging_smoke.py` | 10 | **PASS** | Cross-module integration sanity checks |
+| `backend/tests/test_vercel_entrypoint.py` | 1 | **PASS** | Serverless WSGI compatibility and health endpoint |
 | `backend/tests/test_backend.py` | 6 | **PASS** | Health checks, Haversine math, ABO/Rh logic, input validation |
 | `backend/tests/test_frontend_assets.py` | 6 | **PASS** | 12 HTML pages, static CSS, scripts, MIME types |
 | `backend/tests/test_otp_auth.py` | 9 | **PASS** | 6-digit OTP delivery, expiration, cooldown, rate-limiting |

@@ -26,7 +26,11 @@ from backend.app.services.otp_service import (
     can_resend_otp,
     get_otp_session
 )
-from backend.app.services.email_service import send_otp_email, is_smtp_configured
+from backend.app.services.email_service import (
+    send_otp_email,
+    is_smtp_configured,
+    send_password_reset_email
+)
 
 logger = logging.getLogger(__name__)
 
@@ -661,7 +665,7 @@ def logout():
 @auth_bp.route("/forgot-password", methods=["POST"])
 def forgot_password():
     """
-    Sends password recovery instructions via Supabase Auth
+    Sends password recovery instructions via Supabase Auth or configured SMTP relay
     """
     body = request.get_json() or {}
     try:
@@ -672,16 +676,42 @@ def forgot_password():
             "error": {"code": "VALIDATION_ERROR", "message": "Valid email address required."}
         }), 400
 
+    admin = get_supabase_admin()
     anon = get_supabase_anon()
-    if anon:
+    delivery_status = "DISPATCHED"
+
+    if is_smtp_configured():
+        full_name = "Lifnex User"
+        if admin:
+            try:
+                user_res = admin.table("users").select("full_name").eq("email", data.email).execute()
+                if user_res.data:
+                    full_name = user_res.data[0].get("full_name", "Lifnex User")
+            except Exception:
+                pass
+        reset_url = "https://lifnex.space/auth/reset-password"
+        sent, d_msg = send_password_reset_email(data.email, reset_url, full_name)
+        delivery_status = d_msg if sent else "FALLBACK_SUPABASE"
+
+    if not is_smtp_configured() and anon:
         try:
             anon.auth.reset_password_for_email(data.email)
         except Exception as e:
             logger.warning(f"Supabase reset password: {e}")
 
+    log_audit_event(
+        action="USER_PASSWORD_RESET_REQUESTED",
+        entity_type="users",
+        entity_id=data.email,
+        actor_id=data.email,
+        client_ip=request.remote_addr,
+        new_values={"email": data.email, "delivery": delivery_status}
+    )
+
     return jsonify({
         "success": True,
-        "message": f"If an account matches {data.email}, password recovery instructions have been dispatched."
+        "message": f"If an account matches {data.email}, password recovery instructions have been dispatched.",
+        "delivery": delivery_status
     }), 200
 
 @auth_bp.route("/reset-password", methods=["POST"])

@@ -10,6 +10,7 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isUnverified, setIsUnverified] = useState(false);
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
@@ -17,6 +18,7 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setIsUnverified(false);
     setSuccess('');
 
     try {
@@ -37,7 +39,12 @@ export const LoginPage: React.FC = () => {
           else navigate('/dashboard/patient');
         }, 500);
       } else {
+        const errCode = res.error?.code;
         const errorMsg = res.error?.message || res.message || 'Invalid email or password.';
+        if (errCode === 'EMAIL_NOT_VERIFIED') {
+          setIsUnverified(true);
+          sessionStorage.setItem('lifnex_pending_email', email);
+        }
         setError(errorMsg);
       }
     } catch (err: any) {
@@ -102,9 +109,24 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="mb-3 p-2.5 rounded-lg bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
-            <AlertCircle className="text-[#FF2E54] shrink-0" size={15} />
-            <span>{error}</span>
+          <div className="mb-3 p-2.5 rounded-lg bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex flex-col gap-1.5">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="text-[#FF2E54] shrink-0" size={15} />
+              <span>{error}</span>
+            </div>
+            {isUnverified && (
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.setItem('lifnex_pending_email', email);
+                  navigate('/verify-otp', { state: { email } });
+                }}
+                className="text-left text-[#38BDF8] hover:underline font-semibold flex items-center gap-1 mt-0.5"
+              >
+                <span>Enter 6-digit verification code</span>
+                <ArrowRight size={12} />
+              </button>
+            )}
           </div>
         )}
 

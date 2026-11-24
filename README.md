@@ -1,9 +1,10 @@
 # LIFNEX — Connecting Lives When Every Second Matters
 
-[![CI Tests](https://img.shields.io/badge/pytest-81%20passed-brightgreen.svg)]()
+[![CI Tests](https://img.shields.io/badge/pytest-94%20passed-brightgreen.svg)]()
 [![Platform](https://img.shields.io/badge/python-3.11.9-blue.svg)]()
 [![Frontend](https://img.shields.io/badge/React-18.3.1%20%2F%20Vite%208-blueviolet.svg)]()
-[![Database](https://img.shields.io/badge/Supabase-PostgreSQL%2015-emerald.svg)]()
+[![Database](https://img.shields.io/badge/Supabase-Lifnex--Staging%20Connected-emerald.svg)]()
+[![SMTP](https://img.shields.io/badge/SMTP-Resend%20Ready-red.svg)]()
 [![AI Engine](https://img.shields.io/badge/Google%20Gemini-1.5%20Pro-orange.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 
