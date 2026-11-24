@@ -20,6 +20,9 @@ def get_supabase_admin() -> Optional[Client]:
     """
     global _supabase_admin_client
     if _supabase_admin_client is None:
+        import os
+        if os.getenv("LIFNEX_FORCE_OFFLINE") == "1":
+            return None
         if Config.SUPABASE_URL and Config.SUPABASE_SECRET_KEY and Config.SUPABASE_SECRET_KEY != "sb_secret_service_role_key_here":
             try:
                 _supabase_admin_client = create_client(Config.SUPABASE_URL, Config.SUPABASE_SECRET_KEY)
