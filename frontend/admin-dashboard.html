@@ -1,331 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Platform Overview — Lifnex Administration</title>
-
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="/static/css/dashboards.css">
-  
-  <!-- Chart.js for data visualization -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Admin portal, Lifnex</title>
+  <meta name="description" content="Oversee the Lifnex network.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Admin portal, Lifnex">
+  <meta property="og:description" content="Oversee the Lifnex network.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
 </head>
 <body>
-
-  <!-- Demo Disclaimer Banner -->
-  <div class="demo-banner">
-    <div class="container flex justify-between items-center">
-      <div class="demo-banner-text">
-        <span class="demo-tag">Admin Governance Demo</span>
-        <span>Simulated platform metrics and audit logs for academic demonstration and system evaluation.</span>
-      </div>
-      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Return to Public Site</a>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
-
-  <div class="dashboard-wrapper">
-    <!-- Showcase White Sidebar -->
-    <aside class="dashboard-sidebar">
-      <div class="sidebar-brand">
-        <a href="index.html" class="flex items-center gap-2">
-          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
-          <span class="brand-name font-bold text-lg">Lifnex</span>
-        </a>
-      </div>
-
-      <div class="sidebar-user-badge">
-        <div class="user-avatar-circle" style="background:#101b28; color:#ffffff; font-weight:700;">A</div>
-        <div class="user-info-text">
-          <div class="user-display-name">System Administrator</div>
-          <div class="user-role-tag">
-            <span class="badge-portal badge-portal-admin">👑 Super Admin</span>
-          </div>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav">
-        <a href="admin-dashboard.html" class="sidebar-item active">
-          <span class="sidebar-item-icon"><i data-lucide="layout-dashboard"></i></span>
-          <span>Overview</span>
-        </a>
-        <a href="hospitals.html" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="building-2"></i></span>
-          <span>Hospitals</span>
-        </a>
-        <a href="donor-dashboard.html" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="users"></i></span>
-          <span>Donors</span>
-        </a>
-        <a href="patient-dashboard.html" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="activity"></i></span>
-          <span>Requests</span>
-        </a>
-        <a href="#auditTrailSection" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="shield-check"></i></span>
-          <span>Audit Logs</span>
-        </a>
-        
-        <div style="margin-top: 1rem; padding: 0.5rem 0.85rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
-          Switch Portal View
-        </div>
-        <a href="patient-dashboard.html" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="user"></i></span>
-          <span>Patient Portal</span>
-        </a>
-        <a href="donor-dashboard.html" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="heart"></i></span>
-          <span>Donor Portal</span>
-        </a>
-        <a href="hospital-dashboard.html" class="sidebar-item">
-          <span class="sidebar-item-icon"><i data-lucide="cross"></i></span>
-          <span>Hospital Portal</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <a href="login.html" class="btn btn-ghost btn-sm w-full text-slate-500 hover:text-slate-900 justify-start">
-          <i data-lucide="log-out" style="width:16px; height:16px; margin-right:8px;"></i>
-          <span>Sign Out</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="dashboard-main">
-      <header class="dashboard-topbar">
-        <div class="topbar-left">
-          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">&#9776;</button>
-          <div class="dashboard-title">
-            <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--brand-navy); margin: 0;">Platform Overview</h1>
-            <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0.15rem 0 0;">Lifnex Administration</p>
-          </div>
-        </div>
-
-        <div class="topbar-right">
-          <span class="badge badge-portal-admin" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
-            🟢 System Operational
-          </span>
-          <button class="btn btn-secondary btn-sm" onclick="Toast.show('Report Exported', 'Admin audit report generated in demo mode.', 'success')">
-            <i data-lucide="download" style="width:14px; height:14px; margin-right:4px;"></i> Export Telemetry
-          </button>
-        </div>
-      </header>
-
-      <div class="dashboard-body">
-        
-        <!-- Showcase Metrics Row: 1420 Total Users | 1016 Donors | 52 Hospitals | 368 Requests -->
-        <div class="metrics-row mb-6">
-          <div class="metric-card">
-            <div class="metric-icon-box icon-blue">
-              <i data-lucide="users"></i>
-            </div>
-            <div class="metric-info">
-              <h3>1,420</h3>
-              <p>Total Users</p>
-            </div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-icon-box icon-crimson">
-              <i data-lucide="heart"></i>
-            </div>
-            <div class="metric-info">
-              <h3>1,016</h3>
-              <p>Donors</p>
-            </div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-icon-box icon-emerald">
-              <i data-lucide="building-2"></i>
-            </div>
-            <div class="metric-info">
-              <h3>52</h3>
-              <p>Hospitals</p>
-            </div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-icon-box icon-amber">
-              <i data-lucide="activity"></i>
-            </div>
-            <div class="metric-info">
-              <h3>368</h3>
-              <p>Requests</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Showcase Dual Analytics Grid -->
-        <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-          
-          <!-- Emergency Requests (Last 30 Days) - Showcase Line Chart -->
-          <div class="card" style="margin-bottom: 0;">
-            <div class="card-header" style="border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">
-              <div>
-                <h3 class="card-title" style="font-size: 1rem; font-weight: 700; color: var(--brand-navy);">Emergency Requests (Last 30 Days)</h3>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.15rem 0 0;">Volume dispatched through automated proximity matching</p>
-              </div>
-              <span class="badge badge-normal" style="font-size: 0.7rem; font-weight: 600;">+24% vs Last Period</span>
-            </div>
-            <div style="height: 270px; position: relative; padding: 1rem 0.5rem 0.5rem;">
-              <canvas id="emergencyRequestsTrendChart"></canvas>
-            </div>
-          </div>
-
-          <!-- Request Status - Showcase Donut Chart -->
-          <div class="card" style="margin-bottom: 0;">
-            <div class="card-header" style="border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">
-              <div>
-                <h3 class="card-title" style="font-size: 1rem; font-weight: 700; color: var(--brand-navy);">Request Status</h3>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.15rem 0 0;">368 total requisitions tracked</p>
-              </div>
-              <span class="badge badge-success" style="font-size: 0.7rem;">90% Fulfillment</span>
-            </div>
-            <div style="height: 270px; position: relative; padding: 0.5rem;">
-              <canvas id="requestStatusChart"></canvas>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Bottom Grid: Live Audit Log & User Governance -->
-        <div class="grid-2 gap-6 mb-6" id="auditTrailSection">
-          
-          <!-- Security Audit Event Stream -->
-          <div class="card" style="margin-bottom: 0;">
-            <div class="card-header">
-              <div class="flex items-center gap-2">
-                <i data-lucide="shield" style="width: 18px; height: 18px; color: var(--primary);"></i>
-                <div class="card-title" style="font-size: 0.95rem; font-weight: 700;">Live Security & Governance Audit</div>
-              </div>
-              <span class="badge badge-portal-admin font-mono text-[10px]">RLS ENFORCED</span>
-            </div>
-            <div class="space-y-2 text-xs" style="max-height: 280px; overflow-y: auto;">
-              <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-slate-800">REQUEST_CREATED</span>
-                    <span class="badge badge-portal-patient text-[9px] py-0">Patient</span>
-                  </div>
-                  <div class="text-slate-500 font-mono text-[10px] mt-0.5">Req #c1f72944 | Target: O- (2 units) • Metro General</div>
-                </div>
-                <span class="text-slate-400 text-[11px]">2m ago</span>
-              </div>
-              <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-emerald-700">DONOR_RESPOND_ACCEPTED</span>
-                    <span class="badge badge-portal-donor text-[9px] py-0">Donor</span>
-                  </div>
-                  <div class="text-slate-500 font-mono text-[10px] mt-0.5">Donor: Alex Rivera (Demo) -> ETA: 25 min</div>
-                </div>
-                <span class="text-slate-400 text-[11px]">8m ago</span>
-              </div>
-              <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-blue-700">HOSPITAL_VERIFIED</span>
-                    <span class="badge badge-portal-hospital text-[9px] py-0">Hospital</span>
-                  </div>
-                  <div class="text-slate-500 font-mono text-[10px] mt-0.5">City Care Super Specialty certified cross-match</div>
-                </div>
-                <span class="text-slate-400 text-[11px]">14m ago</span>
-              </div>
-              <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-purple-700">COOLDOWN_ACTIVATED</span>
-                    <span class="badge badge-normal text-[9px] py-0">Safety</span>
-                  </div>
-                  <div class="text-slate-500 font-mono text-[10px] mt-0.5">90-day cooldown applied to donor after verified donation</div>
-                </div>
-                <span class="text-slate-400 text-[11px]">32m ago</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Hospital Verification & Governance Queue -->
-          <div class="card" style="margin-bottom: 0;">
-            <div class="card-header">
-              <div class="flex items-center gap-2">
-                <i data-lucide="check-circle-2" style="width: 18px; height: 18px; color: var(--teal-500);"></i>
-                <div class="card-title" style="font-size: 0.95rem; font-weight: 700;">Partner Hospital Accreditation</div>
-              </div>
-              <span class="text-xs text-slate-500">52 Active</span>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Institution</th>
-                    <th>Status</th>
-                    <th>License</th>
-                    <th style="text-align: right;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div class="font-bold text-xs text-slate-900">City Care Super Specialty</div>
-                      <div class="text-[10px] text-slate-400">Metropolis Central</div>
-                    </td>
-                    <td><span class="badge badge-portal-hospital">Accredited</span></td>
-                    <td class="text-xs font-mono text-slate-600">LIC-2026-091</td>
-                    <td style="text-align: right;">
-                      <button class="btn btn-sm btn-secondary text-xs py-1" onclick="Toast.show('Accreditation Valid', 'City Care license verified through registry.', 'info')">Review</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="font-bold text-xs text-slate-900">Metro Trauma Center</div>
-                      <div class="text-[10px] text-slate-400">North Sector</div>
-                    </td>
-                    <td><span class="badge badge-portal-hospital">Accredited</span></td>
-                    <td class="text-xs font-mono text-slate-600">LIC-2026-114</td>
-                    <td style="text-align: right;">
-                      <button class="btn btn-sm btn-secondary text-xs py-1" onclick="Toast.show('Accreditation Valid', 'Metro Trauma Center credentials confirmed.', 'info')">Review</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="font-bold text-xs text-slate-900">Apex Regional Blood Bank</div>
-                      <div class="text-[10px] text-slate-400">East District</div>
-                    </td>
-                    <td><span class="badge badge-success">Cold-Chain OK</span></td>
-                    <td class="text-xs font-mono text-slate-600">LIC-2026-402</td>
-                    <td style="text-align: right;">
-                      <button class="btn btn-sm btn-secondary text-xs py-1" onclick="Toast.show('Accreditation Valid', 'Apex Regional cold storage verified.', 'info')">Review</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </main>
-  </div>
-
-  <!-- Scripts -->
-  <script src="/static/js/main.js"></script>
-  <script src="/static/js/charts.js"></script>
-  <script src="/static/js/dashboards.js"></script>
-  <script>
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-  </script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

@@ -1,25 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lifnex — Connecting Lives When Every Second Matters | 3D Emergency Blood Network</title>
+  <title>Lifnex: Connecting Lives When Every Second Matters</title>
   <meta name="description" content="AI-powered emergency blood donor coordination platform connecting patients requiring blood with verified voluntary donors, hospitals, and blood banks.">
-  <link rel="icon" type="image/svg+xml" href="/static/assets/branding/favicon.svg">
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="/static/css/dashboards.css">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Lifnex: Connecting Lives When Every Second Matters">
+  <meta property="og:description" content="AI-powered emergency blood donor coordination platform connecting patients requiring blood with verified voluntary donors, hospitals, and blood banks.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
 </head>
 <body>
-  <!-- Fallback static anchors for search engines and testing harnesses -->
   <div id="root">
     <div style="display:none;">
       <h1>Lifnex</h1>
       <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

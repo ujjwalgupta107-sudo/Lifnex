@@ -1,249 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Donor Dashboard — Lifnex Healthcare</title>
-
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="/static/css/dashboards.css">
-  <!-- Leaflet CSS for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Donor portal, Lifnex</title>
+  <meta name="description" content="See nearby alerts and respond to emergency requests.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Donor portal, Lifnex">
+  <meta property="og:description" content="See nearby alerts and respond to emergency requests.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
 </head>
 <body>
-
-  <!-- Demo Disclaimer Banner -->
-  <div class="demo-banner">
-    <div class="container flex justify-between items-center">
-      <div class="demo-banner-text">
-        <span class="demo-tag">Donor Portal</span>
-        <span>Voluntary donor demonstration interface with interactive availability toggle and dispatch simulation.</span>
-      </div>
-      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Return to Public Site</a>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
-
-  <div class="dashboard-wrapper">
-    <!-- Sidebar (Showcase White Design) -->
-    <aside class="dashboard-sidebar" id="dashboardSidebar">
-      <div class="sidebar-brand">
-        <a href="index.html" class="brand-link">
-          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" class="brand-logo-img">
-          <div class="brand-title-wrap">
-            <span class="brand-name">Lif<span class="brand-nex">nex</span></span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="sidebar-nav">
-        <a href="donor-dashboard.html" class="sidebar-item active">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          </span>
-          <span>Dashboard</span>
-        </a>
-        <a href="#requestsNearYou" class="sidebar-item">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-          </span>
-          <span>Emergency Requests</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('My Responses', 'You have accepted 3 historical donation requests.', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </span>
-          <span>My Responses</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Donation History', '3 verified whole-blood donations on record.', 'success')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-          </span>
-          <span>Donation History</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Notifications', 'No unread urgent alerts.', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          </span>
-          <span>Notifications</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Profile', 'Anita - Blood Group O+ (Verified Donor)', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          </span>
-          <span>Profile</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Settings', 'Geofence radius set to 15 km.', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          </span>
-          <span>Settings</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <a href="login.html" class="sidebar-item" style="color: #e11d48;">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          </span>
-          <span>Logout</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="dashboard-main">
-      <!-- Topbar with Portal Badge, Bell and Initial Avatar -->
-      <header class="dashboard-topbar">
-        <div class="topbar-left">
-          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Menu">&#9776;</button>
-          <div class="badge-portal badge-portal-donor">
-            <span>🟢</span>
-            <span>Donor Dashboard</span>
-          </div>
-        </div>
-
-        <div class="topbar-right">
-          <!-- Notification Bell -->
-          <button class="topbar-bell-btn" id="notifBellBtn" title="Notifications">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <span class="topbar-bell-dot"></span>
-          </button>
-
-          <!-- User Initial Avatar (Anita) -->
-          <div class="topbar-user-avatar" title="Anita - Verified Voluntary Donor">A</div>
-        </div>
-      </header>
-
-      <!-- Dashboard Body -->
-      <div class="dashboard-body">
-        
-        <!-- Greeting & Availability Toggle Row (Showcase Aligned) -->
-        <div class="dashboard-greeting-row">
-          <div class="dashboard-greeting">
-            <h1>Welcome, Anita</h1>
-            <p>Manage your requests</p>
-          </div>
-
-          <!-- Available to Donate Switch Toggle -->
-          <div class="donor-availability-widget">
-            <span class="donor-availability-label">Available to Donate</span>
-            <label class="toggle-switch-wrapper">
-              <input type="checkbox" id="donorAvailabilityToggle" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Showcase 4-Stat KPI Metrics Row -->
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-val val-crimson">O+</div>
-            <div class="metric-lbl">Blood Group</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-teal">8</div>
-            <div class="metric-lbl">Requests Nearby</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">3</div>
-            <div class="metric-lbl">Donations</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">12 km</div>
-            <div class="metric-lbl">Avg. Distance</div>
-          </div>
-        </div>
-
-        <!-- Showcase Emergency Requests Near You Card -->
-        <div class="showcase-card" id="requestsNearYou">
-          <div class="showcase-card-header">
-            <div class="showcase-card-title">Emergency Requests Near You</div>
-            <a href="#" class="showcase-view-all">View All &rarr;</a>
-          </div>
-
-          <!-- Urgent Request Item Card (Showcase Aligned) -->
-          <div class="donor-urgent-card">
-            <div class="donor-urgent-left">
-              <div class="blood-drop-circle">🩸</div>
-              <div class="request-item-text">
-                <div class="flex items-center gap-2">
-                  <h4 style="font-size: 1.15rem; font-weight: 800; color: #101b28;">O+ &bull; 1 Unit &bull; <span style="color: #e11d48;">High</span></h4>
-                </div>
-                <p style="color: #64748b; font-size: 0.875rem;">Metro Hospital &bull; 5.2 km away</p>
-              </div>
-            </div>
-
-            <!-- Action Buttons: I'm Interested & Decline -->
-            <div class="donor-urgent-actions">
-              <button class="btn-teal-action" onclick="Toast.show('Dispatch Confirmed', 'Response registered! Metro Hospital has been informed of your arrival in 25 mins.', 'success')">
-                I'm Interested
-              </button>
-              <button class="btn-decline-action" onclick="Toast.show('Request Passed', 'Alert removed from your immediate priority feed.', 'info')">
-                Decline
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Geospatial Radar Map -->
-        <div class="showcase-card">
-          <div class="showcase-card-header">
-            <div class="showcase-card-title">Proximity Radar & Local Dispatch Map</div>
-            <span class="badge-status-pill badge-status-matched">15 km Radar Active</span>
-          </div>
-          <div id="donorMap" style="height: 360px; width: 100%; border-radius: 8px; z-index: 10;"></div>
-        </div>
-
-      </div>
-    </main>
-  </div>
-
-  <!-- Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/static/js/main.js"></script>
-  <script src="/static/js/dashboards.js"></script>
-  <script src="/static/js/maps.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Toggle Availability handler
-      const toggle = document.getElementById("donorAvailabilityToggle");
-      if (toggle) {
-        toggle.addEventListener("change", function() {
-          const status = this.checked ? "available" : "unavailable";
-          if (window.Toast) {
-            Toast.show("Availability Updated", "Your status is now " + (this.checked ? "ACTIVE (receiving requests)" : "PAUSED"), this.checked ? "success" : "info");
-          }
-        });
-      }
-
-      // Initialize Donor Leaflet Map centered on Delhi
-      if (document.getElementById("donorMap")) {
-        const map = L.map("donorMap").setView([28.6220, 77.2005], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Emergency Request Location Marker
-        L.marker([28.6220, 77.2005]).addTo(map)
-          .bindPopup("<strong>Metro Central Trauma Center</strong><br>High Urgency O+ Requisition<br>Distance: 5.2 km")
-          .openPopup();
-
-        // Donor Geofence Radar Circle
-        L.circle([28.6145, 77.2100], {
-          color: '#e11d48',
-          fillColor: '#fecdd3',
-          fillOpacity: 0.35,
-          radius: 1200
-        }).addTo(map).bindPopup("<strong>Your Location (Obfuscated)</strong><br>Active within 15 km Radius");
-      }
-    });
-  </script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

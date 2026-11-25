@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import { MetricValue } from '../../components/ui/MetricValue';
+import { motion } from 'framer-motion';
 import { 
   PlusCircle, Activity, ShieldCheck, Clock, MapPin, 
   CheckCircle, AlertCircle, RefreshCw, X, Send, Eye,
@@ -137,21 +139,21 @@ export const PatientDashboard: React.FC = () => {
   };
 
   return (
-    <div className="container py-8 max-w-7xl">
+    <div className="dash py-8 max-w-7xl">
       {feedback && (
         <div 
-          className={`mb-5 p-3.5 rounded-xl text-sm flex items-center justify-between shadow-lg ${
+          role="status" className={`dash-toast text-[15px] flex items-center justify-between  ${
             feedback.type === 'success' 
-              ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-200' 
-              : 'bg-red-950/80 border border-red-500/50 text-red-200'
+              ? 'toast-ok' 
+              : 'bg-red-wash border border-line text-red-ink'
           }`}
-          style={{ backdropFilter: 'blur(16px)' }}
+          style={{  }}
         >
           <div className="flex items-center gap-2.5">
-            {feedback.type === 'success' ? <CheckCircle size={18} className="text-emerald-400 shrink-0" /> : <AlertCircle size={18} className="text-[#FF2E54] shrink-0" />}
+            {feedback.type === 'success' ? <CheckCircle size={18} className="text-ok-ink shrink-0" /> : <AlertCircle size={18} className="text-red-ink shrink-0" />}
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => setFeedback(null)} className="text-muted hover:text-ink transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -160,16 +162,16 @@ export const PatientDashboard: React.FC = () => {
       {/* Top Greeting Header */}
       <div className="dashboard-greeting-row mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Patient Emergency Portal</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">Broadcast immediate blood unit requirements to local voluntary donor meshes</p>
+          <h1 className="dash-title">Patient Emergency Portal</h1>
+          <p className="text-[13.5px] sm:text-[15px] text-muted mt-1">Broadcast immediate blood unit requirements to local voluntary donor meshes</p>
         </div>
         {activeTab === 'requests' ? (
           <button 
             onClick={() => setActiveTab('create')} 
-            className="btn btn-primary text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-lg"
+            className="btn btn-primary text-[13.5px] py-2.5 px-4 rounded-xl flex items-center gap-2 "
             style={{
-              background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-              boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)',
+              background: 'var(--red)',
+              boxShadow: 'none',
             }}
           >
             <PlusCircle size={15} />
@@ -178,7 +180,7 @@ export const PatientDashboard: React.FC = () => {
         ) : (
           <button 
             onClick={() => setActiveTab('requests')} 
-            className="btn btn-secondary text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 border border-white/10 hover:border-white/20"
+            className="btn btn-secondary text-[13.5px] py-2.5 px-4 rounded-xl flex items-center gap-2 border border-line hover:border-line-strong"
           >
             <Activity size={15} />
             <span>View Active Requisitions ({myRequests.length})</span>
@@ -189,41 +191,31 @@ export const PatientDashboard: React.FC = () => {
       {/* 4 Stats Cards */}
       <div className="metrics-row mb-8">
         <div className="metric-card">
-          <div className="metric-val val-crimson">{myRequests.filter(r => r.status === 'open' || r.status === 'in_progress').length || 1}</div>
+          <MetricValue className="metric-val val-crimson">{myRequests.filter(r => r.status === 'open' || r.status === 'in_progress').length || 1}</MetricValue>
           <div className="metric-lbl">Active Requisitions</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-teal">{matchingDonors.length || 17}</div>
+          <MetricValue className="metric-val val-teal">{matchingDonors.length || 17}</MetricValue>
           <div className="metric-lbl">Matching Donors</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-navy">City Care</div>
+          <MetricValue className="metric-val val-navy">City Care</MetricValue>
           <div className="metric-lbl">Receiving Hospital</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-navy">25 min</div>
+          <MetricValue className="metric-val val-navy">25 min</MetricValue>
           <div className="metric-lbl">Fastest Arrival ETA</div>
         </div>
       </div>
 
       {/* Upgraded Left-Aligned Tab Navigation Bar */}
       <div 
-        className="flex items-center justify-between mb-6 pb-4 border-b border-white/10"
-        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}
+        className="flex items-center justify-between mb-6 pb-4 border-b border-line"
+        style={{ borderBottom: '1px solid var(--line)' }}
       >
         {/* Left Side: Modern Dual Tabs */}
         <div 
           className="dashboard-tab-group"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            borderRadius: '14px',
-            padding: '5px',
-            backdropFilter: 'blur(16px)',
-          }}
         >
           {/* Tab 1: My Requests */}
           <button
@@ -231,37 +223,12 @@ export const PatientDashboard: React.FC = () => {
             id="tab-btn-requests"
             onClick={() => setActiveTab('requests')}
             className={`dashboard-tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '0.65rem 1.15rem',
-              borderRadius: '10px',
-              fontSize: '0.8125rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              border: activeTab === 'requests' ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid transparent',
-              background: activeTab === 'requests' ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'transparent',
-              color: activeTab === 'requests' ? '#FFFFFF' : '#94A3B8',
-              boxShadow: activeTab === 'requests' ? '0 4px 14px rgba(255, 46, 84, 0.45)' : 'none',
-            }}
           >
+            {activeTab === 'requests' && <motion.span layoutId="dash-plate" className="dash-plate" transition={{ type: 'spring', duration: 0.5, bounce: 0.18 }} />}
             <Activity size={15} />
             <span>My Requests</span>
             <span 
               className="dashboard-tab-badge"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '2px 7px',
-                borderRadius: '9999px',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                background: activeTab === 'requests' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                color: activeTab === 'requests' ? '#FFFFFF' : '#CBD5E1',
-              }}
             >
               {myRequests.length}
             </span>
@@ -273,22 +240,8 @@ export const PatientDashboard: React.FC = () => {
             id="tab-btn-create"
             onClick={() => setActiveTab('create')}
             className={`dashboard-tab-btn ${activeTab === 'create' ? 'active' : ''}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '0.65rem 1.15rem',
-              borderRadius: '10px',
-              fontSize: '0.8125rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              border: activeTab === 'create' ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid transparent',
-              background: activeTab === 'create' ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'transparent',
-              color: activeTab === 'create' ? '#FFFFFF' : '#94A3B8',
-              boxShadow: activeTab === 'create' ? '0 4px 14px rgba(255, 46, 84, 0.45)' : 'none',
-            }}
           >
+            {activeTab === 'create' && <motion.span layoutId="dash-plate" className="dash-plate" transition={{ type: 'spring', duration: 0.5, bounce: 0.18 }} />}
             <PlusCircle size={15} />
             <span>New Emergency Request</span>
             <span 
@@ -296,27 +249,27 @@ export const PatientDashboard: React.FC = () => {
                 width: '7px',
                 height: '7px',
                 borderRadius: '50%',
-                background: activeTab === 'create' ? '#FFFFFF' : '#FF2E54',
+                background: activeTab === 'create' ? 'var(--on-red)' : 'var(--red-ink)',
                 display: 'inline-block',
-                boxShadow: '0 0 6px #FF2E54',
+                boxShadow: 'none',
               }}
             ></span>
           </button>
         </div>
 
         {/* Right Side: Live Triage Network Indicator */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-slate-400">
+        <div className="hidden md:flex items-center gap-2 text-[13.5px] text-muted">
           <span 
             style={{
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              background: '#10B981',
+              background: 'var(--ok)',
               display: 'inline-block',
-              boxShadow: '0 0 8px #10B981',
+              boxShadow: 'none',
             }}
           ></span>
-          <span>Triage Grid Online • Sub-Second Dispatch</span>
+          <span>Triage Grid Online, Sub-Second Dispatch</span>
         </div>
       </div>
 
@@ -328,9 +281,9 @@ export const PatientDashboard: React.FC = () => {
           {/* Left: Requisitions List */}
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-ink flex items-center gap-2">
                 <span>Submitted Requests</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                <span className="text-[13.5px] px-2 py-0.5 rounded-full bg-sunk text-muted font-mono">
                   {myRequests.length} Total
                 </span>
               </h2>
@@ -341,44 +294,44 @@ export const PatientDashboard: React.FC = () => {
                 className="btn btn-secondary btn-sm"
                 style={{
                   padding: '0.4rem 0.85rem',
-                  fontSize: '0.75rem',
+                  fontSize: '0.8rem',
                   fontWeight: 600,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#CBD5E1',
+                  background: 'var(--sunk)',
+                  border: '1px solid var(--line)',
+                  color: 'var(--muted)',
                   cursor: 'pointer',
                 }}
               >
-                <RefreshCw size={13} className={loading ? 'animate-spin text-[#FF2E54]' : ''} />
+                <RefreshCw size={13} className={loading ? 'animate-spin text-red-ink' : ''} />
                 <span>Refresh Feed</span>
               </button>
             </div>
 
             {myRequests.length === 0 ? (
               <div 
-                className="card text-center text-slate-400"
+                className="card text-center text-muted"
                 style={{
                   padding: '3rem 2rem',
-                  background: 'rgba(15, 23, 42, 0.7)',
-                  border: '1px dashed rgba(255, 255, 255, 0.15)',
+                  background: 'var(--surface)',
+                  border: '1px dashed var(--line)',
                   borderRadius: '16px',
                 }}
               >
-                <Droplets size={36} className="mx-auto mb-3 text-slate-500 opacity-60" />
-                <h3 className="text-base font-bold text-white mb-1">No Emergency Requests Dispatched</h3>
-                <p className="text-xs text-slate-400 max-w-md mx-auto mb-4">
+                <Droplets size={36} className="mx-auto mb-3 text-faint opacity-60" />
+                <h3 className="text-base font-bold text-ink mb-1">No Emergency Requests Dispatched</h3>
+                <p className="text-[13.5px] text-muted max-w-md mx-auto mb-4">
                   Broadcast an emergency blood requisition across our verified voluntary donor network in seconds.
                 </p>
                 <button 
                   onClick={() => setActiveTab('create')} 
-                  className="btn btn-primary btn-sm text-xs font-bold py-2 px-4 rounded-xl"
+                  className="btn btn-primary btn-sm text-[13.5px] font-bold py-2 px-4 rounded-xl"
                   style={{
-                    background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-                    boxShadow: '0 4px 12px rgba(255, 46, 84, 0.35)',
+                    background: 'var(--red)',
+                    boxShadow: 'none',
                   }}
                 >
                   Create Emergency Requisition →
@@ -397,14 +350,14 @@ export const PatientDashboard: React.FC = () => {
                       cursor: 'pointer',
                       borderRadius: '14px',
                       background: isSelected 
-                        ? 'rgba(17, 24, 39, 0.95)' 
-                        : 'rgba(15, 23, 42, 0.65)',
+                        ? 'var(--surface)' 
+                        : 'var(--surface)',
                       border: isSelected 
-                        ? '1px solid #FF2E54' 
-                        : '1px solid rgba(255, 255, 255, 0.08)',
+                        ? '1px solid var(--red)' 
+                        : '1px solid var(--line)',
                       boxShadow: isSelected 
-                        ? '0 10px 25px rgba(255, 46, 84, 0.15), 0 0 15px rgba(255, 46, 84, 0.1)' 
-                        : '0 4px 15px rgba(0, 0, 0, 0.3)',
+                        ? 'none' 
+                        : 'none',
                     }}
                     onClick={() => {
                       setSelectedRequestId(req.id);
@@ -415,65 +368,65 @@ export const PatientDashboard: React.FC = () => {
                       <div className="flex items-center gap-2.5">
                         <span 
                           style={{
-                            background: 'rgba(255, 46, 84, 0.15)',
-                            color: '#FF2E54',
-                            border: '1px solid rgba(255, 46, 84, 0.3)',
+                            background: 'var(--red-wash)',
+                            color: 'var(--red-ink)',
+                            border: '1px solid transparent',
                             padding: '0.2rem 0.6rem',
                             borderRadius: '6px',
-                            fontWeight: 800,
+                            fontWeight: 700,
                             fontSize: '0.85rem',
                           }}
                         >
                           {req.blood_group}
                         </span>
-                        <span className="text-white font-bold text-sm tracking-tight">
+                        <span className="text-ink font-bold text-[15px] tracking-tight">
                           {req.units_required} Units Required
                         </span>
                       </div>
                       
                       <span 
                         style={{
-                          fontSize: '0.7rem',
+                          fontSize: '0.8rem',
                           fontWeight: 700,
                           padding: '0.2rem 0.6rem',
                           borderRadius: '9999px',
-                          textTransform: 'uppercase',
+                          
                           background: isCancelled 
-                            ? 'rgba(100, 116, 139, 0.2)' 
+                            ? 'var(--sunk)' 
                             : req.status === 'open' 
-                              ? 'rgba(245, 158, 11, 0.2)' 
-                              : 'rgba(16, 185, 129, 0.2)',
+                              ? 'var(--plasma-wash)' 
+                              : 'var(--ok-wash)',
                           color: isCancelled 
-                            ? '#94A3B8' 
+                            ? 'var(--muted)' 
                             : req.status === 'open' 
-                              ? '#FBBF24' 
-                              : '#34D399',
-                          border: `1px solid ${isCancelled ? 'rgba(100, 116, 139, 0.3)' : req.status === 'open' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
+                              ? 'var(--plasma-ink)' 
+                              : 'var(--ok-ink)',
+                          border: `1px solid ${isCancelled ? 'var(--sunk)' : req.status === 'open' ? 'var(--plasma-wash)' : 'var(--ok-wash)'}`,
                         }}
                       >
                         {req.status?.toUpperCase() || 'ACTIVE'}
                       </span>
                     </div>
 
-                    <p className="text-xs text-slate-300 font-medium mb-1.5 flex items-center gap-1.5">
-                      <Building2 size={13} className="text-slate-400" />
+                    <p className="text-[13.5px] text-muted font-medium mb-1.5 flex items-center gap-1.5">
+                      <Building2 size={13} className="text-muted" />
                       <span>{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
                     </p>
                     
-                    <p className="text-[11px] text-slate-400 mb-3 bg-black/20 p-2 rounded-lg border border-white/5">
+                    <p className="text-[12.5px] text-muted mb-3 bg-sunk p-2 rounded-lg border border-line">
                       {req.clinical_notes || 'Trauma surgery priority requisition.'}
                     </p>
 
                     <div 
-                      className="flex justify-between items-center text-xs pt-2.5 border-t border-white/10"
-                      style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
+                      className="flex justify-between items-center text-[13.5px] pt-2.5 border-t border-line"
+                      style={{ borderTop: '1px solid var(--line)' }}
                     >
                       <div className="flex items-center gap-1.5">
-                        <span className="text-slate-400 text-[11px]">Urgency:</span>
+                        <span className="text-muted text-[12.5px]">Urgency:</span>
                         <span 
                           style={{
                             fontWeight: 700,
-                            color: req.urgency_level === 'critical' ? '#FF2E54' : req.urgency_level === 'urgent' ? '#F59E0B' : '#38BDF8',
+                            color: req.urgency_level === 'critical' ? 'var(--red-ink)' : req.urgency_level === 'urgent' ? 'var(--plasma-ink)' : 'var(--info-ink)',
                             textTransform: 'capitalize',
                           }}
                         >
@@ -483,7 +436,7 @@ export const PatientDashboard: React.FC = () => {
 
                       <div className="flex items-center gap-3">
                         {isSelected && (
-                          <span className="text-[10px] text-[#38BDF8] font-bold flex items-center gap-1">
+                          <span className="text-[12.5px] text-info-ink font-bold flex items-center gap-1">
                             <Check size={11} /> Donors Loaded Below
                           </span>
                         )}
@@ -496,22 +449,22 @@ export const PatientDashboard: React.FC = () => {
                             }} 
                             style={{
                               padding: '0.25rem 0.7rem',
-                              fontSize: '0.725rem',
+                              fontSize: '0.8rem',
                               fontWeight: 600,
-                              color: '#FF2E54',
-                              background: 'rgba(255, 46, 84, 0.08)',
-                              border: '1px solid rgba(255, 46, 84, 0.25)',
+                              color: 'var(--red-ink)',
+                              background: 'var(--red-wash)',
+                              border: '1px solid transparent',
                               borderRadius: '6px',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
                             }}
                             onMouseOver={(e) => {
-                              e.currentTarget.style.background = 'rgba(255, 46, 84, 0.2)';
-                              e.currentTarget.style.borderColor = '#FF2E54';
+                              e.currentTarget.style.background = 'var(--red-wash)';
+                              e.currentTarget.style.borderColor = 'var(--red-ink)';
                             }}
                             onMouseOut={(e) => {
-                              e.currentTarget.style.background = 'rgba(255, 46, 84, 0.08)';
-                              e.currentTarget.style.borderColor = 'rgba(255, 46, 84, 0.25)';
+                              e.currentTarget.style.background = 'var(--red-wash)';
+                              e.currentTarget.style.borderColor = 'var(--red-wash)';
                             }}
                           >
                             Cancel Requisition
@@ -529,56 +482,49 @@ export const PatientDashboard: React.FC = () => {
           <div className="lg:col-span-5">
             <div 
               className="card"
-              style={{
-                padding: '1.5rem',
-                background: 'rgba(15, 23, 42, 0.85)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
-              }}
             >
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-base font-bold text-white tracking-tight">Discovered Compatible Donors</h2>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
+                <h2 className="text-base font-bold text-ink tracking-tight">Discovered Compatible Donors</h2>
+                <span className="text-[12.5px] px-2 py-0.5 rounded-full bg-ok-wash text-ok-ink border border-line font-bold">
                   {matchingDonors.length} ONLINE
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mb-4">Haversine distance computed from receiving hospital coordinates</p>
+              <p className="text-[13.5px] text-muted mb-4">Haversine distance computed from receiving hospital coordinates</p>
 
               {matchingDonors.length === 0 ? (
-                <div className="p-6 text-center text-slate-400 border border-white/5 rounded-xl bg-slate-950/40">
-                  <Activity size={24} className="mx-auto mb-2 text-slate-600" />
-                  <p className="text-xs">No active donors discovered in travel radius for this requisition yet.</p>
+                <div className="p-6 text-center text-muted border border-line rounded-xl bg-sunk">
+                  <Activity size={24} className="mx-auto mb-2 text-faint" />
+                  <p className="text-[13.5px]">No active donors discovered in travel radius for this requisition yet.</p>
                 </div>
               ) : (
                 <div className="space-y-2.5">
                   {matchingDonors.map((donor, idx) => (
                     <div 
                       key={donor.donor_id || idx} 
-                      className="p-3 rounded-xl bg-slate-950/70 border border-white/10 text-xs space-y-1.5 transition-all hover:border-[#FF2E54]/40"
+                      className="p-3 rounded-xl bg-sunk border border-line text-[13.5px] space-y-1.5 transition-all hover:border-red-ink/40"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-bold text-white flex items-center gap-1.5">
-                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
+                        <span className="font-bold text-ink flex items-center gap-1.5">
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ok)', display: 'inline-block' }}></span>
                           Donor #{donor.donor_id?.slice(0, 8) || 'Verified'}
                         </span>
                         <span 
                           style={{
-                            background: 'rgba(16, 185, 129, 0.15)',
-                            color: '#34D399',
-                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            background: 'var(--ok-wash)',
+                            color: 'var(--ok-ink)',
+                            border: '1px solid transparent',
                             padding: '0.15rem 0.5rem',
                             borderRadius: '9999px',
-                            fontSize: '0.68rem',
+                            fontSize: '0.8rem',
                             fontWeight: 700,
                           }}
                         >
                           {donor.blood_group} Compatible
                         </span>
                       </div>
-                      <div className="flex justify-between text-slate-400 text-[11px] pt-1 border-t border-white/5">
-                        <span>Approx. Distance: <strong className="text-slate-200">{donor.distance_km || 2.4} km</strong></span>
-                        <span>Estimated Arrival: <strong className="text-[#38BDF8]">{donor.estimated_arrival_minutes || 25} mins</strong></span>
+                      <div className="flex justify-between text-muted text-[12.5px] pt-1 border-t border-line">
+                        <span>Approx. Distance: <strong className="text-ink">{donor.distance_km || 2.4} km</strong></span>
+                        <span>Estimated Arrival: <strong className="text-info-ink">{donor.estimated_arrival_minutes || 25} mins</strong></span>
                       </div>
                     </div>
                   ))}
@@ -597,22 +543,22 @@ export const PatientDashboard: React.FC = () => {
           <div 
             style={{
               padding: '2rem',
-              background: 'rgba(11, 17, 32, 0.95)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
               borderRadius: '16px',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 46, 84, 0.06)',
-              backdropFilter: 'blur(20px)',
+              boxShadow: 'none',
+              
             }}
           >
             {/* Form Card Header */}
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FF2E54]/15 text-[#FF2E54] border border-[#FF2E54]/25">
+              <span className="text-[12.5px] font-bold  px-2 py-0.5 rounded bg-red-wash text-red-ink border border-red">
                 ● INSTANT GEOSPATIAL BROADCAST
               </span>
               <button 
                 type="button" 
                 onClick={() => setActiveTab('requests')}
-                className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                className="text-muted hover:text-ink transition-colors p-1.5 rounded-lg hover:bg-sunk"
                 title="Close"
               >
                 <X size={18} />
@@ -620,18 +566,18 @@ export const PatientDashboard: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <h2 className="text-xl font-bold text-white tracking-tight">
+              <h2 className="text-xl font-bold text-ink tracking-tight">
                 Submit Emergency Blood Requisition
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-[13.5px] text-muted mt-0.5">
                 Coordinates and blood specifications will immediately broadcast to voluntary donors
               </p>
             </div>
 
             {/* Clean Presets */}
             <div className="mb-4">
-              <span className="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">
-                ⚡ QUICK-FILL REQUISITION PRESETS
+              <span className="text-[12.5px] font-bold text-muted block mb-1.5 ">
+                Quick-fill presets
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {[
@@ -645,17 +591,17 @@ export const PatientDashboard: React.FC = () => {
                       key={p.label}
                       type="button"
                       onClick={() => applyPreset(p.group, p.u, p.urg as any, p.note)}
-                      className={`text-xs p-2 rounded-xl border text-left transition-all ${
+                      className={`text-[13.5px] p-2 rounded-xl border text-left transition-all ${
                         isSelected
-                          ? 'bg-[#FF2E54]/20 border-[#FF2E54] text-white'
-                          : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                          ? 'bg-red-wash border-red text-red-ink'
+                          : 'bg-sunk border-line text-muted hover:border-line-strong hover:text-ink'
                       }`}
                     >
                       <div className="font-bold flex items-center justify-between">
                         <span>{p.label}</span>
-                        <span className="text-[#FF2E54] font-extrabold">{p.u}U</span>
+                        <span className="text-red-ink font-bold">{p.u}U</span>
                       </div>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">{p.group} • {p.urg}</span>
+                      <span className="text-[12.5px] text-muted block mt-0.5">{p.group}, {p.urg}</span>
                     </button>
                   );
                 })}
@@ -666,11 +612,11 @@ export const PatientDashboard: React.FC = () => {
               {/* Blood Group and Units Required */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-group mb-0">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                    Blood Group Required <span className="text-[#FF2E54]">*</span>
+                  <label className="text-[13.5px] font-semibold text-muted block mb-1.5">
+                    Blood Group Required <span className="text-red-ink">*</span>
                   </label>
                   <select 
-                    className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                    className="form-control text-[15px] py-2 px-3 bg-sunk border-line text-ink rounded-lg "
                     value={bloodGroup} 
                     onChange={(e) => setBloodGroup(e.target.value)}
                   >
@@ -681,15 +627,15 @@ export const PatientDashboard: React.FC = () => {
                 </div>
 
                 <div className="form-group mb-0">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                    Units Required (Whole Blood / RBC) <span className="text-[#FF2E54]">*</span>
+                  <label className="text-[13.5px] font-semibold text-muted block mb-1.5">
+                    Units Required (Whole Blood / RBC) <span className="text-red-ink">*</span>
                   </label>
                   <div className="flex items-center gap-2">
                     <input 
                       type="number"
                       min={1}
                       max={10}
-                      className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] flex-1"
+                      className="form-control text-[15px] py-2 px-3 bg-sunk border-line text-ink rounded-lg  flex-1"
                       value={units}
                       onChange={(e) => setUnits(Math.max(1, parseInt(e.target.value) || 1))}
                     />
@@ -699,10 +645,10 @@ export const PatientDashboard: React.FC = () => {
                           key={u}
                           type="button"
                           onClick={() => setUnits(u)}
-                          className={`text-xs px-2.5 py-2 rounded-lg border font-bold transition-all ${
+                          className={`text-[13.5px] px-2.5 py-2 rounded-lg border font-bold transition-all ${
                             units === u 
-                              ? 'bg-[#FF2E54] border-[#FF2E54] text-white shadow-sm' 
-                              : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
+                              ? 'bg-red border-red text-on-red shadow-sm' 
+                              : 'bg-sunk border-line text-muted hover:bg-sunk hover:text-ink'
                           }`}
                         >
                           {u}U
@@ -715,14 +661,14 @@ export const PatientDashboard: React.FC = () => {
 
               {/* Urgency Classification */}
               <div className="form-group mb-0">
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                  Urgency Level <span className="text-[#FF2E54]">*</span>
+                <label className="text-[13.5px] font-semibold text-muted block mb-1.5">
+                  Urgency Level <span className="text-red-ink">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-2.5">
                   {[
-                    { id: 'critical', label: 'Critical', desc: 'Immediate surgery', dot: '#FF2E54', activeClass: 'bg-[#FF2E54]/20 border-[#FF2E54] text-white' },
-                    { id: 'urgent', label: 'Urgent', desc: 'Within 2–4 hours', dot: '#F59E0B', activeClass: 'bg-amber-500/20 border-amber-500 text-white' },
-                    { id: 'routine', label: 'Routine', desc: 'Scheduled', dot: '#38BDF8', activeClass: 'bg-sky-500/20 border-sky-500 text-white' },
+                    { id: 'critical', label: 'Critical', desc: 'Immediate surgery', dot: 'var(--red-ink)', activeClass: 'bg-red-wash border-red text-red-ink' },
+                    { id: 'urgent', label: 'Urgent', desc: 'Within 2–4 hours', dot: 'var(--plasma-ink)', activeClass: 'bg-plasma-wash border-plasma text-ink' },
+                    { id: 'routine', label: 'Routine', desc: 'Scheduled', dot: 'var(--info-ink)', activeClass: 'bg-info-wash border-line-strong text-ink' },
                   ].map(item => {
                     const isSelected = urgency === item.id;
                     return (
@@ -733,14 +679,14 @@ export const PatientDashboard: React.FC = () => {
                         className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                           isSelected 
                             ? `${item.activeClass} shadow-sm` 
-                            : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-white'
+                            : 'bg-sunk border-line text-muted hover:border-line-strong hover:text-ink'
                         }`}
                       >
                         <div className="flex items-center justify-center gap-1.5 mb-0.5">
                           <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: item.dot, display: 'inline-block' }}></span>
-                          <span className="text-xs font-bold">{item.label}</span>
+                          <span className="text-[13.5px] font-bold">{item.label}</span>
                         </div>
-                        <span className="text-[10px] opacity-75 block">{item.desc}</span>
+                        <span className="text-[12.5px] block">{item.desc}</span>
                       </button>
                     );
                   })}
@@ -749,11 +695,11 @@ export const PatientDashboard: React.FC = () => {
 
               {/* Receiving Hospital */}
               <div className="form-group mb-0">
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                <label className="text-[13.5px] font-semibold text-muted block mb-1.5">
                   Receiving Hospital
                 </label>
                 <select 
-                  className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                  className="form-control text-[15px] py-2 px-3 bg-sunk border-line text-ink rounded-lg "
                   value={hospitalId} 
                   onChange={(e) => setHospitalId(e.target.value)}
                 >
@@ -773,11 +719,11 @@ export const PatientDashboard: React.FC = () => {
 
               {/* Clinical Notes */}
               <div className="form-group mb-0">
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                  Clinical Notes & Surgical Bed <span className="text-[#FF2E54]">*</span>
+                <label className="text-[13.5px] font-semibold text-muted block mb-1.5">
+                  Clinical Notes & Surgical Bed <span className="text-red-ink">*</span>
                 </label>
                 <textarea 
-                  className="form-control text-sm py-2 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54]" 
+                  className="form-control text-[15px] py-2 px-3 bg-sunk border-line text-ink rounded-lg " 
                   rows={2} 
                   value={notes} 
                   onChange={(e) => setNotes(e.target.value)} 
@@ -790,10 +736,10 @@ export const PatientDashboard: React.FC = () => {
               <div className="pt-2 flex items-center gap-3">
                 <button 
                   type="submit" 
-                  className="btn btn-primary flex-1 py-2.5 font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 rounded-xl"
+                  className="btn btn-primary flex-1 py-2.5 font-bold text-[13.5px] sm:text-[15px]  flex items-center justify-center gap-2 rounded-xl"
                   style={{
-                    background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
-                    boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)',
+                    background: 'var(--red)',
+                    boxShadow: 'none',
                     cursor: submitting ? 'not-allowed' : 'pointer',
                   }}
                   disabled={submitting}
@@ -814,7 +760,7 @@ export const PatientDashboard: React.FC = () => {
                 <button 
                   type="button" 
                   onClick={() => setActiveTab('requests')}
-                  className="btn btn-secondary py-2.5 px-4 text-xs font-semibold rounded-xl"
+                  className="btn btn-secondary py-2.5 px-4 text-[13.5px] font-semibold rounded-xl"
                 >
                   Cancel
                 </button>

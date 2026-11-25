@@ -1,0 +1,78 @@
+/* Day/night and page changes share one signature: liquid.
+   The shape itself is animated from lib/liquid.ts with WAAPI. */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+::view-transition-group(site-nav) { z-index: 10; animation-duration: 0.35s; }
+::view-transition-old(site-nav),
+::view-transition-new(site-nav) { animation-duration: 0.25s; }
+html[data-vt='route'] .site-nav { view-transition-name: site-nav; }
+html[data-vt] { pointer-events: none; }
+
+/* One reveal primitive for anything that enters on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  filter: blur(6px);
+  transition:
+    opacity 800ms var(--ease-out),
+    transform 900ms var(--ease-out),
+    filter 800ms var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+.reveal[data-in='true'] { opacity: 1; transform: none; filter: none; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); filter: blur(5px); }
+}
+.rise-in { animation: rise-in 800ms var(--ease-out) both; animation-delay: var(--d, 0ms); }
+
+/* Panels that swap inside a tab set */
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(10px); filter: blur(3px); }
+}
+.panel-in { animation: panel-in 320ms var(--ease-out) both; }
+
+@keyframes ecg-run { to { stroke-dashoffset: -100; } }
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.13); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.07); }
+  50% { transform: scale(1); }
+}
+.beat { animation: beat 1.15s ease-in-out infinite; transform-origin: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { transform: none; filter: none; transition: opacity 200ms ease; }
+  .rise-in, .panel-in, .beat { animation: none; }
+}
+
+/* Day/night switch. Interruptible transitions with a spring-shaped curve. */
+.theme-toggle {
+  --spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1.004 83.8%, 1);
+  background: oklch(0.93 0.03 60);
+  transition: background-color 500ms ease, transform 160ms var(--ease-out);
+}
+.theme-toggle:active { transform: scale(0.94); }
+.theme-toggle[data-night='true'] { background: oklch(0.21 0.06 14); }
+.theme-toggle g, .theme-toggle circle { transition: transform 800ms var(--spring), opacity 350ms ease, fill 400ms ease; transform-box: view-box; }
+.tt-stars { opacity: 0; transform: translateY(-14px); }
+.tt-drop { fill: #d3122e; transform-origin: 20px 20px; }
+.tt-rays { transform-origin: 20px 20px; }
+[data-night='true'] .tt-stars { opacity: 1; transform: none; }
+[data-night='true'] .tt-cloud { opacity: 0; transform: translateY(18px); }
+[data-night='true'] .tt-thumb { transform: translateX(30px); }
+[data-night='true'] .tt-rays { opacity: 0; transform: rotate(140deg) scale(0.4); }
+[data-night='true'] .tt-drop { fill: #ff5a63; transform: scale(1.34); }
+[data-night='true'] .tt-bite { transform: translateX(-20px); }
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover .tt-rays { transform: rotate(45deg); }
+  .theme-toggle[data-night='true']:hover .tt-thumb { transform: translateX(27px); }
+}
+@media (prefers-reduced-motion: reduce) { .theme-toggle g, .theme-toggle circle { transition-duration: 1ms; } }

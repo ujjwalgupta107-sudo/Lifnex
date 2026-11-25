@@ -1,173 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hospitals & Blood Banks Directory — Lifnex Platform</title>
-  <meta name="description" content="Explore verified hospitals, trauma centers, and accredited blood banks connected to the Lifnex emergency coordination network.">
-  <link rel="icon" type="image/svg+xml" href="/static/assets/branding/favicon.svg">
-
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  
+  <title>Lifnex hospital network</title>
+  <meta name="description" content="Verified hospitals, trauma centers and accredited blood banks connected to the Lifnex emergency network.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Lifnex hospital network">
+  <meta property="og:description" content="Verified hospitals, trauma centers and accredited blood banks connected to the Lifnex emergency network.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <style>
-    #hospitalsMap {
-      height: 480px;
-      width: 100%;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-glass);
-      z-index: 10;
-    }
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
   </style>
 </head>
 <body>
-
-  <!-- Demo Disclaimer Banner -->
-  <div class="demo-banner">
-    <div class="container flex justify-between items-center">
-      <div class="flex items-center">
-        <span class="demo-tag">Synthetic Demo Environment</span>
-        <span>All hospital coordinates, contact numbers, and inventory indicators are simulated data.</span>
-      </div>
-      <a href="index.html" style="color: var(--cyan-400); font-size: 0.8rem;">&larr; Back to Home</a>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
-
-  <!-- Unified Navigation Header -->
-  <header class="navbar" id="mainNav">
-    <div class="container navbar-inner">
-      <a href="index.html" class="nav-brand">
-        <img src="/static/assets/branding/logo.svg" alt="Lifnex Official Logo">
-      </a>
-
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="how-it-works.html" class="nav-link">How It Works</a>
-        <a href="hospitals.html" class="nav-link active">Hospitals & Blood Banks</a>
-        <a href="contact.html" class="nav-link">Contact</a>
-      </nav>
-
-      <div class="nav-actions">
-        <a href="login.html" class="btn btn-secondary btn-sm">Sign In</a>
-        <a href="register.html" class="btn btn-primary btn-sm">Join Network</a>
-        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu">&#9776;</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Compact Page Hero -->
-  <section class="page-hero">
-    <div class="container flex justify-between items-center flex-wrap gap-4">
-      <div>
-        <span class="section-tag">Geospatial Healthcare Network</span>
-        <h1 class="page-hero-title">Hospital & Blood Bank Directory</h1>
-        <p class="page-hero-desc">Interactive live mesh of accredited medical centers equipped with cold-chain storage and trauma banking.</p>
-      </div>
-      <div class="flex gap-2">
-        <span class="badge badge-primary">🔴 Hospitals</span>
-        <span class="badge badge-success">🟢 Active Donors</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Directory & Map Section -->
-  <section class="section">
-    <div class="container">
-      <div class="grid-2" style="grid-template-columns: 1.8fr 1.2fr; gap: 2rem;">
-        <div>
-          <div id="hospitalsMap"></div>
-        </div>
-
-        <div>
-          <div class="card" style="margin-bottom: 1.5rem;">
-            <h3 class="card-title" style="margin-bottom: 1rem;">Filter Facilities</h3>
-            <div class="form-group">
-              <label class="form-label">Search Location</label>
-              <input type="text" id="hospitalSearch" class="form-control" placeholder="Search by hospital name or city...">
-            </div>
-            <div class="flex gap-2">
-              <button class="btn btn-secondary btn-sm" onclick="filterCity('all')">All</button>
-              <button class="btn btn-secondary btn-sm" onclick="filterCity('Lucknow')">Lucknow</button>
-              <button class="btn btn-secondary btn-sm" onclick="filterCity('Delhi')">Delhi</button>
-            </div>
-          </div>
-
-          <div id="hospitalListContainer" style="display: flex; flex-direction: column; gap: 1rem; max-height: 340px; overflow-y: auto;">
-            <div class="card" style="padding: 1rem;">
-              <div class="flex justify-between items-center mb-1">
-                <h4 style="color:#FFF; font-size: 1rem;">KGMU Trauma Center</h4>
-                <span class="badge badge-success">Verified</span>
-              </div>
-              <p style="font-size: 0.8125rem; color: var(--slate-400); margin: 0;">Shah Mina Rd, Chowk, Lucknow • 24/7 Blood Bank</p>
-            </div>
-
-            <div class="card" style="padding: 1rem;">
-              <div class="flex justify-between items-center mb-1">
-                <h4 style="color:#FFF; font-size: 1rem;">City Care Medical Institute</h4>
-                <span class="badge badge-success">Verified</span>
-              </div>
-              <p style="font-size: 0.8125rem; color: var(--slate-400); margin: 0;">Gomti Nagar Extension, Lucknow • Component Separation</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Unified Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <img src="/static/assets/branding/logo.svg" alt="Lifnex Logo" style="height: 38px; margin-bottom: 1.25rem;">
-          <p style="color: var(--slate-400); line-height: 1.6; max-width: 320px;">
-            Connecting verified blood donors with patients and hospitals across India when every second matters.
-          </p>
-        </div>
-        <div class="footer-col">
-          <h4>Platform</h4>
-          <ul class="footer-links">
-            <li><a href="how-it-works.html">How It Works</a></li>
-            <li><a href="hospitals.html">Hospitals & Blood Banks</a></li>
-            <li><a href="register.html">Request Blood</a></li>
-            <li><a href="register.html?role=donor">Become a Donor</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <ul class="footer-links">
-            <li><a href="about.html">About Lifnex</a></li>
-            <li><a href="contact.html">Emergency Contact</a></li>
-            <li><a href="#">Privacy & RLS Security</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Emergency Dispatch</h4>
-          <p style="color: #FF2E54; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem;">1800-LIFNEX-EMG</p>
-          <p style="color: var(--slate-400); font-size: 0.85rem;">24/7 Monitored Dispatch Hotline</p>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <div>&copy; 2026 Lifnex Healthcare Network. All rights reserved.</div>
-        <div>Engineered with Leaflet Map & Supabase RLS</div>
-      </div>
-    </div>
-  </footer>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script type="module" src="/static/js/maps.js"></script>
-  <script>
-    const mobileBtn = document.getElementById('mobileNavToggle');
-    const navLinks = document.getElementById('navLinks');
-    if (mobileBtn && navLinks) {
-      mobileBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
-    }
-  </script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

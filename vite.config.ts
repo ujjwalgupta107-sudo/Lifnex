@@ -22,6 +22,7 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, 'frontend/dist'),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'frontend/index.html'),
@@ -36,6 +37,11 @@ export default defineConfig({
         donorDashboard: resolve(__dirname, 'frontend/donor-dashboard.html'),
         hospitalDashboard: resolve(__dirname, 'frontend/hospital-dashboard.html'),
         adminDashboard: resolve(__dirname, 'frontend/admin-dashboard.html'),
+        verifyOtp: resolve(__dirname, 'frontend/verify-otp.html'),
+        portalPatient: resolve(__dirname, 'frontend/dashboard/patient.html'),
+        portalDonor: resolve(__dirname, 'frontend/dashboard/donor.html'),
+        portalHospital: resolve(__dirname, 'frontend/dashboard/hospital.html'),
+        portalAdmin: resolve(__dirname, 'frontend/dashboard/admin.html'),
       },
     },
   },

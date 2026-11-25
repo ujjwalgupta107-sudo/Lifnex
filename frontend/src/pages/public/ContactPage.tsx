@@ -1,231 +1,188 @@
 import React, { useState } from 'react';
-import {
-  PhoneCall,
-  Mail,
-  MapPin,
-  Clock,
-  AlertTriangle,
-  CheckCircle2,
-  Send,
-  Building2,
-  ShieldAlert,
-} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Building2, Check, Mail, MapPin, Send, ShieldAlert } from 'lucide-react';
+import { Pulse } from '../../components/ui/Brand';
+import { Reveal } from '../../components/ui/Reveal';
+import { PageHead } from '../../components/site/PageHead';
+
+const EMPTY = { name: '', email: '', phone: '', category: 'Emergency Clinical Dispatch', message: '' };
 
 export const ContactPage: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: 'Emergency Clinical Dispatch',
-    message: '',
-  });
+  const [formData, setFormData] = useState(EMPTY);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
   };
+  const set = (k: keyof typeof EMPTY) => (e: React.ChangeEvent<any>) => setFormData({ ...formData, [k]: e.target.value });
 
   return (
-    <div className="bg-[#050811] text-slate-100 min-h-screen">
-      {/* Hero Header */}
-      <section className="relative py-20 border-b border-white/10 bg-gradient-to-b from-[#0B1222] to-[#050811]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl">
-          <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#FF2E54] bg-[#FF2E54]/10 border border-[#FF2E54]/20 px-3 py-1 rounded-full mb-6">
-            24/7 Clinical Communications Desk
-          </span>
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 leading-tight">
-            Emergency Dispatch & <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2E54] via-[#FF747E] to-[#38BDF8]">
-              Institutional Support.
-            </span>
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Reach the Lifnex emergency coordination officers, hospital integration engineers, and clinical compliance desk.
+    <>
+      <PageHead lines={['Reach the', 'emergency desk']}>
+        <p className="lede">
+          Emergency coordination officers, hospital integration engineers, and the clinical compliance desk.
+        </p>
+      </PageHead>
+
+      <section className="wrap pb-24 md:pb-36">
+        <div className="note note-error mb-10">
+          <ShieldAlert size={20} />
+          <p>
+            <strong>Life-threatening emergency?</strong> If you or a patient are in immediate cardiac or hemorrhagic
+            shock, always call national ambulance services (112 or 108) or proceed to the nearest trauma emergency
+            department. Lifnex provides voluntary donor coordination alongside clinical care.
           </p>
         </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          {/* Urgent Warning Banner */}
-          <div className="mb-12 p-5 rounded-2xl bg-[#170E1A] border border-red-500/30 flex items-start gap-4">
-            <ShieldAlert className="w-6 h-6 text-[#FF2E54] shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-slate-300">
-              <strong className="text-white">Active Life-Threatening Trauma Notice: </strong>
-              If you or a patient are in immediate cardiac or hemorrhagic shock, always call national ambulance services (112 or 108) or proceed to the nearest trauma emergency department immediately. Lifnex provides voluntary donor coordination alongside clinical care.
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Left: Contact Channels */}
-            <div className="space-y-6">
-              {/* Emergency Hotline Card */}
-              <div className="p-8 rounded-3xl bg-[#0D1526] border border-red-500/40 shadow-[0_0_30px_rgba(255,46,84,0.15)]">
-                <div className="w-12 h-12 rounded-2xl bg-red-500/10 text-[#FF2E54] flex items-center justify-center mb-4">
-                  <PhoneCall className="w-6 h-6" />
-                </div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#FF747E] mb-1">
-                  24/7 Trauma Escalation Hotline
-                </div>
-                <div className="text-3xl sm:text-4xl font-black text-white mb-2">
+        <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="grid content-start gap-4">
+            <Reveal>
+              <div className="rounded-card bg-red p-7 text-on-red sm:p-10">
+                <h2 className="text-xl">24/7 trauma escalation hotline</h2>
+                <p className="mt-3 whitespace-nowrap text-[clamp(1.55rem,3.6vw,3.1rem)] font-extrabold leading-none tracking-tight" style={{ fontStretch: '120%' }}>
                   1800-LIFNEX-EMG
-                </div>
-                <div className="text-xs font-mono text-slate-400 mb-4">Toll-free across India • (1800-543-639)</div>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Direct line to our human-in-the-loop clinical dispatch desk for rare blood group requisition support and inter-hospital logistics.
+                </p>
+                <p className="mt-3">Toll-free across India (1800-543-639)</p>
+                <Pulse className="my-6 h-14 w-full" strokeWidth={3} />
+                <p className="max-w-[48ch]">
+                  Direct line to our human-in-the-loop clinical dispatch desk for rare blood group requisition support
+                  and inter-hospital logistics.
                 </p>
               </div>
-
-              {/* Department Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-6 rounded-2xl bg-[#0C1322] border border-white/10">
-                  <Mail className="w-6 h-6 text-[#38BDF8] mb-3" />
-                  <h4 className="font-bold text-white text-sm mb-1">Clinical Desk</h4>
-                  <div className="text-xs font-mono text-[#38BDF8] mb-2">clinical@lifnex.org</div>
-                  <p className="text-xs text-slate-400">Physician inquiries and triage consultation.</p>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-[#0C1322] border border-white/10">
-                  <Building2 className="w-6 h-6 text-emerald-400 mb-3" />
-                  <h4 className="font-bold text-white text-sm mb-1">Hospital Integration</h4>
-                  <div className="text-xs font-mono text-emerald-400 mb-2">hospital@lifnex.org</div>
-                  <p className="text-xs text-slate-400">Cryo-reserve sync and accreditation desk.</p>
-                </div>
-              </div>
-
-              {/* Office Address */}
-              <div className="p-6 rounded-2xl bg-[#0C1322] border border-white/10 flex items-start gap-4">
-                <MapPin className="w-6 h-6 text-[#FF2E54] shrink-0 mt-1" />
+            </Reveal>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                { icon: Mail, t: 'Clinical desk', m: 'clinical@lifnex.org', d: 'Physician inquiries and triage consultation.' },
+                { icon: Building2, t: 'Hospital integration', m: 'hospital@lifnex.org', d: 'Cryo-reserve sync and accreditation desk.' },
+              ].map((c, i) => (
+                <Reveal key={c.t} delay={i * 80}>
+                  <div className="panel h-full p-6">
+                    <c.icon size={24} className="text-red-ink" />
+                    <h3 className="mt-4 text-lg">{c.t}</h3>
+                    <a href={`mailto:${c.m}`} className="link mt-2 inline-block">
+                      {c.m}
+                    </a>
+                    <p className="mt-3 text-muted">{c.d}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+            <Reveal>
+              <div className="panel flex gap-5 p-6">
+                <MapPin size={24} className="mt-0.5 shrink-0 text-red-ink" />
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1">Central Coordination Hub</h4>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Lifnex Emergency Health Network <br />
-                    Cyber-Med Technology Centre, Hazratganj <br />
-                    Lucknow, Uttar Pradesh - 226001, India
-                  </p>
+                  <h3 className="text-lg">Central coordination hub</h3>
+                  <address className="mt-2 not-italic text-muted">
+                    Lifnex Emergency Health Network, Cyber-Med Technology Centre, Hazratganj, Lucknow, Uttar Pradesh
+                    226001, India
+                  </address>
                 </div>
               </div>
-            </div>
-
-            {/* Right: Message Form */}
-            <div className="p-8 sm:p-10 rounded-3xl bg-[#0D1526] border border-white/10 shadow-2xl">
-              <h3 className="text-2xl font-bold text-white mb-2">Transmit a Message</h3>
-              <p className="text-xs sm:text-sm text-slate-400 mb-6">
-                Fill out the transmission form below. All urgent dispatches are routed with high priority.
-              </p>
-
-              {submitted ? (
-                <div className="p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-                  <h4 className="text-lg font-bold text-white mb-2">Transmission Acknowledged</h4>
-                  <p className="text-xs text-slate-300 leading-relaxed mb-6">
-                    Your inquiry has been logged in the dispatch queue. A coordination officer will respond via email or phone within 15 minutes.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setFormData({
-                        name: '',
-                        email: '',
-                        phone: '',
-                        category: 'Emergency Clinical Dispatch',
-                        message: '',
-                      });
-                    }}
-                    className="px-6 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
-                  >
-                    Submit Another Query
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Dr. Rajesh Mehra"
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FF2E54]"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                        Official Email *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="mehra@apollo.org"
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FF2E54]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                        Contact Phone
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FF2E54]"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Inquiry Category *
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-[#111A2E] border border-white/10 text-white text-sm focus:outline-none focus:border-[#FF2E54]"
-                    >
-                      <option value="Emergency Clinical Dispatch">Emergency Clinical Dispatch</option>
-                      <option value="Hospital & Cryo-Bank Accreditation">Hospital & Cryo-Bank Accreditation</option>
-                      <option value="Voluntary Donor Coordination">Voluntary Donor Coordination</option>
-                      <option value="Technical or Security Escalation">Technical or Security Escalation</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Case Details or Message *
-                    </label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Specify hospital location, patient blood group requirement, or accreditation query..."
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FF2E54]"
-                    ></textarea>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-[#FF2E54] to-[#BE123C] hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm shadow-lg"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>Transmit to Coordination Desk</span>
-                  </button>
-                </form>
-              )}
-            </div>
+            </Reveal>
           </div>
+
+          <Reveal delay={80}>
+            <div className="panel h-full p-7 sm:p-10">
+              <AnimatePresence mode="wait" initial={false}>
+                {submitted ? (
+                  <motion.div
+                    key="ok"
+                    role="status"
+                    initial={{ opacity: 0, transform: 'scale(0.96)', filter: 'blur(6px)' }}
+                    animate={{ opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, filter: 'blur(6px)' }}
+                    transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                    className="grid h-full min-h-[420px] place-content-center justify-items-center text-center"
+                  >
+                    <svg width="112" height="112" viewBox="0 0 112 112" aria-hidden="true">
+                      <motion.path
+                        d="M56 8 C56 8 18 50 18 70 A38 38 0 0 0 94 70 C94 50 56 8 56 8 Z"
+                        fill="var(--red)"
+                        initial={{ scale: 0.6, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: 'spring', duration: 0.8, bounce: 0.45 }}
+                        style={{ transformOrigin: '56px 70px' }}
+                      />
+                      <motion.path
+                        d="M38 70l12 12 24-26"
+                        fill="none"
+                        stroke="#fff"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ delay: 0.3, duration: 0.45, ease: [0.77, 0, 0.175, 1] }}
+                      />
+                    </svg>
+                    <h2 className="mt-6 text-3xl">Message received</h2>
+                    <p className="mt-3 max-w-[42ch] text-muted">
+                      Your inquiry has been logged in the dispatch queue. A coordination officer will respond via email
+                      or phone within 15 minutes.
+                    </p>
+                    <button
+                      className="btn btn-ghost mt-7"
+                      onClick={() => {
+                        setSubmitted(false);
+                        setFormData(EMPTY);
+                      }}
+                    >
+                      <span>Send another message</span>
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key="form"
+                    onSubmit={handleSubmit}
+                    exit={{ opacity: 0, transform: 'translateY(-12px)', filter: 'blur(6px)' }}
+                    transition={{ duration: 0.22 }}
+                    className="grid gap-5"
+                  >
+                    <div>
+                      <h2 className="text-[clamp(1.7rem,3vw,2.4rem)]">Send a message</h2>
+                      <p className="mt-2 text-muted">All urgent dispatches are routed with high priority.</p>
+                    </div>
+                    <label className="field">
+                      <span className="field-label">Full name</span>
+                      <input className="input" type="text" autoComplete="name" required value={formData.name} onChange={set('name')} placeholder="Dr. Rajesh Mehra" />
+                    </label>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <label className="field">
+                        <span className="field-label">Official email</span>
+                        <input className="input" type="email" autoComplete="email" required value={formData.email} onChange={set('email')} placeholder="mehra@apollo.org" />
+                      </label>
+                      <label className="field">
+                        <span className="field-label">Contact phone (optional)</span>
+                        <input className="input" type="tel" autoComplete="tel" value={formData.phone} onChange={set('phone')} placeholder="+91 98765 43210" />
+                      </label>
+                    </div>
+                    <label className="field">
+                      <span className="field-label">Category</span>
+                      <select className="input" value={formData.category} onChange={set('category')}>
+                        <option value="Emergency Clinical Dispatch">Emergency clinical dispatch</option>
+                        <option value="Hospital & Cryo-Bank Accreditation">Hospital and cryo-bank accreditation</option>
+                        <option value="Voluntary Donor Coordination">Voluntary donor coordination</option>
+                        <option value="Technical or Security Escalation">Technical or security escalation</option>
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span className="field-label">Case details or message</span>
+                      <textarea className="input" required rows={4} value={formData.message} onChange={set('message')} placeholder="Hospital location, patient blood group requirement, or accreditation query" />
+                    </label>
+                    <button type="submit" className="btn btn-primary btn-lg">
+                      <Send size={18} />
+                      <span>Send to the desk</span>
+                    </button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+            </div>
+          </Reveal>
         </div>
       </section>
-    </div>
+    </>
   );
 };
+
+export default ContactPage;

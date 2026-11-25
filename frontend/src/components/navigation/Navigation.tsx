@@ -1,41 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  Menu,
-  X,
-  Droplet,
-  ShieldAlert,
-  User,
-  LogOut,
-  ChevronDown,
-  LayoutDashboard,
-  Activity,
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { LayoutDashboard, LogOut, Menu, X } from 'lucide-react';
+import { ThemeToggle } from '../ui/ThemeToggle';
+import { Mark, Wordmark } from '../ui/Brand';
+import { useGo } from '../../lib/routes';
+
+const NAV_LINKS = [
+  { name: 'Home', path: '/' },
+  { name: 'About', path: '/about' },
+  { name: 'How it works', path: '/how-it-works' },
+  { name: 'Hospitals', path: '/hospitals' },
+  { name: 'Contact', path: '/contact' },
+];
 
 export const Navigation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [tucked, setTucked] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+  const go = useGo();
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem('lifnex_user');
-      if (stored) {
-        setCurrentUser(JSON.parse(stored));
-      } else {
-        setCurrentUser(null);
-      }
+      setCurrentUser(stored ? JSON.parse(stored) : null);
     } catch {
       setCurrentUser(null);
     }
+    setIsOpen(false);
+    setTucked(false);
   }, [location.pathname]);
+
+  // tuck away on scroll down, return on scroll up
+  useEffect(() => {
+    let last = window.scrollY;
+    const on = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - last) < 6) return;
+      setTucked(y > last && y > 420);
+      last = y;
+    };
+    window.addEventListener('scroll', on, { passive: true });
+    return () => window.removeEventListener('scroll', on);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false);
+    window.addEventListener('keydown', esc);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', esc);
+    };
+  }, [isOpen]);
 
   const handleSignOut = () => {
     localStorage.removeItem('lifnex_token');
     localStorage.removeItem('lifnex_user');
     setCurrentUser(null);
-    navigate('/');
+    go('/');
   };
 
   const getDashboardPath = () => {
@@ -47,187 +72,162 @@ export const Navigation: React.FC = () => {
     return '/dashboard/patient';
   };
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'How It Works', path: '/how-it-works' },
-    { name: 'Hospitals', path: '/hospitals' },
-    { name: 'Contact', path: '/contact' },
-  ];
+  const lit = hovered ?? location.pathname;
 
   return (
     <>
-      {/* Top Demo Banner */}
-      <div className="bg-[#0B101D] border-b border-white/5 py-2 px-4 text-[11px] sm:text-xs text-slate-400">
-        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-[#FF747E] font-bold text-[10px] uppercase border border-red-500/30">
-              Synthetic Demo Environment
+      <div className="bg-venous text-on-venous text-[13px] leading-snug">
+        <div className="wrap flex items-center justify-between gap-4 py-2">
+          <p>
+            <strong className="font-semibold">Demo environment.</strong>{' '}
+            <span className="opacity-80">
+              Lifnex is an academic demonstration project, all telemetry is simulated.
             </span>
-            <span>Lifnex is an academic demonstration project — all telemetry is simulated.</span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span className="hidden md:inline font-mono text-[#38BDF8]">
-              Emergency Desk: 1800-LIFNEX-EMG
-            </span>
-            <Link to="/" className="text-[#38BDF8] hover:underline">
-              Terminal v5.0
-            </Link>
-          </div>
+          </p>
+          <span className="hidden md:inline shrink-0 opacity-90">Emergency desk 1800-LIFNEX-EMG</span>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <header className="sticky top-0 z-50 bg-[#050811]/90 backdrop-blur-xl border-b border-white/10 transition-all">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF2E54] to-[#BE123C] flex items-center justify-center shadow-[0_0_15px_rgba(255,46,84,0.4)] group-hover:scale-105 transition-transform">
-              <Droplet className="w-5 h-5 text-white fill-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tight text-white flex items-center gap-1.5 leading-none">
-                LIFNEX
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-[#FF747E] border border-red-500/30">
-                  AI GRID
-                </span>
-              </span>
-              <span className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mt-1">
-                Emergency Blood Network
-              </span>
-            </div>
+      <header
+        className="site-nav sticky top-0 z-50 px-3 pt-3 transition-transform duration-500 [transition-timing-function:var(--ease-out)]"
+        style={{ transform: tucked && !isOpen ? 'translateY(-120%)' : 'none' }}
+      >
+        <div
+          className="mx-auto flex h-[64px] max-w-[1296px] items-center justify-between gap-4 rounded-[20px] border border-line pl-3 pr-3 sm:pl-4"
+          style={{
+            background: 'var(--nav-glass)',
+            backdropFilter: 'blur(18px) saturate(1.6)',
+            WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
+            boxShadow: 'var(--shadow-lift)',
+          }}
+        >
+          <Link to="/" className="group flex items-center gap-2.5 rounded-xl" aria-label="Lifnex home">
+            <Mark size={38} className="transition-transform duration-500 [transition-timing-function:var(--ease-out)] group-hover:rotate-90" />
+            <Wordmark className="text-[25px]" />
           </Link>
 
-          {/* Desktop Links */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`text-sm font-semibold transition-colors duration-200 relative py-1 ${
-                  location.pathname === link.path
-                    ? 'text-white font-bold'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                {link.name}
-                {location.pathname === link.path && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF2E54] rounded-full shadow-[0_0_8px_#FF2E54]" />
-                )}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Action CTAs */}
-          <div className="hidden sm:flex items-center gap-3">
-            {currentUser ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  to={getDashboardPath()}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#FF2E54] to-[#BE123C] hover:opacity-90 transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(255,46,84,0.3)]"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span>My Portal ({currentUser.role || 'User'})</span>
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  title="Sign Out"
-                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 border border-white/10 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 border border-white/10 transition-all"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#FF2E54] to-[#BE123C] hover:opacity-90 shadow-lg transition-all flex items-center gap-1.5"
-                >
-                  <Activity className="w-3.5 h-3.5" />
-                  <span>Emergency Request</span>
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 border border-white/10"
-            aria-label="Toggle navigation menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Navigation Drawer */}
-        {isOpen && (
-          <div className="md:hidden border-b border-white/10 bg-[#070B16] px-4 py-6 space-y-4">
-            <nav className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
+          <nav aria-label="Main" className="hidden lg:flex items-center" onMouseLeave={() => setHovered(null)}>
+            {NAV_LINKS.map((link) => {
+              const active = location.pathname === link.path;
+              return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                    location.pathname === link.path
-                      ? 'bg-red-500/10 text-white font-bold border border-red-500/20'
-                      : 'text-slate-400 hover:text-white'
+                  aria-current={active ? 'page' : undefined}
+                  onMouseEnter={() => setHovered(link.path)}
+                  onFocus={() => setHovered(link.path)}
+                  onBlur={() => setHovered(null)}
+                  className={`relative rounded-full px-4 py-2 text-[15px] font-medium transition-colors duration-200 ${
+                    active ? 'text-red-ink' : 'text-muted hover:text-ink'
                   }`}
                 >
+                  {lit === link.path && (
+                    <motion.span
+                      layoutId="nav-cell"
+                      className="absolute inset-0 -z-10 rounded-full bg-red-wash"
+                      transition={{ type: 'spring', duration: 0.5, bounce: 0.22 }}
+                    />
+                  )}
                   {link.name}
                 </Link>
-              ))}
-            </nav>
+              );
+            })}
+          </nav>
 
-            <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <div className="hidden md:flex items-center gap-2">
               {currentUser ? (
                 <>
+                  <Link to={getDashboardPath()} className="btn btn-primary btn-sm">
+                    <LayoutDashboard size={16} />
+                    <span>My portal</span>
+                  </Link>
+                  <button onClick={handleSignOut} className="btn btn-ghost btn-sm !px-3" aria-label="Sign out" title="Sign out">
+                    <LogOut size={16} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="btn btn-ghost btn-sm">
+                    <span>Sign in</span>
+                  </Link>
+                  <Link to="/register" className="btn btn-primary btn-sm">
+                    <span>Request blood</span>
+                  </Link>
+                </>
+              )}
+            </div>
+            <button
+              onClick={() => setIsOpen((v) => !v)}
+              className="grid h-11 w-11 place-items-center rounded-xl border border-line-strong transition-transform duration-150 active:scale-95 lg:hidden"
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="venous-panel fixed inset-0 z-40 flex flex-col justify-between overflow-y-auto px-6 pb-8 pt-36 lg:hidden"
+            initial={{ clipPath: 'ellipse(0% 0% at 92% 8%)' }}
+            animate={{ clipPath: 'ellipse(170% 150% at 92% 8%)' }}
+            exit={{ clipPath: 'ellipse(0% 0% at 92% 8%)' }}
+            transition={{ duration: 0.55, ease: [0.77, 0, 0.175, 1] }}
+          >
+            <nav aria-label="Mobile" className="flex flex-col">
+              {NAV_LINKS.map((link, i) => (
+                <motion.div
+                  key={link.path}
+                  initial={{ opacity: 0, transform: 'translateY(26px)' }}
+                  animate={{ opacity: 1, transform: 'translateY(0px)' }}
+                  transition={{ delay: 0.16 + i * 0.05, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                >
                   <Link
-                    to={getDashboardPath()}
+                    to={link.path}
                     onClick={() => setIsOpen(false)}
-                    className="w-full py-3 rounded-xl text-center text-sm font-bold text-white bg-gradient-to-r from-[#FF2E54] to-[#BE123C]"
+                    aria-current={location.pathname === link.path ? 'page' : undefined}
+                    className="display block py-2.5 text-[clamp(2.1rem,10vw,3rem)] aria-[current=page]:text-plasma"
                   >
-                    Open Portal ({currentUser.role})
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </nav>
+            <div className="mt-10 grid gap-3">
+              {currentUser ? (
+                <>
+                  <Link to={getDashboardPath()} onClick={() => setIsOpen(false)} className="btn btn-inverse btn-lg">
+                    <span>Open my portal</span>
                   </Link>
                   <button
                     onClick={() => {
                       setIsOpen(false);
                       handleSignOut();
                     }}
-                    className="w-full py-2.5 rounded-xl text-center text-xs font-semibold text-slate-400 hover:text-white border border-white/10"
+                    className="btn btn-outline-inverse btn-lg"
                   >
-                    Sign Out
+                    <span>Sign out</span>
                   </button>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full py-3 rounded-xl text-center text-sm font-bold text-slate-300 border border-white/10"
-                  >
-                    Sign In
+                  <Link to="/register" onClick={() => setIsOpen(false)} className="btn btn-inverse btn-lg">
+                    <span>Request blood</span>
                   </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full py-3 rounded-xl text-center text-sm font-bold text-white bg-[#FF2E54]"
-                  >
-                    Emergency Blood Request
+                  <Link to="/login" onClick={() => setIsOpen(false)} className="btn btn-outline-inverse btn-lg">
+                    <span>Sign in</span>
                   </Link>
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
-      </header>
+      </AnimatePresence>
     </>
   );
 };

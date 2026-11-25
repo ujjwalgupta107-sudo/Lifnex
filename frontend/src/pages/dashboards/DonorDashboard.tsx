@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import { MetricValue } from '../../components/ui/MetricValue';
+import { motion } from 'framer-motion';
+import SquishSwitch from '../../components/reactbits/SquishSwitch';
+import { GeofenceRadar } from '../../components/site/GeofenceRadar';
 import { 
   Activity, Bell, CheckCircle2, Clock, Droplets, MapPin, 
   ShieldCheck, User, Settings, Check, X, AlertTriangle, RefreshCw,
@@ -158,22 +162,22 @@ export const DonorDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="container py-8 max-w-7xl">
+    <div className="dash py-8 max-w-7xl">
       {/* Top Banner Alert Message */}
       {feedback && (
         <div 
-          className={`mb-5 p-3.5 rounded-xl text-sm flex items-center justify-between shadow-lg ${
+          role="status" className={`dash-toast text-[15px] flex items-center justify-between  ${
             feedback.type === 'success' 
-              ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-200' 
-              : 'bg-red-950/80 border border-red-500/50 text-red-200'
+              ? 'toast-ok' 
+              : 'bg-red-wash border border-line text-red-ink'
           }`}
-          style={{ backdropFilter: 'blur(16px)' }}
+          style={{  }}
         >
           <div className="flex items-center gap-2.5">
-            {feedback.type === 'success' ? <CheckCircle2 size={18} className="text-emerald-400 shrink-0" /> : <AlertTriangle size={18} className="text-[#FF2E54] shrink-0" />}
+            {feedback.type === 'success' ? <CheckCircle2 size={18} className="text-ok-ink shrink-0" /> : <AlertTriangle size={18} className="text-red-ink shrink-0" />}
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => setFeedback(null)} className="text-muted hover:text-ink transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -182,11 +186,11 @@ export const DonorDashboard: React.FC = () => {
       {/* Top Greeting & Availability Header */}
       <div className="dashboard-greeting-row mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="dash-title">
             Welcome, {user.full_name || 'Anita Desai (Demo Donor)'}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Voluntary Donor Emergency Hub • Blood Group: <span className="text-[#FF2E54] font-bold">{bloodGroup}</span>
+          <p className="text-[13.5px] sm:text-[15px] text-muted mt-1">
+            Voluntary Donor Emergency Hub, Blood Group: <span className="text-red-ink font-bold">{bloodGroup}</span>
           </p>
         </div>
 
@@ -194,9 +198,9 @@ export const DonorDashboard: React.FC = () => {
         <div 
           className="flex items-center gap-3 px-4 py-2 rounded-full border"
           style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            borderColor: available ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.12)',
-            boxShadow: available ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none',
+            background: 'var(--surface)',
+            borderColor: available ? 'var(--ok-wash)' : 'var(--sunk)',
+            boxShadow: 'none',
           }}
         >
           <div className="flex items-center gap-1.5">
@@ -205,41 +209,34 @@ export const DonorDashboard: React.FC = () => {
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                background: available ? '#10B981' : '#64748B',
-                boxShadow: available ? '0 0 8px #10B981' : 'none',
+                background: available ? 'var(--ok-ink)' : 'var(--muted)',
+                boxShadow: 'none',
               }}
             ></span>
-            <span className="text-xs font-semibold text-slate-200">
+            <span className="text-[13.5px] font-semibold text-ink">
               {available ? 'Available to Donate' : 'Unavailable / Busy'}
             </span>
           </div>
-          <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
-            <input 
-              type="checkbox" 
-              checked={available} 
-              onChange={handleAvailabilityToggle}
-            />
-            <span className="toggle-slider"></span>
-          </label>
+          <SquishSwitch checked={available} onChange={handleAvailabilityToggle} trackColor="var(--line-strong)" trackOnColor="var(--ok)" thumbColor="#fff" thumbOnColor="#fff" ariaLabel="Available to donate" />
         </div>
       </div>
 
       {/* 4-Stat Metric Grid */}
       <div className="metrics-row mb-8">
         <div className="metric-card">
-          <div className="metric-val val-crimson">{bloodGroup}</div>
+          <MetricValue className="metric-val val-crimson">{bloodGroup}</MetricValue>
           <div className="metric-lbl">Blood Group</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-teal">{feedRequests.length || 8}</div>
+          <MetricValue className="metric-val val-teal">{feedRequests.length || 8}</MetricValue>
           <div className="metric-lbl">Requests Nearby</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-navy">3</div>
+          <MetricValue className="metric-val val-navy">3</MetricValue>
           <div className="metric-lbl">Verified Donations</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-navy">{travelRadius} km</div>
+          <MetricValue className="metric-val val-navy">{travelRadius} km</MetricValue>
           <div className="metric-lbl">Travel Radius</div>
         </div>
       </div>
@@ -252,48 +249,40 @@ export const DonorDashboard: React.FC = () => {
         {/* ======================================================== */}
         {/* LEFT SIDEBAR NAVIGATION PANEL                            */}
         {/* ======================================================== */}
-        <aside className="md:col-span-4 lg:col-span-3 space-y-4">
+        <aside className="dash-aside md:col-span-4 lg:col-span-3">
           <div 
             className="donor-sidebar-card"
-            style={{
-              background: 'rgba(15, 23, 42, 0.88)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '18px',
-              padding: '1.25rem',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-            }}
           >
             {/* Donor Mini Profile Card */}
-            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-white/10">
+            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-line">
               <div 
                 style={{
                   width: '42px',
                   height: '42px',
                   borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
+                  background: 'var(--red)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#FFFFFF',
-                  fontWeight: 900,
+                  color: 'var(--on-red)',
+                  fontWeight: 700,
                   fontSize: '1.1rem',
-                  boxShadow: '0 4px 12px rgba(255, 46, 84, 0.35)',
+                  boxShadow: 'none',
                 }}
               >
                 A
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-bold text-white truncate">Anita Desai</div>
-                <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
-                  <span>{bloodGroup} • Voluntary Donor</span>
+                <div className="text-[15px] font-bold text-ink truncate">Anita Desai</div>
+                <div className="text-[12.5px] text-muted flex items-center gap-1.5">
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ok)', display: 'inline-block' }}></span>
+                  <span>{bloodGroup}, Voluntary Donor</span>
                 </div>
               </div>
             </div>
 
             {/* Navigation Tabs List */}
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
+            <div className="text-[12.5px] font-bold  text-muted mb-2 px-1">
               Donor Portal Navigation
             </div>
 
@@ -308,43 +297,16 @@ export const DonorDashboard: React.FC = () => {
                     type="button"
                     onClick={() => setActiveTab(item.id as any)}
                     className={`donor-sidebar-item ${isActive ? 'active' : ''}`}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      padding: '0.75rem 0.9rem',
-                      borderRadius: '12px',
-                      fontSize: '0.825rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      border: isActive ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid transparent',
-                      background: isActive ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'transparent',
-                      color: isActive ? '#FFFFFF' : '#94A3B8',
-                      boxShadow: isActive ? '0 4px 14px rgba(255, 46, 84, 0.4)' : 'none',
-                      textAlign: 'left',
-                    }}
                   >
+                    {isActive && <motion.span layoutId="dash-plate" className="dash-plate" transition={{ type: 'spring', duration: 0.5, bounce: 0.18 }} />}
                     <div className="flex items-center gap-2.5">
-                      <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
+                      <Icon size={16} className={isActive ? 'text-on-red' : 'text-muted'} />
                       <span>{item.label}</span>
                     </div>
 
                     {item.count !== null && item.count > 0 && (
                       <span 
                         className="donor-sidebar-badge"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: '2px 7px',
-                          borderRadius: '9999px',
-                          fontSize: '0.7rem',
-                          fontWeight: 800,
-                          background: isActive ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                          color: isActive ? '#FFFFFF' : '#CBD5E1',
-                        }}
                       >
                         {item.count}
                       </span>
@@ -355,15 +317,15 @@ export const DonorDashboard: React.FC = () => {
             </nav>
 
             {/* Sidebar Bottom Live Emergency Status Card */}
-            <div className="mt-5 pt-4 border-t border-white/10">
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 space-y-1">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400">Geofence Status</span>
-                  <span className="text-emerald-400 font-bold">15 km Active</span>
+            <div className="mt-5 pt-4 border-t border-line">
+              <div className="p-3 rounded-xl bg-sunk border border-line space-y-1">
+                <div className="flex items-center justify-between text-[12.5px]">
+                  <span className="text-muted">Geofence Status</span>
+                  <span className="text-ok-ink font-bold">15 km Active</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400">Emergency Hotline</span>
-                  <span className="text-white font-mono text-[10px]">1800-LIFNEX</span>
+                <div className="flex items-center justify-between text-[12.5px]">
+                  <span className="text-muted">Emergency Hotline</span>
+                  <span className="text-ink font-mono text-[12.5px]">1800-LIFNEX</span>
                 </div>
               </div>
             </div>
@@ -373,7 +335,7 @@ export const DonorDashboard: React.FC = () => {
         {/* ======================================================== */}
         {/* RIGHT MAIN CONTENT AREA                                  */}
         {/* ======================================================== */}
-        <main className="md:col-span-8 lg:col-span-9 space-y-6">
+        <main key={activeTab} className="panel-in min-w-0 md:col-span-8 lg:col-span-9 space-y-6">
           
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
@@ -381,24 +343,24 @@ export const DonorDashboard: React.FC = () => {
               {/* Header */}
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Droplets className="text-[#FF2E54]" size={18} />
+                  <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+                    <Droplets className="text-red-ink" size={18} />
                     <span>Immediate Emergency Priority Feed</span>
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-[13.5px] text-muted mt-0.5">
                     Critical blood requests within your {travelRadius} km geofence requiring {bloodGroup}
                   </p>
                 </div>
                 <button 
                   onClick={loadDashboardData} 
-                  className="btn btn-secondary btn-sm flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-lg"
+                  className="btn btn-secondary btn-sm flex items-center gap-1.5 text-[13.5px] py-1.5 px-3 rounded-lg"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#CBD5E1',
+                    background: 'var(--sunk)',
+                    border: '1px solid var(--line)',
+                    color: 'var(--muted)',
                   }}
                 >
-                  <RefreshCw size={12} className={loading ? 'animate-spin text-[#FF2E54]' : ''} />
+                  <RefreshCw size={12} className={loading ? 'animate-spin text-red-ink' : ''} />
                   <span>Refresh Feed</span>
                 </button>
               </div>
@@ -406,17 +368,17 @@ export const DonorDashboard: React.FC = () => {
               {/* Feed List */}
               {feedRequests.length === 0 ? (
                 <div 
-                  className="card text-center text-slate-400"
+                  className="card text-center text-muted"
                   style={{
                     padding: '3rem 2rem',
-                    background: 'rgba(15, 23, 42, 0.7)',
-                    border: '1px dashed rgba(255, 255, 255, 0.15)',
+                    background: 'var(--surface)',
+                    border: '1px dashed var(--line)',
                     borderRadius: '16px',
                   }}
                 >
-                  <Heart size={36} className="mx-auto mb-3 text-slate-500 opacity-60" />
-                  <h3 className="text-base font-bold text-white mb-1">No Urgent Alerts Right Now</h3>
-                  <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  <Heart size={36} className="mx-auto mb-3 text-faint opacity-60" />
+                  <h3 className="text-base font-bold text-ink mb-1">No Urgent Alerts Right Now</h3>
+                  <p className="text-[13.5px] text-muted max-w-md mx-auto">
                     All hospital requisitions matching blood group {bloodGroup} in your area are currently fulfilled. You will receive an instant dispatch ping when a match occurs.
                   </p>
                 </div>
@@ -426,40 +388,33 @@ export const DonorDashboard: React.FC = () => {
                     <div 
                       key={req.id} 
                       className="card"
-                      style={{
-                        padding: '1.25rem',
-                        background: 'rgba(15, 23, 42, 0.85)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '14px',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                      }}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span 
                               style={{
-                                background: req.urgency_level === 'critical' ? 'rgba(255, 46, 84, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                                color: req.urgency_level === 'critical' ? '#FF2E54' : '#FBBF24',
-                                border: `1px solid ${req.urgency_level === 'critical' ? 'rgba(255, 46, 84, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
+                                background: req.urgency_level === 'critical' ? 'var(--red-wash)' : 'var(--plasma-wash)',
+                                color: req.urgency_level === 'critical' ? 'var(--red-ink)' : 'var(--plasma-ink)',
+                                border: `1px solid ${req.urgency_level === 'critical' ? 'var(--red-wash)' : 'var(--plasma-wash)'}`,
                                 padding: '0.15rem 0.5rem',
                                 borderRadius: '6px',
-                                fontWeight: 800,
-                                fontSize: '0.7rem',
-                                textTransform: 'uppercase',
+                                fontWeight: 700,
+                                fontSize: '0.8rem',
+                                
                               }}
                             >
                               {req.urgency_level || 'CRITICAL'}
                             </span>
-                            <span className="text-white font-bold text-sm">{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
-                            <span className="text-xs text-slate-400">• {req.city || 'New Delhi'}</span>
+                            <span className="text-ink font-bold text-[15px]">{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
+                            <span className="text-[13.5px] text-muted">• {req.city || 'New Delhi'}</span>
                           </div>
                           
-                          <p className="text-xs text-slate-200">
-                            Requires <strong className="text-white font-bold">{req.units_required || 2} Units</strong> of <strong className="text-[#FF2E54] font-bold">{req.blood_group}</strong> • Approx. Distance: <strong className="text-slate-200">{req.distance_km || 3.4} km</strong>
+                          <p className="text-[13.5px] text-ink">
+                            Requires <strong className="text-ink font-bold">{req.units_required || 2} Units</strong> of <strong className="text-red-ink font-bold">{req.blood_group}</strong>, Approx. Distance: <strong className="text-ink">{req.distance_km || 3.4} km</strong>
                           </p>
                           
-                          <p className="text-[11px] text-slate-400 bg-black/20 p-2 rounded-lg border border-white/5">
+                          <p className="text-[12.5px] text-muted bg-sunk p-2 rounded-lg border border-line">
                             {req.clinical_notes || 'Trauma surgery priority requisition.'}
                           </p>
                         </div>
@@ -469,10 +424,10 @@ export const DonorDashboard: React.FC = () => {
                           <button 
                             type="button"
                             onClick={() => handleRespond(req.id, 'accepted')} 
-                            className="btn btn-primary text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 font-bold shadow-md flex-1 sm:flex-none"
+                            className="btn btn-primary text-[13.5px] py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 font-bold  flex-1 sm:flex-none"
                             style={{
-                              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35)',
+                              background: 'var(--ok-fill)',
+                              boxShadow: 'none',
                             }}
                           >
                             <Check size={14} />
@@ -482,11 +437,11 @@ export const DonorDashboard: React.FC = () => {
                           <button 
                             type="button"
                             onClick={() => handleRespond(req.id, 'declined')} 
-                            className="btn btn-secondary text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1"
+                            className="btn btn-secondary text-[13.5px] py-2.5 px-3 rounded-xl flex items-center justify-center gap-1"
                             style={{
-                              background: 'rgba(255, 255, 255, 0.05)',
-                              border: '1px solid rgba(255, 255, 255, 0.12)',
-                              color: '#94A3B8',
+                              background: 'var(--sunk)',
+                              border: '1px solid var(--line)',
+                              color: 'var(--muted)',
                             }}
                           >
                             <X size={14} />
@@ -502,41 +457,36 @@ export const DonorDashboard: React.FC = () => {
               {/* Local Dispatch Radar Card */}
               <div 
                 className="card"
-                style={{
-                  padding: '1.5rem',
-                  background: 'rgba(15, 23, 42, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '16px',
-                }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Radio size={16} className="text-[#38BDF8] animate-pulse" />
-                    <h3 className="text-sm font-bold text-white">Local Dispatch Mesh Radar</h3>
+                    <Radio size={16} className="text-info-ink animate-pulse" />
+                    <h3 className="text-[15px] font-bold text-ink">Local Dispatch Mesh Radar</h3>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                  <span className="text-[12.5px] px-2 py-0.5 rounded-full bg-sunk text-muted font-mono">
                     15 km Geofence
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mb-3">
+                <GeofenceRadar />
+                <p className="text-[13.5px] text-muted mb-3">
                   Your coordinates are protected through differential privacy and randomized geo-hashing. Only approximate route vectors are calculated for dispatch.
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-base font-black text-white">4</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">Hospitals in Radius</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-base font-bold text-ink">4</div>
+                    <div className="text-[12.5px] text-muted mt-0.5">Hospitals in Radius</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-base font-black text-[#10B981]">Active</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">Triage Signal</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-base font-bold text-ok-ink">Active</div>
+                    <div className="text-[12.5px] text-muted mt-0.5">Triage Signal</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-base font-black text-[#38BDF8]">18 mins</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">Average ETA</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-base font-bold text-info-ink">18 mins</div>
+                    <div className="text-[12.5px] text-muted mt-0.5">Average ETA</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-base font-black text-[#FF2E54]">100%</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">RLS Protected</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-base font-bold text-red-ink">100%</div>
+                    <div className="text-[12.5px] text-muted mt-0.5">RLS Protected</div>
                   </div>
                 </div>
               </div>
@@ -548,15 +498,15 @@ export const DonorDashboard: React.FC = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-center mb-2">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Droplets className="text-[#FF2E54]" size={18} />
+                  <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+                    <Droplets className="text-red-ink" size={18} />
                     <span>Compatible Emergency Alerts ({feedRequests.length})</span>
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Live emergency requisitions matched against your {bloodGroup} blood group</p>
+                  <p className="text-[13.5px] text-muted mt-0.5">Live emergency requisitions matched against your {bloodGroup} blood group</p>
                 </div>
                 <button 
                   onClick={loadDashboardData} 
-                  className="btn btn-secondary btn-sm flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-lg"
+                  className="btn btn-secondary btn-sm flex items-center gap-1.5 text-[13.5px] py-1.5 px-3 rounded-lg"
                 >
                   <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
                   <span>Refresh</span>
@@ -564,39 +514,39 @@ export const DonorDashboard: React.FC = () => {
               </div>
 
               {feedRequests.length === 0 ? (
-                <div className="card p-8 text-center text-slate-400">
-                  <p className="text-sm">No emergency alerts in your immediate radius right now.</p>
-                  <p className="text-xs text-slate-500 mt-1">Thank you for standing ready as a verified donor.</p>
+                <div className="card p-8 text-center text-muted">
+                  <p className="text-[15px]">No emergency alerts in your immediate radius right now.</p>
+                  <p className="text-[13.5px] text-faint mt-1">Thank you for standing ready as a verified donor.</p>
                 </div>
               ) : (
                 feedRequests.map((req) => (
                   <div 
                     key={req.id} 
-                    className="card p-4 rounded-xl border border-white/10 bg-slate-900/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                    className="card p-4 rounded-xl border border-line bg-sunk flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="badge badge-primary font-bold text-[11px]">{req.urgency_level || 'CRITICAL'}</span>
-                        <span className="text-white font-bold text-sm">{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
-                        <span className="text-xs text-slate-400">• {req.city || 'New Delhi'}</span>
+                        <span className="badge badge-primary font-bold text-[12.5px]">{req.urgency_level || 'CRITICAL'}</span>
+                        <span className="text-ink font-bold text-[15px]">{req.hospital_name || 'City Care Super Specialty Hospital'}</span>
+                        <span className="text-[13.5px] text-muted">• {req.city || 'New Delhi'}</span>
                       </div>
-                      <p className="text-xs text-slate-200">
-                        Requires <strong className="text-white">{req.units_required || 2} Units</strong> of <strong className="text-[#FF2E54]">{req.blood_group}</strong>
+                      <p className="text-[13.5px] text-ink">
+                        Requires <strong className="text-ink">{req.units_required || 2} Units</strong> of <strong className="text-red-ink">{req.blood_group}</strong>
                       </p>
-                      <p className="text-[11px] text-slate-400">{req.clinical_notes || 'Trauma surgery priority requisition.'}</p>
+                      <p className="text-[12.5px] text-muted">{req.clinical_notes || 'Trauma surgery priority requisition.'}</p>
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                       <button 
                         onClick={() => handleRespond(req.id, 'accepted')} 
-                        className="btn btn-primary text-xs py-2 px-3.5 rounded-lg flex-1 sm:flex-none font-bold shadow-md"
-                        style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
+                        className="btn btn-primary text-[13.5px] py-2 px-3.5 rounded-lg flex-1 sm:flex-none font-bold "
+                        style={{ background: 'var(--ok-fill)' }}
                       >
                         Accept & Dispatch →
                       </button>
                       <button 
                         onClick={() => handleRespond(req.id, 'declined')} 
-                        className="btn btn-secondary text-xs py-2 px-3 rounded-lg"
+                        className="btn btn-secondary text-[13.5px] py-2 px-3 rounded-lg"
                       >
                         Decline
                       </button>
@@ -611,50 +561,44 @@ export const DonorDashboard: React.FC = () => {
           {activeTab === 'responses' && (
             <div 
               className="card"
-              style={{
-                padding: '1.75rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
             >
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">My Emergency Responses</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Responses you have submitted for active emergency cases</p>
+                  <h2 className="text-lg font-bold text-ink tracking-tight">My Emergency Responses</h2>
+                  <p className="text-[13.5px] text-muted mt-0.5">Responses you have submitted for active emergency cases</p>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-mono">
+                <span className="text-[13.5px] px-2.5 py-1 rounded-full bg-sunk text-muted font-mono">
                   {myResponses.length} Cases
                 </span>
               </div>
 
               {myResponses.length === 0 ? (
-                <div className="p-8 text-center text-slate-400 border border-white/5 rounded-xl bg-slate-950/40">
-                  <CheckCircle2 size={32} className="mx-auto mb-2 text-slate-600" />
-                  <p className="text-sm font-semibold text-slate-300">No Responses Submitted Yet</p>
-                  <p className="text-xs text-slate-400 mt-1">When you accept emergency alerts, your dispatch status will appear here.</p>
+                <div className="p-8 text-center text-muted border border-line rounded-xl bg-sunk">
+                  <CheckCircle2 size={32} className="mx-auto mb-2 text-faint" />
+                  <p className="text-[15px] font-semibold text-muted">No Responses Submitted Yet</p>
+                  <p className="text-[13.5px] text-muted mt-1">When you accept emergency alerts, your dispatch status will appear here.</p>
                 </div>
               ) : (
-                <div className="divide-y divide-white/10">
+                <div className="divide-y divide-line">
                   {myResponses.map((res, i) => (
-                    <div key={i} className="py-3.5 flex justify-between items-center text-sm">
+                    <div key={i} className="py-3.5 flex justify-between items-center text-[15px]">
                       <div>
-                        <div className="font-bold text-white flex items-center gap-2">
+                        <div className="font-bold text-ink flex items-center gap-2">
                           <span>Case #{res.request_id?.slice(0, 8) || 'Alert'}</span>
-                          <span className="text-xs text-slate-400 font-normal">({res.timestamp})</span>
+                          <span className="text-[13.5px] text-muted font-normal">({res.timestamp})</span>
                         </div>
-                        <div className="text-xs text-slate-400 mt-0.5">Estimated Arrival: <strong className="text-[#38BDF8]">{res.eta}</strong></div>
+                        <div className="text-[13.5px] text-muted mt-0.5">Estimated Arrival: <strong className="text-info-ink">{res.eta}</strong></div>
                       </div>
                       <span 
                         style={{
-                          fontSize: '0.725rem',
+                          fontSize: '0.8rem',
                           fontWeight: 700,
                           padding: '0.2rem 0.65rem',
                           borderRadius: '9999px',
-                          textTransform: 'uppercase',
-                          background: res.status === 'accepted' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                          color: res.status === 'accepted' ? '#34D399' : '#F87171',
-                          border: `1px solid ${res.status === 'accepted' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'}`,
+                          
+                          background: res.status === 'accepted' ? 'var(--ok-wash)' : 'var(--red-wash)',
+                          color: res.status === 'accepted' ? 'var(--ok-ink)' : 'var(--red-ink)',
+                          border: `1px solid ${res.status === 'accepted' ? 'var(--ok-wash)' : 'var(--red-wash)'}`,
                         }}
                       >
                         {res.status.toUpperCase()}
@@ -672,63 +616,63 @@ export const DonorDashboard: React.FC = () => {
             <div 
               style={{
                 padding: '2rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--surface)',
+                border: '1px solid var(--line)',
                 borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                backdropFilter: 'blur(20px)',
+                boxShadow: 'none',
+                
               }}
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-white tracking-tight">Verified Donation Record</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Officially logged donations verified by participating hospitals</p>
+                  <h2 className="text-xl font-bold text-ink tracking-tight">Verified Donation Record</h2>
+                  <p className="text-[13.5px] text-muted mt-0.5">Officially logged donations verified by participating hospitals</p>
                 </div>
-                <span className="text-emerald-400 font-bold text-sm">3 Logged</span>
+                <span className="text-ok-ink font-bold text-[15px]">3 Logged</span>
               </div>
 
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-line">
                 {[
                   {
                     id: 'don-1',
-                    title: 'Whole Blood Donation (1 Unit • 450 ml)',
-                    hospital: 'City Care Super Specialty Hospital • Verified by Dr. Arthur Vance',
+                    title: 'Whole Blood Donation (1 Unit, 450 ml)',
+                    hospital: 'City Care Super Specialty Hospital, Verified by Dr. Arthur Vance',
                     date: '14 Oct 2026',
                   },
                   {
                     id: 'don-2',
                     title: 'Packed Red Blood Cells (1 Unit)',
-                    hospital: 'KGMU Trauma Center • Emergency Dispatch Mesh',
+                    hospital: 'KGMU Trauma Center, Emergency Dispatch Mesh',
                     date: '22 Jun 2026',
                   },
                   {
                     id: 'don-3',
                     title: 'Platelet Apheresis Single Donor',
-                    hospital: 'Metropolitan Regional Blood Bank • Oncology Support',
+                    hospital: 'Metropolitan Regional Blood Bank, Oncology Support',
                     date: '05 Jan 2026',
                   },
                 ].map((rec) => (
                   <div key={rec.id} className="py-4 flex justify-between items-center gap-4">
                     <div>
-                      <div className="text-sm font-bold text-white">{rec.title}</div>
-                      <div className="text-xs text-slate-400 mt-0.5">{rec.hospital}</div>
+                      <div className="text-[15px] font-bold text-ink">{rec.title}</div>
+                      <div className="text-[13.5px] text-muted mt-0.5">{rec.hospital}</div>
                     </div>
                     <div className="text-right shrink-0">
                       <span 
                         style={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.8rem',
                           padding: '0.2rem 0.65rem',
                           borderRadius: '9999px',
-                          border: '1px solid rgba(16, 185, 129, 0.35)',
-                          background: 'rgba(16, 185, 129, 0.1)',
-                          color: '#34D399',
+                          border: '1px solid transparent',
+                          background: 'var(--ok-wash)',
+                          color: 'var(--ok-ink)',
                           fontWeight: 700,
                           display: 'inline-block',
                         }}
                       >
                         VERIFIED
                       </span>
-                      <div className="text-xs text-slate-400 mt-1">{rec.date}</div>
+                      <div className="text-[13.5px] text-muted mt-1">{rec.date}</div>
                     </div>
                   </div>
                 ))}
@@ -740,22 +684,16 @@ export const DonorDashboard: React.FC = () => {
           {activeTab === 'notifications' && (
             <div 
               className="card"
-              style={{
-                padding: '1.75rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
             >
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">Notification Center</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Emergency alerts and status updates</p>
+                  <h2 className="text-lg font-bold text-ink tracking-tight">Notification Center</h2>
+                  <p className="text-[13.5px] text-muted mt-0.5">Emergency alerts and status updates</p>
                 </div>
                 {unreadNotifs > 0 && (
                   <button 
                     onClick={handleMarkAllNotifications} 
-                    className="btn btn-secondary btn-sm text-xs py-1.5 px-3 rounded-lg"
+                    className="btn btn-secondary btn-sm text-[13.5px] py-1.5 px-3 rounded-lg"
                   >
                     Mark All Read
                   </button>
@@ -763,25 +701,25 @@ export const DonorDashboard: React.FC = () => {
               </div>
 
               {notifications.length === 0 ? (
-                <div className="p-8 text-center text-slate-400 border border-white/5 rounded-xl bg-slate-950/40">
-                  <Bell size={28} className="mx-auto mb-2 text-slate-600" />
-                  <p className="text-sm">No new notifications on file.</p>
+                <div className="p-8 text-center text-muted border border-line rounded-xl bg-sunk">
+                  <Bell size={28} className="mx-auto mb-2 text-faint" />
+                  <p className="text-[15px]">No new notifications on file.</p>
                 </div>
               ) : (
-                <div className="divide-y divide-white/10">
+                <div className="divide-y divide-line">
                   {notifications.map((n) => (
-                    <div key={n.id} className={`py-3.5 flex justify-between items-center ${!n.is_read ? 'bg-[#FF2E54]/5 px-3 rounded-xl' : ''}`}>
+                    <div key={n.id} className={`py-3.5 flex justify-between items-center ${!n.is_read ? 'bg-red-wash px-3 rounded-xl' : ''}`}>
                       <div>
-                        <div className="font-bold text-white text-sm flex items-center gap-2">
-                          {!n.is_read && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF2E54' }}></span>}
+                        <div className="font-bold text-ink text-[15px] flex items-center gap-2">
+                          {!n.is_read && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--red)' }}></span>}
                           <span>{n.title}</span>
                         </div>
-                        <div className="text-xs text-slate-300 mt-0.5">{n.message}</div>
+                        <div className="text-[13.5px] text-muted mt-0.5">{n.message}</div>
                       </div>
                       {!n.is_read && (
                         <button 
                           onClick={() => handleMarkNotification(n.id)} 
-                          className="text-xs text-[#38BDF8] hover:underline font-semibold ml-4 shrink-0"
+                          className="text-[13.5px] text-info-ink hover:underline font-semibold ml-4 shrink-0"
                         >
                           Mark Read
                         </button>
@@ -798,24 +736,24 @@ export const DonorDashboard: React.FC = () => {
             <div 
               style={{
                 padding: '2rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--surface)',
+                border: '1px solid var(--line)',
                 borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                backdropFilter: 'blur(20px)',
+                boxShadow: 'none',
+                
               }}
             >
               <div className="mb-6">
-                <h2 className="text-lg font-bold text-white tracking-tight">Donor Profile Information</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Manage your contact information and verified blood group identity</p>
+                <h2 className="text-lg font-bold text-ink tracking-tight">Donor Profile Information</h2>
+                <p className="text-[13.5px] text-muted mt-0.5">Manage your contact information and verified blood group identity</p>
               </div>
 
               <div className="space-y-4 max-w-2xl">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">Full Name</label>
+                  <label className="text-[13.5px] text-muted font-semibold block mb-1.5">Full Name</label>
                   <input 
                     type="text" 
-                    className="form-control text-sm py-2.5 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] w-full" 
+                    className="form-control text-[15px] py-2.5 px-3 bg-sunk border-line text-ink rounded-lg  w-full" 
                     value={fullName} 
                     onChange={(e) => setFullName(e.target.value)} 
                     placeholder="Anita Desai (Demo Donor)"
@@ -824,12 +762,12 @@ export const DonorDashboard: React.FC = () => {
 
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <label className="text-xs text-slate-300 font-semibold">Phone Number</label>
-                    <span className="text-[11px] text-emerald-400 font-medium">(Protected via Supabase RLS)</span>
+                    <label className="text-[13.5px] text-muted font-semibold">Phone Number</label>
+                    <span className="text-[12.5px] text-ok-ink font-medium">(Protected via Supabase RLS)</span>
                   </div>
                   <input 
                     type="text" 
-                    className="form-control text-sm py-2.5 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] w-full" 
+                    className="form-control text-[15px] py-2.5 px-3 bg-sunk border-line text-ink rounded-lg  w-full" 
                     value={phone} 
                     onChange={(e) => setPhone(e.target.value)} 
                     placeholder="+91 98765 43210"
@@ -837,10 +775,10 @@ export const DonorDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">City / Operating Zone</label>
+                  <label className="text-[13.5px] text-muted font-semibold block mb-1.5">City / Operating Zone</label>
                   <input 
                     type="text" 
-                    className="form-control text-sm py-2.5 px-3 bg-slate-950/80 border-white/10 text-white rounded-lg focus:border-[#FF2E54] w-full" 
+                    className="form-control text-[15px] py-2.5 px-3 bg-sunk border-line text-ink rounded-lg  w-full" 
                     value={city} 
                     onChange={(e) => setCity(e.target.value)} 
                     placeholder="New Delhi"
@@ -848,14 +786,14 @@ export const DonorDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold block mb-1.5">
+                  <label className="text-[13.5px] text-muted font-semibold block mb-1.5">
                     Blood Group (Verified)
                   </label>
                   <div className="flex items-center gap-2.5">
-                    <span className="px-2.5 py-1 rounded bg-[#FF2E54]/20 border border-[#FF2E54]/40 text-[#FF2E54] font-bold text-xs">
+                    <span className="px-2.5 py-1 rounded bg-red-wash border border-red text-red-ink font-bold text-[13.5px]">
                       {bloodGroup}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-[13.5px] text-muted">
                       Clinical laboratory verified. Contact admin to re-certify.
                     </span>
                   </div>
@@ -868,8 +806,8 @@ export const DonorDashboard: React.FC = () => {
                       setFeedback({ type: 'success', message: 'Donor profile information saved successfully.' });
                       setTimeout(() => setFeedback(null), 3000);
                     }} 
-                    className="btn btn-primary py-2.5 px-6 rounded-xl font-bold shadow-md cursor-pointer text-xs"
-                    style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)', boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)' }}
+                    className="btn btn-primary py-2.5 px-6 rounded-xl font-bold  cursor-pointer text-[13.5px]"
+                    style={{ background: 'var(--red)', boxShadow: 'none' }}
                   >
                     Save Profile Changes
                   </button>
@@ -883,27 +821,27 @@ export const DonorDashboard: React.FC = () => {
             <div 
               style={{
                 padding: '2rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--surface)',
+                border: '1px solid var(--line)',
                 borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                backdropFilter: 'blur(20px)',
+                boxShadow: 'none',
+                
               }}
             >
               <div className="mb-6">
-                <h2 className="text-lg font-bold text-white tracking-tight">Geofence & Alert Settings</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Configure dispatch travel radius and notification preferences</p>
+                <h2 className="text-lg font-bold text-ink tracking-tight">Geofence & Alert Settings</h2>
+                <p className="text-[13.5px] text-muted mt-0.5">Configure dispatch travel radius and notification preferences</p>
               </div>
 
               <div className="space-y-5 max-w-2xl">
                 {/* Travel Radius Slider */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                      <MapPin size={14} className="text-[#FF2E54]" />
+                    <label className="text-[13.5px] text-muted font-semibold flex items-center gap-1.5">
+                      <MapPin size={14} className="text-red-ink" />
                       <span>Emergency Dispatch Travel Radius</span>
                     </label>
-                    <span className="text-xs font-bold text-[#FF2E54] font-mono">
+                    <span className="text-[13.5px] font-bold text-red-ink font-mono">
                       {travelRadius} km
                     </span>
                   </div>
@@ -914,9 +852,9 @@ export const DonorDashboard: React.FC = () => {
                     step={1} 
                     value={travelRadius} 
                     onChange={(e) => setTravelRadius(Number(e.target.value))} 
-                    className="w-full accent-[#FF2E54] cursor-pointer" 
+                    className="w-full accent-red cursor-pointer" 
                   />
-                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <div className="flex justify-between text-[12.5px] text-faint mt-1">
                     <span>5 km (Local neighborhood)</span>
                     <span>25 km (Citywide)</span>
                     <span>50 km (Regional)</span>
@@ -925,34 +863,20 @@ export const DonorDashboard: React.FC = () => {
 
                 {/* Alert Toggles */}
                 <div className="space-y-3 pt-2">
-                  <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950/70 border border-white/5">
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-sunk border border-line">
                     <div>
-                      <div className="text-xs font-semibold text-white">Emergency Push Alerts</div>
-                      <div className="text-[11px] text-slate-400">Receive instant audio chime on critical local matches</div>
+                      <div className="text-[13.5px] font-semibold text-ink">Emergency Push Alerts</div>
+                      <div className="text-[12.5px] text-muted">Receive instant audio chime on critical local matches</div>
                     </div>
-                    <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={pushAlerts} 
-                        onChange={() => setPushAlerts(!pushAlerts)} 
-                      />
-                      <span className="toggle-slider"></span>
-                    </label>
+                    <SquishSwitch checked={pushAlerts} onChange={() => setPushAlerts(!pushAlerts)} trackColor="var(--line-strong)" trackOnColor="var(--ok)" thumbColor="#fff" thumbOnColor="#fff" ariaLabel="Push alerts" />
                   </div>
 
-                  <div className="flex justify-between items-center p-3 rounded-xl bg-slate-950/70 border border-white/5">
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-sunk border border-line">
                     <div>
-                      <div className="text-xs font-semibold text-white">SMS Triage Notification</div>
-                      <div className="text-[11px] text-slate-400">Receive backup SMS dispatch route when app is backgrounded</div>
+                      <div className="text-[13.5px] font-semibold text-ink">SMS Triage Notification</div>
+                      <div className="text-[12.5px] text-muted">Receive backup SMS dispatch route when app is backgrounded</div>
                     </div>
-                    <label className="toggle-switch-wrapper mb-0" style={{ cursor: 'pointer' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={smsAlerts} 
-                        onChange={() => setSmsAlerts(!smsAlerts)} 
-                      />
-                      <span className="toggle-slider"></span>
-                    </label>
+                    <SquishSwitch checked={smsAlerts} onChange={() => setSmsAlerts(!smsAlerts)} trackColor="var(--line-strong)" trackOnColor="var(--ok)" thumbColor="#fff" thumbOnColor="#fff" ariaLabel="SMS alerts" />
                   </div>
                 </div>
 
@@ -963,8 +887,8 @@ export const DonorDashboard: React.FC = () => {
                       setFeedback({ type: 'success', message: 'Geofence radius and dispatch preferences updated.' });
                       setTimeout(() => setFeedback(null), 3000);
                     }} 
-                    className="btn btn-primary text-xs py-2.5 px-6 rounded-xl font-bold shadow-md cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)', boxShadow: '0 4px 15px rgba(255, 46, 84, 0.4)' }}
+                    className="btn btn-primary text-[13.5px] py-2.5 px-6 rounded-xl font-bold  cursor-pointer"
+                    style={{ background: 'var(--red)', boxShadow: 'none' }}
                   >
                     Save Preferences
                   </button>

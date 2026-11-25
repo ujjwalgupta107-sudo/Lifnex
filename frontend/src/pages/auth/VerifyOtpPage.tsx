@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
-import { Mini3DDroplet } from '../../components/3d/Mini3DDroplet';
-import { 
-  ShieldCheck, AlertCircle, CheckCircle, ArrowRight, 
-  RotateCw, ArrowLeft, Mail, Lock
-} from 'lucide-react';
+import Counter from '../../components/reactbits/Counter';
+import { AuthShell } from '../../components/site/AuthShell';
+import { useGo } from '../../lib/routes';
+import { AlertCircle, ArrowRight, CheckCircle, RotateCw } from 'lucide-react';
 
 export const VerifyOtpPage: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = useGo();
   const location = useLocation();
 
   // Retrieve email and role passed from registration or session storage
@@ -28,7 +27,7 @@ export const VerifyOtpPage: React.FC = () => {
 
   // 60-Second Resend Countdown Timer
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (countdown > 0) {
       setCanResend(false);
       timer = setInterval(() => {
@@ -203,162 +202,96 @@ export const VerifyOtpPage: React.FC = () => {
     }
   };
 
+  const complete = otp.join('').length === 6;
+
   return (
-    <div 
-      className="auth-page-wrapper"
-      style={{
-        minHeight: '82vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.5rem 1rem',
-        width: '100%',
-      }}
+    <AuthShell
+      title="Verify your email"
+      sub={
+        <>
+          We sent a 6-digit code to <strong className="break-all text-ink">{email}</strong>
+        </>
+      }
+      pitch="One last check. Safety runs both ways."
     >
-      {/* Compact 430px Centered Verification Card */}
-      <div 
-        className="auth-card-compact verify-otp-card"
-        style={{
-          maxWidth: '430px',
-          width: '100%',
-          margin: '0 auto',
-          background: 'rgba(11, 17, 32, 0.95)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          borderRadius: '18px',
-          padding: '2rem 1.75rem',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 46, 84, 0.15)',
-          backdropFilter: 'blur(20px)',
-          position: 'relative',
-        }}
-      >
-        {/* Subtle Top Crimson Accent Line */}
-        <div 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '3px',
-            background: 'linear-gradient(90deg, #FF2E54 0%, #E11D48 50%, #38BDF8 100%)',
-            borderTopLeftRadius: '18px',
-            borderTopRightRadius: '18px',
-          }}
-        />
-
-        {/* Brand Header */}
-        <div className="text-center mb-4">
-          <Mini3DDroplet />
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">Verify Your Email</h1>
-          <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-            We sent a 6-digit verification code to<br />
-            <strong className="text-white font-semibold">{email}</strong>
-          </p>
+      {error && (
+        <div role="alert" data-testid="otp-error-banner" className="note note-error panel-in mb-5">
+          <AlertCircle size={18} />
+          <p>{error}</p>
         </div>
+      )}
+      {successMsg && (
+        <div role="status" data-testid="otp-success-banner" className="note note-ok panel-in mb-5">
+          <CheckCircle size={18} />
+          <p>{successMsg}</p>
+        </div>
+      )}
 
-        {/* Feedback Banners */}
-        {error && (
-          <div role="alert" data-testid="otp-error-banner" className="mb-4 p-3 rounded-xl bg-red-950/70 border border-red-500/40 text-red-200 text-xs flex items-center gap-2.5 animate-fadeIn">
-            <AlertCircle className="text-[#FF2E54] shrink-0" size={16} />
-            <span className="leading-snug">{error}</span>
-          </div>
-        )}
+      <form onSubmit={handleVerifySubmit} className="grid grid-cols-1 gap-6">
+        <div className={`flex min-w-0 justify-between gap-1.5 sm:gap-3 ${error ? 'otp-shake' : ''}`}>
+          {otp.map((digit, idx) => (
+            <input
+              key={idx}
+              ref={(el) => {
+                inputRefs.current[idx] = el;
+              }}
+              data-index={idx}
+              data-filled={Boolean(digit)}
+              aria-label={`Digit ${idx + 1} of 6`}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(idx, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(idx, e)}
+              onPaste={idx === 0 ? handlePaste : undefined}
+              className="otp-cell"
+              disabled={loading}
+              autoComplete="one-time-code"
+            />
+          ))}
+        </div>
+        <p className="text-sm text-muted">The code expires in 10 minutes.</p>
 
-        {successMsg && (
-          <div role="status" data-testid="otp-success-banner" className="mb-4 p-3 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2.5 animate-fadeIn">
-            <CheckCircle className="text-emerald-400 shrink-0" size={16} />
-            <span className="leading-snug">{successMsg}</span>
-          </div>
-        )}
+        <button type="submit" className="btn btn-primary btn-lg" disabled={loading || !complete}>
+          {loading ? (
+            <>
+              <span className="spinner" aria-hidden="true" />
+              <span>Verifying</span>
+            </>
+          ) : (
+            <>
+              <span>Verify email</span>
+              <ArrowRight size={18} className="nudge" />
+            </>
+          )}
+        </button>
 
-        <form onSubmit={handleVerifySubmit} className="space-y-4">
-          {/* Six Separate OTP Input Boxes */}
-          <div className="flex justify-between items-center gap-2 sm:gap-2.5 my-2">
-            {otp.map((digit, idx) => (
-              <input
-                key={idx}
-                ref={(el) => (inputRefs.current[idx] = el)}
-                data-index={idx}
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(idx, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(idx, e)}
-                onPaste={idx === 0 ? handlePaste : undefined}
-                className="w-12 h-14 sm:w-13 sm:h-15 text-center text-xl sm:text-2xl font-extrabold text-white bg-slate-950/80 border border-white/15 rounded-xl focus:border-[#FF2E54] focus:ring-2 focus:ring-[#FF2E54]/30 focus:outline-none transition-all shadow-inner font-mono"
-                style={{
-                  boxShadow: digit ? '0 0 12px rgba(255, 46, 84, 0.25)' : 'none',
-                  borderColor: digit ? '#FF2E54' : 'rgba(255, 255, 255, 0.15)',
-                }}
-                disabled={loading}
-                autoComplete="one-time-code"
-              />
-            ))}
-          </div>
-
-          <p className="text-[11px] text-slate-500 text-center">
-            Verification code expires in 10 minutes
-          </p>
-
-          {/* Verify Email Button */}
-          <button
-            type="submit"
-            className="btn btn-primary w-full py-2.5 text-xs sm:text-sm font-bold shadow-md mt-2 flex items-center justify-center gap-2"
-            disabled={loading || otp.join('').length !== 6}
-            style={{
-              opacity: otp.join('').length === 6 ? 1 : 0.75,
-              cursor: otp.join('').length === 6 ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {loading ? (
-              <>
-                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                <span>Verifying Code...</span>
-              </>
-            ) : (
-              <>
-                <span>Verify Email</span>
-                <ArrowRight size={15} />
-              </>
-            )}
-          </button>
-
-          {/* Resend and Email Change Controls */}
-          <div className="pt-2 text-center space-y-2">
-            <div>
-              {canResend ? (
-                <button
-                  type="button"
-                  data-testid="otp-resend-button"
-                  onClick={handleResend}
-                  disabled={resending}
-                  className="text-xs text-[#FF2E54] hover:text-[#ff4d6d] font-bold flex items-center justify-center gap-1.5 mx-auto transition-colors cursor-pointer"
-                >
-                  <RotateCw size={13} className={resending ? 'animate-spin' : ''} />
-                  <span>Resend Verification Code</span>
-                </button>
-              ) : (
-                <span data-testid="otp-resend-countdown" className="text-xs text-slate-400 flex items-center justify-center gap-1.5 font-medium">
-                  <RotateCw size={13} className="text-slate-500" />
-                  <span>Resend Code in <strong className="text-slate-200 font-bold">{countdown}s</strong></span>
-                </span>
-              )}
-            </div>
-
-            {/* Change Email Option */}
-            <div>
-              <Link
-                to="/register"
-                className="text-xs text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1 mt-1"
-              >
-                <ArrowLeft size={12} />
-                <span>Wrong email? Change Email</span>
-              </Link>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {canResend ? (
+            <button
+              type="button"
+              data-testid="otp-resend-button"
+              onClick={handleResend}
+              disabled={resending}
+              className="inline-flex items-center gap-2 font-semibold text-red-ink"
+            >
+              <RotateCw size={16} className={resending ? 'animate-spin' : ''} />
+              <span>Resend code</span>
+            </button>
+          ) : (
+            <span data-testid="otp-resend-countdown" className="inline-flex items-center gap-1.5 text-muted">
+              Resend in <Counter value={countdown} fontSize={17} fontWeight={650} textColor="var(--ink)" suffix="s" fade={0} padding={2} />
+            </span>
+          )}
+          <Link to="/register" className="link">
+            Change email
+          </Link>
+        </div>
+      </form>
+    </AuthShell>
   );
 };
+
+export default VerifyOtpPage;

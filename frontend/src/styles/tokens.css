@@ -1,0 +1,86 @@
+/* Lifnex colour tokens.
+   Day is a lit ward: cool white with the faintest blush, arterial red.
+   Night is the same ward on the night shift: venous maroon-black, hotter red.
+   Plasma amber is the only second accent, kept for plasma and urgency. */
+
+:root {
+  --font-body: 'Mona Sans Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --nav-h: 76px;
+  --ok-fill: oklch(0.49 0.115 160);
+}
+
+:root,
+[data-theme='day'] {
+  color-scheme: light;
+  --ground: oklch(0.972 0.005 12);
+  --surface: oklch(0.998 0.001 12);
+  --raised: oklch(1 0 0);
+  --sunk: oklch(0.945 0.009 12);
+  --ink: oklch(0.205 0.045 14);
+  --muted: oklch(0.445 0.032 14);
+  --faint: oklch(0.505 0.028 14);
+  --line: oklch(0.205 0.045 14 / 0.11);
+  --line-strong: oklch(0.205 0.045 14 / 0.24);
+
+  --red: oklch(0.54 0.22 22);
+  --red-deep: oklch(0.47 0.195 21);
+  --red-ink: oklch(0.505 0.212 22);
+  --red-wash: oklch(0.555 0.224 22 / 0.08);
+  --on-red: oklch(1 0 0);
+  --venous: oklch(0.275 0.095 17);
+  --on-venous: oklch(0.975 0.012 14);
+
+  --plasma: oklch(0.79 0.155 76);
+  --plasma-ink: oklch(0.505 0.115 66);
+  --plasma-wash: oklch(0.79 0.155 76 / 0.18);
+
+  --ok: oklch(0.6 0.13 160);
+  --ok-ink: oklch(0.465 0.105 160);
+  --ok-wash: oklch(0.6 0.13 160 / 0.12);
+  --info-ink: oklch(0.465 0.095 245);
+  --info-wash: oklch(0.465 0.095 245 / 0.1);
+
+  --shadow-lift: 0 1px 1px oklch(0.2 0.05 14 / 0.04), 0 14px 30px -12px oklch(0.2 0.05 14 / 0.16);
+  --shadow-float: 0 2px 4px oklch(0.2 0.05 14 / 0.05), 0 30px 70px -24px oklch(0.2 0.05 14 / 0.3);
+  --nav-glass: oklch(0.995 0.002 12 / 0.78);
+}
+
+[data-theme='night'] {
+  color-scheme: dark;
+  --ground: oklch(0.148 0.03 14);
+  --surface: oklch(0.19 0.037 14);
+  --raised: oklch(0.23 0.043 14);
+  --sunk: oklch(0.134 0.03 14);
+  --ink: oklch(0.968 0.008 18);
+  --muted: oklch(0.775 0.026 16);
+  --faint: oklch(0.68 0.03 16);
+  --line: oklch(0.968 0.008 18 / 0.11);
+  --line-strong: oklch(0.968 0.008 18 / 0.25);
+
+  --red: oklch(0.575 0.226 23);
+  --red-deep: oklch(0.49 0.2 22);
+  --red-ink: oklch(0.735 0.17 20);
+  --red-wash: oklch(0.64 0.23 22 / 0.15);
+  --on-red: oklch(1 0 0);
+  --venous: oklch(0.262 0.088 17);
+  --on-venous: oklch(0.975 0.012 14);
+
+  --plasma: oklch(0.82 0.15 78);
+  --plasma-ink: oklch(0.84 0.135 80);
+  --plasma-wash: oklch(0.82 0.15 78 / 0.14);
+
+  --ok: oklch(0.72 0.14 160);
+  --ok-ink: oklch(0.81 0.13 160);
+  --ok-wash: oklch(0.72 0.14 160 / 0.14);
+  --info-ink: oklch(0.81 0.085 240);
+  --info-wash: oklch(0.81 0.085 240 / 0.13);
+
+  --shadow-lift: 0 0 0 1px oklch(1 0 0 / 0.02), 0 16px 34px -14px oklch(0.06 0.02 14 / 0.8);
+  --shadow-float: 0 0 0 1px oklch(1 0 0 / 0.04), 0 34px 80px -24px oklch(0.05 0.02 14 / 0.95);
+  --nav-glass: oklch(0.19 0.037 14 / 0.74);
+}

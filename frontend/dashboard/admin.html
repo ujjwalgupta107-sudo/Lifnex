@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="day">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin portal, Lifnex</title>
+  <meta name="description" content="Oversee the Lifnex network.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Admin portal, Lifnex">
+  <meta property="og:description" content="Oversee the Lifnex network.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
+    </div>
+  </div>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

@@ -1,93 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, MapPin, Phone, Plus, Search, ShieldCheck } from 'lucide-react';
 import { api } from '../../services/api';
-import {
-  Building2,
-  Search,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
-  ExternalLink,
-  PlusCircle,
-  Filter,
-} from 'lucide-react';
+import SpotlightCard from '../../components/reactbits/SpotlightCard';
+import { Reveal } from '../../components/ui/Reveal';
+import { PageHead } from '../../components/site/PageHead';
+import { FALLBACK_HOSPITALS } from '../../data/content';
+import { useTheme } from '../../lib/theme';
+import { useReduced } from '../../lib/hooks';
 
-const FALLBACK_HOSPITALS = [
-  {
-    id: 'hosp-1',
-    name: 'All India Institute of Medical Sciences (AIIMS)',
-    city: 'New Delhi',
-    state: 'Delhi',
-    address: 'Ansari Nagar, New Delhi - 110029',
-    contact_number: '+91 11 26588500',
-    blood_bank_license: 'CDSCO-DL-2023-0891',
-    is_verified: true,
-    cryo_stock_enabled: true,
-  },
-  {
-    id: 'hosp-2',
-    name: 'King George’s Medical University (KGMU)',
-    city: 'Lucknow',
-    state: 'Uttar Pradesh',
-    address: 'Shah Mina Rd, Chowk, Lucknow - 226003',
-    contact_number: '+91 522 2257450',
-    blood_bank_license: 'CDSCO-UP-2022-1142',
-    is_verified: true,
-    cryo_stock_enabled: true,
-  },
-  {
-    id: 'hosp-3',
-    name: 'Postgraduate Institute of Medical Education (PGIMER)',
-    city: 'Chandigarh',
-    state: 'Punjab / Chandigarh',
-    address: 'Sector 12, Chandigarh - 160012',
-    contact_number: '+91 172 2747585',
-    blood_bank_license: 'CDSCO-CH-2021-0456',
-    is_verified: true,
-    cryo_stock_enabled: true,
-  },
-  {
-    id: 'hosp-4',
-    name: 'Tata Memorial Hospital (Advanced Cancer Centre)',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    address: 'Dr. E Borges Road, Parel, Mumbai - 400012',
-    contact_number: '+91 22 24177000',
-    blood_bank_license: 'CDSCO-MH-2023-3321',
-    is_verified: true,
-    cryo_stock_enabled: true,
-  },
-  {
-    id: 'hosp-5',
-    name: 'Apollo Health City Blood & Transfusion Centre',
-    city: 'Hyderabad',
-    state: 'Telangana',
-    address: 'Jubilee Hills, Hyderabad - 500033',
-    contact_number: '+91 40 23607777',
-    blood_bank_license: 'CDSCO-TS-2024-5509',
-    is_verified: true,
-    cryo_stock_enabled: true,
-  },
-  {
-    id: 'hosp-6',
-    name: 'Christian Medical College & Hospital (CMC)',
-    city: 'Vellore',
-    state: 'Tamil Nadu',
-    address: 'Ida Scudder Road, Vellore - 632004',
-    contact_number: '+91 416 2281000',
-    blood_bank_license: 'CDSCO-TN-2022-8812',
-    is_verified: true,
-    cryo_stock_enabled: true,
-  },
+const STANDARDS = [
+  ['Submit license', 'Valid State or Central CDSCO blood bank operational permit.'],
+  ['Admin review', 'Verification by Lifnex clinical compliance officers within 24 hours.'],
+  ['Cryo sync', 'Access to the hospital requisition terminal and donor dispatch intake.'],
 ];
 
 export const HospitalsPage: React.FC = () => {
   const [hospitals, setHospitals] = useState<any[]>(FALLBACK_HOSPITALS);
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('All');
-  const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const reduced = useReduced();
 
   useEffect(() => {
     api
@@ -101,168 +35,163 @@ export const HospitalsPage: React.FC = () => {
       })
       .catch(() => {
         // Keeps fallback list
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }, []);
 
   const cities = ['All', ...Array.from(new Set(hospitals.map((h) => h.city || h.state).filter(Boolean)))];
 
   const filteredHospitals = hospitals.filter((h) => {
+    const q = searchTerm.toLowerCase();
     const matchesSearch =
-      (h.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (h.address || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (h.city || '').toLowerCase().includes(searchTerm.toLowerCase());
+      (h.name || '').toLowerCase().includes(q) ||
+      (h.address || '').toLowerCase().includes(q) ||
+      (h.city || '').toLowerCase().includes(q) ||
+      (h.blood_bank_license || '').toLowerCase().includes(q);
     const matchesCity = cityFilter === 'All' || h.city === cityFilter || h.state === cityFilter;
     return matchesSearch && matchesCity;
   });
 
   return (
-    <div className="bg-[#050811] text-slate-100 min-h-screen">
-      {/* Hero Header */}
-      <section className="relative py-20 border-b border-white/10 bg-gradient-to-b from-[#0B1222] to-[#050811]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl">
-          <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#10B981] bg-[#10B981]/10 border border-[#10B981]/20 px-3 py-1 rounded-full mb-6">
-            Accredited Healthcare Facilities
-          </span>
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 leading-tight">
-            Hospital & Blood Bank <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] via-[#38BDF8] to-[#FF747E]">
-              Accreditation Directory.
-            </span>
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
-            Verified trauma centers, super-specialty hospitals, and licensed blood banks integrated
-            into the Lifnex emergency coordination mesh.
-          </p>
-
-          <Link
-            to="/register?role=hospital"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-[#FF2E54] hover:bg-[#E11D48] transition-all shadow-lg"
-          >
-            <PlusCircle className="w-5 h-5" />
-            <span>Apply for Hospital Accreditation</span>
+    <>
+      <PageHead
+        lines={['Hospitals and', 'blood banks', 'you can trust']}
+        aside={
+          <Link to="/register?role=hospital" className="btn btn-primary btn-lg justify-self-start">
+            <Plus size={19} />
+            <span>Apply for accreditation</span>
           </Link>
-        </div>
-      </section>
+        }
+      >
+        <p className="lede">
+          Verified trauma centers, super-specialty hospitals, and licensed blood banks in the Lifnex emergency mesh.
+        </p>
+      </PageHead>
 
-      {/* Directory Search & Filters */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="p-6 rounded-3xl bg-[#0D1526] border border-white/10 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="relative w-full md:w-96">
-              <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search hospital name, city or license..."
-                className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-[#38BDF8] text-sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <Filter className="w-4 h-4 text-slate-400" />
-              <select
-                value={cityFilter}
-                onChange={(e) => setCityFilter(e.target.value)}
-                className="px-4 py-3 rounded-xl bg-[#111A2E] border border-white/10 text-white text-sm focus:outline-none focus:border-[#38BDF8]"
-              >
-                {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city === 'All' ? 'All Locations' : city}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <section className="wrap pb-24 md:pb-36">
+        <div className="mb-8 grid gap-3 md:grid-cols-[1fr_auto]">
+          <div className="field-box">
+            <Search size={19} className="input-icon" />
+            <input
+              type="search"
+              aria-label="Search hospitals"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search hospital name, city or license"
+              className="input has-icon"
+            />
           </div>
-
-          {/* Hospitals Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredHospitals.map((h, i) => (
-              <div
-                key={h.id || i}
-                className="p-6 rounded-3xl bg-[#0C1322] border border-white/10 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                      <Building2 className="w-5 h-5" />
-                    </div>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Verified Facility</span>
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-white mb-2 leading-snug">{h.name}</h3>
-
-                  <div className="flex items-start gap-2 text-xs text-slate-400 mb-3">
-                    <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                    <span>{h.address || `${h.city}, ${h.state}`}</span>
-                  </div>
-
-                  {h.blood_bank_license && (
-                    <div className="text-[11px] font-mono text-[#38BDF8] bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg mb-4 inline-block">
-                      Lic: {h.blood_bank_license}
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5 text-slate-300">
-                    <Phone className="w-3.5 h-3.5 text-[#FF2E54]" />
-                    <span>{h.contact_number || '+91 1800-LIFNEX'}</span>
-                  </div>
-                  <span className="text-emerald-400 font-semibold text-[11px]">Cryo-Sync Active</span>
-                </div>
-              </div>
+          <select
+            aria-label="Filter by city"
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            className="input md:w-60"
+          >
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city === 'All' ? 'All locations' : city}
+              </option>
             ))}
-          </div>
-
-          {filteredHospitals.length === 0 && (
-            <div className="text-center py-16 p-8 rounded-3xl bg-[#0D1526] border border-white/10">
-              <AlertCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-white mb-2">No facilities match your search</h3>
-              <p className="text-xs text-slate-400">Try searching with a broader city name or reset filters.</p>
-            </div>
-          )}
+          </select>
         </div>
-      </section>
 
-      {/* Accreditation Standards */}
-      <section className="py-20 bg-[#080E1C] border-t border-white/10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-          <div className="p-8 rounded-3xl bg-[#0D1526] border border-white/10">
-            <h3 className="text-2xl font-bold text-white mb-4">How Hospitals Get Accredited</h3>
-            <p className="text-sm text-slate-300 leading-relaxed mb-6">
-              Lifnex maintains a strict verification bar. Healthcare centers must submit valid CDSCO / State Blood Transfusion Council license certificates, cold-chain temperature monitoring protocols, and contact coordinates for their primary blood bank medical officer.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div className="p-4 rounded-xl bg-white/5 text-xs text-slate-300">
-                <strong className="text-white block mb-1">1. Submit License</strong>
-                Valid State / Central CDSCO blood bank operational permit.
-              </div>
-              <div className="p-4 rounded-xl bg-white/5 text-xs text-slate-300">
-                <strong className="text-white block mb-1">2. Admin Review</strong>
-                Verification by Lifnex clinical compliance officers within 24 hours.
-              </div>
-              <div className="p-4 rounded-xl bg-white/5 text-xs text-slate-300">
-                <strong className="text-white block mb-1">3. Cryo Sync</strong>
-                Access to the hospital requisition terminal and donor dispatch intake.
-              </div>
-            </div>
-            <Link
-              to="/register?role=hospital"
-              className="text-sm font-bold text-[#FF2E54] hover:underline inline-flex items-center gap-1"
+        <p className="mb-5 text-muted" aria-live="polite">
+          {filteredHospitals.length} {filteredHospitals.length === 1 ? 'facility' : 'facilities'}
+        </p>
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {filteredHospitals.map((h, i) => (
+              <motion.div
+                key={h.id || i}
+                layout={!reduced}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', duration: 0.5, bounce: 0.12 }}
+              >
+                <SpotlightCard
+                  className="h-full overflow-hidden rounded-card border border-line p-7"
+                  style={{ background: 'var(--surface)', borderColor: 'var(--line)' }}
+                  theme={theme === 'night' ? 'dark' : 'light'}
+                  spotlightColor={theme === 'night' ? 'rgba(255, 74, 87, 0.2)' : 'rgba(211, 18, 46, 0.09)'}
+                >
+                  <div className="relative flex h-full flex-col justify-between gap-8">
+                    <div>
+                      <p className="flex items-center justify-between gap-3">
+                        <span className="text-lg font-semibold text-red-ink">{h.city}</span>
+                        <span className="tag tag-ok">
+                          <ShieldCheck size={15} /> Verified
+                        </span>
+                      </p>
+                      <h2 className="mt-5 text-[1.4rem] leading-[1.15]">{h.name}</h2>
+                      <p className="mt-4 flex gap-2.5 text-muted">
+                        <MapPin size={18} className="mt-1 shrink-0" />
+                        <span>{h.address || `${h.city}, ${h.state}`}</span>
+                      </p>
+                    </div>
+                    <div className="border-t border-line pt-5">
+                      <p className="flex items-center gap-2.5 font-semibold">
+                        <Phone size={17} className="text-red-ink" />
+                        {h.contact_number || '+91 1800-LIFNEX'}
+                      </p>
+                      <p className="mt-2 flex flex-wrap justify-between gap-2 text-sm text-faint">
+                        {h.blood_bank_license && <span>License {h.blood_bank_license}</span>}
+                        <span className="text-ok-ink">Cryo-sync active</span>
+                      </p>
+                    </div>
+                  </div>
+                </SpotlightCard>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {filteredHospitals.length === 0 && (
+          <div className="panel grid place-items-center gap-4 px-6 py-20 text-center">
+            <h2 className="text-2xl">No facilities match your search</h2>
+            <p className="text-muted">Try a broader city name, or clear the filters.</p>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                setSearchTerm('');
+                setCityFilter('All');
+              }}
             >
-              <span>Begin Institutional Registration</span>
-              <ExternalLink className="w-4 h-4" />
-            </Link>
+              <span>Clear filters</span>
+            </button>
           </div>
+        )}
+      </section>
+
+      <section className="border-t border-line bg-sunk py-24 md:py-32">
+        <div className="wrap grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+          <Reveal>
+            <h2 className="h-sec">How hospitals get accredited</h2>
+            <p className="lede mt-6">
+              Healthcare centers must submit valid CDSCO or State Blood Transfusion Council license certificates,
+              cold-chain temperature monitoring protocols, and contact coordinates for their primary blood bank medical
+              officer.
+            </p>
+            <Link to="/register?role=hospital" className="btn btn-ghost btn-lg mt-8">
+              <span>Begin registration</span>
+              <ArrowRight size={18} className="nudge" />
+            </Link>
+          </Reveal>
+          <ol>
+            {STANDARDS.map(([t, d], i) => (
+              <Reveal key={t} delay={i * 90} className="grid grid-cols-[4.2rem_1fr] items-baseline gap-4 border-t border-line py-7 last:border-b">
+                <span className="display text-[3.2rem] text-red-ink">{i + 1}</span>
+                <span>
+                  <span className="block text-xl font-semibold tracking-tight">{t}</span>
+                  <span className="mt-1 block text-muted">{d}</span>
+                </span>
+              </Reveal>
+            ))}
+          </ol>
         </div>
       </section>
-    </div>
+    </>
   );
 };
+
+export default HospitalsPage;

@@ -1,305 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patient Dashboard — Lifnex Healthcare</title>
-
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="/static/css/dashboards.css">
-  <!-- Leaflet CSS for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Patient portal, Lifnex</title>
+  <meta name="description" content="Create and follow emergency blood requests.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Patient portal, Lifnex">
+  <meta property="og:description" content="Create and follow emergency blood requests.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
 </head>
 <body>
-
-  <!-- Demo Disclaimer Banner -->
-  <div class="demo-banner">
-    <div class="container flex justify-between items-center">
-      <div class="demo-banner-text">
-        <span class="demo-tag">Patient Portal</span>
-        <span>Emergency blood request dispatch and real-time donor tracking</span>
-      </div>
-      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Return to Public Site</a>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
-
-  <div class="dashboard-wrapper">
-    <!-- Sidebar (Showcase White Design) -->
-    <aside class="dashboard-sidebar" id="dashboardSidebar">
-      <div class="sidebar-brand">
-        <a href="index.html" class="brand-link">
-          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" class="brand-logo-img">
-          <div class="brand-title-wrap">
-            <span class="brand-name">Lif<span class="brand-nex">nex</span></span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="sidebar-nav">
-        <a href="patient-dashboard.html" class="sidebar-item active">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          </span>
-          <span>Dashboard</span>
-        </a>
-        <a href="#" class="sidebar-item" data-modal-open="createRequestModal">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-          </span>
-          <span>My Requests</span>
-        </a>
-        <a href="#donorResponsesSection" class="sidebar-item">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          </span>
-          <span>Donor Responses</span>
-        </a>
-        <a href="#notificationsSection" class="sidebar-item">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          </span>
-          <span>Notifications</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Profile', 'Rahul (Verified Patient Account)', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          </span>
-          <span>Profile</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Settings', 'Platform notification preferences: Enabled', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          </span>
-          <span>Settings</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <a href="login.html" class="sidebar-item" style="color: #e11d48;">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          </span>
-          <span>Logout</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="dashboard-main">
-      <!-- Topbar with Portal Badge, Bell and Initial Avatar -->
-      <header class="dashboard-topbar">
-        <div class="topbar-left">
-          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Menu">&#9776;</button>
-          <div class="badge-portal badge-portal-patient">
-            <span>🩸</span>
-            <span>Patient Dashboard</span>
-          </div>
-        </div>
-
-        <div class="topbar-right">
-          <!-- Notification Bell -->
-          <button class="topbar-bell-btn" id="notifBellBtn" title="Notifications">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <span class="topbar-bell-dot"></span>
-          </button>
-
-          <!-- User Initial Avatar (Rahul) -->
-          <div class="topbar-user-avatar" title="Rahul - Patient Account">R</div>
-        </div>
-      </header>
-
-      <!-- Dashboard Body -->
-      <div class="dashboard-body">
-        
-        <!-- Greeting -->
-        <div class="dashboard-greeting-row">
-          <div class="dashboard-greeting">
-            <h1>Welcome, Rahul</h1>
-            <p>Manage your emergency blood requests</p>
-          </div>
-        </div>
-
-        <!-- Showcase 4-Stat KPI Metrics Row -->
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-val val-crimson">2</div>
-            <div class="metric-lbl">Active Requests</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">5</div>
-            <div class="metric-lbl">Donor Responses</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-teal">1</div>
-            <div class="metric-lbl">Fulfilled</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">14 min</div>
-            <div class="metric-lbl">Avg. Response</div>
-          </div>
-        </div>
-
-        <!-- Full-Width Emergency Request Button (Showcase Aligned) -->
-        <button class="btn-emergency-action" data-modal-open="createRequestModal">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Create Emergency Request
-        </button>
-
-        <!-- Showcase My Requests Card & Stepper -->
-        <div class="showcase-card">
-          <div class="showcase-card-header">
-            <div class="showcase-card-title">My Requests</div>
-            <a href="#" class="showcase-view-all">View All &rarr;</a>
-          </div>
-
-          <!-- Request Item -->
-          <div class="request-item-card">
-            <div class="request-item-top">
-              <div class="request-item-info">
-                <div class="blood-drop-circle">🩸</div>
-                <div class="request-item-text">
-                  <h4>O- &bull; 2 Units &bull; Critical</h4>
-                  <p>City Care Super Specialty Hospital &bull; 4.2 km away</p>
-                </div>
-              </div>
-              <span class="badge-status-pill badge-status-matched">Matched</span>
-            </div>
-
-            <!-- 4-Step Progress Stepper -->
-            <div class="stepper-container">
-              <div class="stepper-track-line"></div>
-              <div class="stepper-step">
-                <div class="stepper-circle">✓</div>
-                <span class="stepper-label">Requested</span>
-              </div>
-              <div class="stepper-step">
-                <div class="stepper-circle">✓</div>
-                <span class="stepper-label">Matching</span>
-              </div>
-              <div class="stepper-step">
-                <div class="stepper-circle">✓</div>
-                <span class="stepper-label">Donor Responded</span>
-              </div>
-              <div class="stepper-step">
-                <div class="stepper-circle">✓</div>
-                <span class="stepper-label">Matched</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Emergency Geospatial Map -->
-        <div class="showcase-card">
-          <div class="showcase-card-header">
-            <div class="showcase-card-title">Interactive Geospatial Dispatch Map</div>
-            <span class="badge-status-pill badge-status-matched">Live GPS</span>
-          </div>
-          <div id="patientMap" style="height: 360px; width: 100%; border-radius: 8px; z-index: 10;"></div>
-        </div>
-
-      </div>
-    </main>
-  </div>
-
-  <!-- Create Request Modal -->
-  <div class="modal" id="createRequestModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 class="modal-title font-bold text-lg text-slate-900">Broadcast Emergency Blood Requisition</h3>
-        <button class="modal-close-btn" data-modal-close>&times;</button>
-      </div>
-      <form id="emergencyRequestForm">
-        <div class="modal-body space-y-4">
-          <div class="grid-2 gap-4">
-            <div class="form-group">
-              <label for="reqBloodGroup" class="form-label">Required Blood Group <span class="required">*</span></label>
-              <select id="reqBloodGroup" class="form-select" required>
-                <option value="O-">O Negative (O-)</option>
-                <option value="O+">O Positive (O+)</option>
-                <option value="A-">A Negative (A-)</option>
-                <option value="A+">A Positive (A+)</option>
-                <option value="B-">B Negative (B-)</option>
-                <option value="B+">B Positive (B+)</option>
-                <option value="AB-">AB Negative (AB-)</option>
-                <option value="AB+">AB Positive (AB+)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="reqUnits" class="form-label">Units Needed <span class="required">*</span></label>
-              <input type="number" id="reqUnits" class="form-input" min="1" max="10" value="2" required>
-            </div>
-          </div>
-
-          <div class="grid-2 gap-4">
-            <div class="form-group">
-              <label for="reqUrgency" class="form-label">Urgency Level <span class="required">*</span></label>
-              <select id="reqUrgency" class="form-select" required>
-                <option value="critical">Critical (&lt; 2 Hours)</option>
-                <option value="urgent">Urgent (&lt; 6 Hours)</option>
-                <option value="normal">Standard (&lt; 24 Hours)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="reqHospital" class="form-label">Receiving Hospital <span class="required">*</span></label>
-              <select id="reqHospital" class="form-select" required>
-                <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11">City Care Super Specialty Hospital</option>
-                <option value="b1ffcd88-8b1a-4fe7-aa5c-5aa8ac270b22">Metro Central Trauma Center</option>
-                <option value="c2eedc77-7a2b-4ed6-994b-4bb7ab160c33">St. Jude Memorial Blood Bank</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="reqNotes" class="form-label">Clinical Emergency Notes</label>
-            <textarea id="reqNotes" class="form-textarea" rows="2" placeholder="e.g. Acute trauma in emergency ward. Immediate whole blood transfusion required."></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
-          <button type="submit" class="btn btn-primary">Dispatch Requisition Live &rarr;</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/static/js/main.js"></script>
-  <script src="/static/js/dashboards.js"></script>
-  <script src="/static/js/maps.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Initialize Patient Leaflet Map centered on Delhi/Metropolis
-      if (document.getElementById("patientMap")) {
-        const map = L.map("patientMap").setView([28.6145, 77.2100], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Hospital Marker
-        L.marker([28.6145, 77.2100]).addTo(map)
-          .bindPopup("<strong>City Care Super Specialty Hospital</strong><br>Destination Center")
-          .openPopup();
-
-        // Jittered Donor Marker
-        L.circle([28.6200, 77.2050], {
-          color: '#0f9d8a',
-          fillColor: '#a7f3d0',
-          fillOpacity: 0.5,
-          radius: 600
-        }).addTo(map).bindPopup("<strong>Matched Voluntary Donor</strong><br>En route (ETA 14 mins)");
-      }
-    });
-  </script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

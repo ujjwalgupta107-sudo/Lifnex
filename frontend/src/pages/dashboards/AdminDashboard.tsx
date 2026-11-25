@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import { MetricValue } from '../../components/ui/MetricValue';
+import { motion } from 'framer-motion';
 import { 
   Building2, Users, Droplets, CheckCircle, Clock, 
   Activity, ShieldAlert, Check, RefreshCw, X, Search, FileText,
@@ -118,22 +120,22 @@ export const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="container py-8 max-w-7xl">
+    <div className="dash py-8 max-w-7xl">
       {/* Top Banner Alert */}
       {feedback && (
         <div 
-          className={`mb-5 p-3.5 rounded-xl text-sm flex items-center justify-between shadow-lg ${
+          role="status" className={`dash-toast text-[15px] flex items-center justify-between  ${
             feedback.type === 'success' 
-              ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-200' 
-              : 'bg-red-950/80 border border-red-500/50 text-red-200'
+              ? 'toast-ok' 
+              : 'bg-red-wash border border-line text-red-ink'
           }`}
-          style={{ backdropFilter: 'blur(16px)' }}
+          style={{  }}
         >
           <div className="flex items-center gap-2.5">
-            {feedback.type === 'success' ? <CheckCircle size={18} className="text-emerald-400 shrink-0" /> : <ShieldAlert size={18} className="text-[#FF2E54] shrink-0" />}
+            {feedback.type === 'success' ? <CheckCircle size={18} className="text-ok-ink shrink-0" /> : <ShieldAlert size={18} className="text-red-ink shrink-0" />}
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => setFeedback(null)} className="text-muted hover:text-ink transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -143,53 +145,53 @@ export const AdminDashboard: React.FC = () => {
       <div className="dashboard-greeting-row mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Executive Command Terminal</h1>
+            <h1 className="dash-title">Executive Command Terminal</h1>
             <span 
               className="badge"
               style={{
-                background: 'rgba(255, 46, 84, 0.15)',
-                color: '#FF2E54',
-                border: '1px solid rgba(255, 46, 84, 0.4)',
+                background: 'var(--red-wash)',
+                color: 'var(--red-ink)',
+                border: '1px solid transparent',
                 padding: '0.25rem 0.65rem',
                 borderRadius: '9999px',
-                fontSize: '0.725rem',
+                fontSize: '0.8rem',
                 fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
               }}
             >
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF2E54', display: 'inline-block' }}></span>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--red)', display: 'inline-block' }}></span>
               SUPERUSER AUTHORIZED
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-[13.5px] sm:text-[15px] text-muted mt-1">
             Platform operational metrics, hospital accreditation, and emergency oversight
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block', boxShadow: '0 0 8px #10B981' }}></span>
-          <span>Core Services 99.98% • Latency 24ms</span>
+        <div className="flex items-center gap-2 text-[13.5px] text-muted">
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--ok)', display: 'inline-block', boxShadow: 'none' }}></span>
+          <span>Core Services 99.98%, Latency 24ms</span>
         </div>
       </div>
 
       {/* 4 Stats Cards */}
       <div className="metrics-row mb-8">
         <div className="metric-card">
-          <div className="metric-val val-crimson">1,420</div>
+          <MetricValue className="metric-val val-crimson">1,420</MetricValue>
           <div className="metric-lbl">Total Registered Users</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-teal">1,016</div>
+          <MetricValue className="metric-val val-teal">1,016</MetricValue>
           <div className="metric-lbl">Verified Donors</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-navy">{hospitals.length || 1}</div>
+          <MetricValue className="metric-val val-navy">{hospitals.length || 1}</MetricValue>
           <div className="metric-lbl">Connected Hospitals</div>
         </div>
         <div className="metric-card">
-          <div className="metric-val val-navy">368</div>
+          <MetricValue className="metric-val val-navy">368</MetricValue>
           <div className="metric-lbl">Emergency Fulfillments</div>
         </div>
       </div>
@@ -200,48 +202,40 @@ export const AdminDashboard: React.FC = () => {
         {/* ======================================================== */}
         {/* LEFT SIDEBAR NAVIGATION PANEL                            */}
         {/* ======================================================== */}
-        <aside className="md:col-span-4 lg:col-span-3 space-y-4">
+        <aside className="dash-aside md:col-span-4 lg:col-span-3">
           <div 
             className="donor-sidebar-card"
-            style={{
-              background: 'rgba(15, 23, 42, 0.88)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '18px',
-              padding: '1.25rem',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 15px 35px rgba(0, 0, 0, 0.5)',
-            }}
           >
             {/* Terminal Root Profile Card */}
-            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-white/10">
+            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-line">
               <div 
                 style={{
                   width: '42px',
                   height: '42px',
                   borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)',
+                  background: 'var(--red)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#FFFFFF',
-                  fontWeight: 900,
+                  color: 'var(--on-red)',
+                  fontWeight: 700,
                   fontSize: '1.1rem',
-                  boxShadow: '0 4px 12px rgba(255, 46, 84, 0.35)',
+                  boxShadow: 'none',
                 }}
               >
                 ⚡
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-bold text-white truncate">Admin Root Terminal</div>
-                <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
-                  <span>Superuser • Full Access</span>
+                <div className="text-[15px] font-bold text-ink truncate">Admin Root Terminal</div>
+                <div className="text-[12.5px] text-muted flex items-center gap-1.5">
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ok)', display: 'inline-block' }}></span>
+                  <span>Superuser, Full Access</span>
                 </div>
               </div>
             </div>
 
             {/* Navigation Tabs List */}
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
+            <div className="text-[12.5px] font-bold  text-muted mb-2 px-1">
               Command Modules
             </div>
 
@@ -256,43 +250,16 @@ export const AdminDashboard: React.FC = () => {
                     type="button"
                     onClick={() => setActiveTab(item.id as any)}
                     className={`donor-sidebar-item ${isActive ? 'active' : ''}`}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      padding: '0.75rem 0.9rem',
-                      borderRadius: '12px',
-                      fontSize: '0.825rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      border: isActive ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid transparent',
-                      background: isActive ? 'linear-gradient(135deg, #FF2E54 0%, #D61238 100%)' : 'transparent',
-                      color: isActive ? '#FFFFFF' : '#94A3B8',
-                      boxShadow: isActive ? '0 4px 14px rgba(255, 46, 84, 0.4)' : 'none',
-                      textAlign: 'left',
-                    }}
                   >
+                    {isActive && <motion.span layoutId="dash-plate" className="dash-plate" transition={{ type: 'spring', duration: 0.5, bounce: 0.18 }} />}
                     <div className="flex items-center gap-2.5">
-                      <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
+                      <Icon size={16} className={isActive ? 'text-on-red' : 'text-muted'} />
                       <span>{item.label}</span>
                     </div>
 
                     {item.count !== null && item.count > 0 && (
                       <span 
                         className="donor-sidebar-badge"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: '2px 7px',
-                          borderRadius: '9999px',
-                          fontSize: '0.7rem',
-                          fontWeight: 800,
-                          background: isActive ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                          color: isActive ? '#FFFFFF' : '#CBD5E1',
-                        }}
                       >
                         {item.count}
                       </span>
@@ -303,15 +270,15 @@ export const AdminDashboard: React.FC = () => {
             </nav>
 
             {/* Sidebar Bottom Security Status */}
-            <div className="mt-5 pt-4 border-t border-white/10">
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5 space-y-1">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400">PostgreSQL RLS</span>
-                  <span className="text-emerald-400 font-bold">Enforced (Active)</span>
+            <div className="mt-5 pt-4 border-t border-line">
+              <div className="p-3 rounded-xl bg-sunk border border-line space-y-1">
+                <div className="flex items-center justify-between text-[12.5px]">
+                  <span className="text-muted">PostgreSQL RLS</span>
+                  <span className="text-ok-ink font-bold">Enforced (Active)</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400">Gemini Pro Triage</span>
-                  <span className="text-cyan-400 font-bold">Operational</span>
+                <div className="flex items-center justify-between text-[12.5px]">
+                  <span className="text-muted">Gemini Pro Triage</span>
+                  <span className="text-info-ink font-bold">Operational</span>
                 </div>
               </div>
             </div>
@@ -321,7 +288,7 @@ export const AdminDashboard: React.FC = () => {
         {/* ======================================================== */}
         {/* RIGHT MAIN CONTENT AREA                                  */}
         {/* ======================================================== */}
-        <main className="md:col-span-8 lg:col-span-9 space-y-6">
+        <main key={activeTab} className="panel-in min-w-0 md:col-span-8 lg:col-span-9 space-y-6">
 
           {/* ======================================================== */}
           {/* TAB 1: ANALYTICS & HEALTH                                */}
@@ -331,28 +298,22 @@ export const AdminDashboard: React.FC = () => {
               {/* 7-Day Chart */}
               <div 
                 className="card"
-                style={{
-                  padding: '1.75rem',
-                  background: 'rgba(15, 23, 42, 0.88)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '18px',
-                }}
               >
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                      <Activity className="text-[#FF2E54]" size={18} />
+                    <h2 className="text-lg font-bold text-ink tracking-tight flex items-center gap-2">
+                      <Activity className="text-red-ink" size={18} />
                       <span>7-Day Platform Dispatch Trend</span>
                     </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">Emergency Requisitions vs Active Responding Donors</p>
+                    <p className="text-[13.5px] text-muted mt-0.5">Emergency Requisitions vs Active Responding Donors</p>
                   </div>
-                  <div className="flex items-center gap-4 text-xs font-semibold">
-                    <span className="flex items-center gap-1.5 text-[#FF2E54]">
-                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF2E54' }}></span>
+                  <div className="flex items-center gap-4 text-[13.5px] font-semibold">
+                    <span className="flex items-center gap-1.5 text-red-ink">
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--red)' }}></span>
                       Requisitions
                     </span>
-                    <span className="flex items-center gap-1.5 text-[#38BDF8]">
-                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#38BDF8' }}></span>
+                    <span className="flex items-center gap-1.5 text-plasma-ink">
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--plasma)' }}></span>
                       Donors
                     </span>
                   </div>
@@ -361,12 +322,12 @@ export const AdminDashboard: React.FC = () => {
                 <div style={{ width: '100%', height: 280 }}>
                   <ResponsiveContainer>
                     <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="name" stroke="#64748B" />
-                      <YAxis stroke="#64748B" />
-                      <Tooltip contentStyle={{ backgroundColor: '#0B1120', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '10px' }} />
-                      <Line type="monotone" dataKey="requests" stroke="#FF2E54" strokeWidth={3} dot={{ r: 4 }} name="Emergency Requisitions" />
-                      <Line type="monotone" dataKey="donors" stroke="#38BDF8" strokeWidth={2} dot={{ r: 3 }} name="Active Donors" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
+                      <XAxis dataKey="name" stroke="var(--faint)" />
+                      <YAxis stroke="var(--faint)" />
+                      <Tooltip contentStyle={{ backgroundColor: 'var(--raised)', border: '1px solid var(--line)', borderRadius: '14px', color: 'var(--ink)' }} />
+                      <Line type="monotone" dataKey="requests" stroke="var(--red)" strokeWidth={3} dot={{ r: 4 }} name="Emergency Requisitions" />
+                      <Line type="monotone" dataKey="donors" stroke="var(--plasma)" strokeWidth={2} dot={{ r: 3 }} name="Active Donors" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -375,43 +336,37 @@ export const AdminDashboard: React.FC = () => {
               {/* Sub-System Health Matrix */}
               <div 
                 className="card"
-                style={{
-                  padding: '1.5rem',
-                  background: 'rgba(15, 23, 42, 0.85)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '16px',
-                }}
               >
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <Server size={18} className="text-[#10B981]" />
-                    <h3 className="text-sm font-bold text-white">Live Sub-System Health Infrastructure</h3>
+                    <Server size={18} className="text-ok-ink" />
+                    <h3 className="text-[15px] font-bold text-ink">Live Sub-System Health Infrastructure</h3>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold">
+                  <span className="text-[12.5px] px-2 py-0.5 rounded-full bg-ok-wash text-ok-ink border border-line font-bold">
                     ALL OPERATIONAL
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-xs font-bold text-white">Flask WSGI API</div>
-                    <div className="text-base font-black text-[#10B981] mt-0.5">Healthy</div>
-                    <div className="text-[10px] text-slate-500">v1 Active</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-[13.5px] font-bold text-ink">Flask WSGI API</div>
+                    <div className="text-base font-bold text-ok-ink mt-0.5">Healthy</div>
+                    <div className="text-[12.5px] text-faint">v1 Active</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-xs font-bold text-white">Supabase PostgreSQL</div>
-                    <div className="text-base font-black text-[#10B981] mt-0.5">Connected</div>
-                    <div className="text-[10px] text-slate-500">9 Core Tables</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-[13.5px] font-bold text-ink">Supabase PostgreSQL</div>
+                    <div className="text-base font-bold text-ok-ink mt-0.5">Connected</div>
+                    <div className="text-[12.5px] text-faint">9 Core Tables</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-xs font-bold text-white">Haversine Router</div>
-                    <div className="text-base font-black text-[#38BDF8] mt-0.5">Sub-Second</div>
-                    <div className="text-[10px] text-slate-500">15 km Geofence</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-[13.5px] font-bold text-ink">Haversine Router</div>
+                    <div className="text-base font-bold text-info-ink mt-0.5">Sub-Second</div>
+                    <div className="text-[12.5px] text-faint">15 km Geofence</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
-                    <div className="text-xs font-bold text-white">RLS Security</div>
-                    <div className="text-base font-black text-[#FF2E54] mt-0.5">Strict</div>
-                    <div className="text-[10px] text-slate-500">256-Bit Encrypted</div>
+                  <div className="p-3 rounded-xl bg-sunk border border-line">
+                    <div className="text-[13.5px] font-bold text-ink">RLS Security</div>
+                    <div className="text-base font-bold text-red-ink mt-0.5">Strict</div>
+                    <div className="text-[12.5px] text-faint">256-Bit Encrypted</div>
                   </div>
                 </div>
               </div>
@@ -419,18 +374,12 @@ export const AdminDashboard: React.FC = () => {
               {/* Gemini AI Synthesis */}
               <div 
                 className="card"
-                style={{
-                  padding: '1.5rem',
-                  background: 'rgba(15, 23, 42, 0.85)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '16px',
-                }}
               >
-                <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                  <Sparkles size={16} className="text-[#38BDF8]" />
+                <h3 className="text-[15px] font-bold text-ink mb-2 flex items-center gap-2">
+                  <Sparkles size={16} className="text-info-ink" />
                   <span>Gemini AI Operational Synthesis</span>
                 </h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-[13.5px] text-muted leading-relaxed">
                   {aiInsights?.summary || 'Triage velocity is stable across regional trauma clusters. Rh-negative inventory (O-, B-) is tracking at peak utilization. The geospatial routing mesh has routed 94% of critical requests under the 25-minute ETA threshold. Zero data privacy breaches or unauthorized role escalations recorded in this cycle.'}
                 </p>
               </div>
@@ -443,58 +392,52 @@ export const AdminDashboard: React.FC = () => {
           {activeTab === 'hospitals' && (
             <div 
               className="card"
-              style={{
-                padding: '1.75rem',
-                background: 'rgba(15, 23, 42, 0.88)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '18px',
-              }}
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                    <Building2 className="text-[#FF2E54]" size={18} />
+                  <h2 className="text-lg font-bold text-ink tracking-tight flex items-center gap-2">
+                    <Building2 className="text-red-ink" size={18} />
                     <span>Hospital Directory & Accreditation ({hospitals.length})</span>
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Verify and accredit clinical hospital facilities for emergency intake</p>
+                  <p className="text-[13.5px] text-muted mt-0.5">Verify and accredit clinical hospital facilities for emergency intake</p>
                 </div>
                 
                 <div className="relative w-full sm:w-64 flex items-center">
                   <input
                     id="admin-hospital-search"
                     type="text"
-                    className="form-control text-xs py-2 bg-slate-950/70 border-white/10 text-white rounded-lg focus:border-[#FF2E54]"
+                    className="form-control text-[13.5px] py-2 bg-sunk border-line text-ink rounded-lg "
                     style={{ paddingLeft: '2.5rem', paddingRight: '0.85rem' }}
                     placeholder="Search hospital or city..."
                     value={hospitalSearch}
                     onChange={(e) => setHospitalSearch(e.target.value)}
                   />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={14} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-faint pointer-events-none" size={14} />
                 </div>
               </div>
 
-              <div className="divide-y divide-white/10">
+              <div className="divide-y divide-line">
                 {filteredHospitals.map((h, i) => (
                   <div key={h.id || i} className="py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white text-sm">{h.name || 'City Care Super Specialty Hospital'}</span>
+                        <span className="font-bold text-ink text-[15px]">{h.name || 'City Care Super Specialty Hospital'}</span>
                         <span 
                           style={{
-                            fontSize: '0.68rem',
+                            fontSize: '0.8rem',
                             fontWeight: 700,
                             padding: '0.15rem 0.5rem',
                             borderRadius: '9999px',
-                            background: h.is_verified ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                            color: h.is_verified ? '#34D399' : '#FBBF24',
-                            border: `1px solid ${h.is_verified ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
+                            background: h.is_verified ? 'var(--ok-wash)' : 'var(--plasma-wash)',
+                            color: h.is_verified ? 'var(--ok-ink)' : 'var(--plasma-ink)',
+                            border: `1px solid ${h.is_verified ? 'var(--ok-wash)' : 'var(--plasma-wash)'}`,
                           }}
                         >
                           {h.is_verified ? 'VERIFIED ACCREDITED' : 'PENDING REVIEW'}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400">
-                        {h.address || '142 Medical Enclave, Ansari Nagar'} • {h.city || 'New Delhi'} • Contact: <strong className="text-slate-300">{h.contact_person || 'Dr. Arthur Vance'}</strong>
+                      <p className="text-[13.5px] text-muted">
+                        {h.address || '142 Medical Enclave, Ansari Nagar'}, {h.city || 'New Delhi'}, Contact: <strong className="text-muted">{h.contact_person || 'Dr. Arthur Vance'}</strong>
                       </p>
                     </div>
 
@@ -502,13 +445,13 @@ export const AdminDashboard: React.FC = () => {
                       {!h.is_verified ? (
                         <button 
                           onClick={() => handleVerifyHospital(h.id)} 
-                          className="btn btn-primary text-xs py-2 px-3.5 rounded-xl font-bold shadow-md"
-                          style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
+                          className="btn btn-primary text-[13.5px] py-2 px-3.5 rounded-xl font-bold "
+                          style={{ background: 'var(--ok-fill)' }}
                         >
                           Accredit & Verify →
                         </button>
                       ) : (
-                        <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                        <span className="text-[13.5px] text-ok-ink font-bold flex items-center gap-1">
                           <Check size={14} /> Full Active Access
                         </span>
                       )}
@@ -526,21 +469,21 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-2">
                 <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                    <Droplets className="text-[#FF2E54]" size={18} />
+                  <h2 className="text-lg font-bold text-ink tracking-tight flex items-center gap-2">
+                    <Droplets className="text-red-ink" size={18} />
                     <span>Emergency Requisitions Oversight ({filteredRequests.length})</span>
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Global audit and supervisory control over active requisitions</p>
+                  <p className="text-[13.5px] text-muted mt-0.5">Global audit and supervisory control over active requisitions</p>
                 </div>
 
                 {/* Filter Pills */}
-                <div className="flex items-center gap-1.5 bg-slate-950/60 p-1 rounded-xl border border-white/10 text-xs">
+                <div className="flex flex-wrap items-center gap-1.5 bg-sunk p-1 rounded-xl border border-line min-w-0 max-w-full text-[13.5px]">
                   {(['all', 'critical', 'urgent', 'routine'] as const).map(lvl => (
                     <button
                       key={lvl}
                       onClick={() => setRequestFilter(lvl)}
-                      className={`px-3 py-1 rounded-lg font-bold text-[11px] capitalize transition-all ${
-                        requestFilter === lvl ? 'bg-[#FF2E54] text-white shadow' : 'text-slate-400 hover:text-white'
+                      className={`px-3 py-1 rounded-lg font-bold text-[12.5px] capitalize transition-all ${
+                        requestFilter === lvl ? 'bg-red text-on-red shadow' : 'text-muted hover:text-ink'
                       }`}
                     >
                       {lvl}
@@ -550,44 +493,44 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {filteredRequests.length === 0 ? (
-                <div className="card p-8 text-center text-slate-400">
-                  <p className="text-sm">No emergency requests match this filter.</p>
+                <div className="card p-8 text-center text-muted">
+                  <p className="text-[15px]">No emergency requests match this filter.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {filteredRequests.map((req) => (
                     <div 
                       key={req.id} 
-                      className="card p-4 rounded-xl border border-white/10 bg-slate-900/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                      className="card p-4 rounded-xl border border-line bg-sunk flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">
+                          <span className="font-mono text-[13.5px] font-bold text-ink bg-sunk px-2 py-0.5 rounded">
                             #{req.id?.slice(0, 8) || 'REQ'}
                           </span>
-                          <span className="badge badge-primary font-bold text-[11px]">{req.blood_group}</span>
-                          <span className="text-white font-bold text-sm">{req.units_required} Units</span>
+                          <span className="badge badge-primary font-bold text-[12.5px]">{req.blood_group}</span>
+                          <span className="text-ink font-bold text-[15px]">{req.units_required} Units</span>
                           <span 
                             style={{
-                              fontSize: '0.68rem',
+                              fontSize: '0.8rem',
                               fontWeight: 700,
-                              color: req.urgency_level === 'critical' ? '#FF2E54' : req.urgency_level === 'urgent' ? '#F59E0B' : '#38BDF8',
-                              textTransform: 'uppercase',
+                              color: req.urgency_level === 'critical' ? 'var(--red-ink)' : req.urgency_level === 'urgent' ? 'var(--plasma-ink)' : 'var(--info-ink)',
+                              
                             }}
                           >
-                            • {req.urgency_level || 'critical'}
+                           , {req.urgency_level || 'critical'}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-300 font-medium">
+                        <p className="text-[13.5px] text-muted font-medium">
                           {req.hospital_name || 'City Care Super Specialty Hospital'}
                         </p>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[12.5px] text-muted">
                           {req.clinical_notes || 'Trauma surgery priority requisition.'}
                         </p>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className="badge badge-success text-[10px]">
+                        <span className="badge badge-success text-[12.5px]">
                           {req.status?.toUpperCase() || 'ACTIVE'}
                         </span>
                         <button
@@ -595,7 +538,7 @@ export const AdminDashboard: React.FC = () => {
                             setFeedback({ type: 'success', message: `Emergency request #${req.id?.slice(0, 8)} elevated to Level-1 priority.` });
                             setTimeout(() => setFeedback(null), 3000);
                           }}
-                          className="btn btn-secondary text-xs py-1.5 px-3 rounded-lg"
+                          className="btn btn-secondary text-[13.5px] py-1.5 px-3 rounded-lg"
                         >
                           Elevate Priority
                         </button>
@@ -614,34 +557,34 @@ export const AdminDashboard: React.FC = () => {
             <div 
               style={{
                 padding: '1.75rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--surface)',
+                border: '1px solid var(--line)',
                 borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                backdropFilter: 'blur(20px)',
+                boxShadow: 'none',
+                
               }}
               className="space-y-5"
             >
               {/* Header & Filter Card */}
-              <div className="flex justify-between items-center gap-4 flex-wrap pb-4 border-b border-white/10">
+              <div className="flex justify-between items-center gap-4 flex-wrap pb-4 border-b border-line">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="p-1.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-[#38BDF8]">
+                    <span className="p-1.5 rounded-lg bg-info-wash border border-line text-info-ink">
                       <FileText size={18} />
                     </span>
-                    <h2 className="text-lg font-bold text-white tracking-tight">Immutable Security Audit Trail</h2>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider">
+                    <h2 className="text-lg font-bold text-ink tracking-tight">Immutable Security Audit Trail</h2>
+                    <span className="text-[12.5px] px-2 py-0.5 rounded-full bg-ok-wash text-ok-ink border border-line font-bold ">
                       ● Live Ledger
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-[13.5px] text-muted">
                     PostgreSQL append-only compliance ledger tracking authentication, requisitions, and facility accreditations.
                   </p>
                 </div>
 
                 {/* Filter Pills & Actions */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs shrink-0 flex-wrap">
+                  <div className="flex flex-wrap items-center gap-1.5 bg-sunk p-1 rounded-xl border border-line min-w-0 max-w-full text-[13.5px] shrink-0 flex-wrap">
                     {[
                       { id: 'all', label: 'All Events', count: auditEvents.length },
                       { id: 'auth', label: 'Auth', count: auditEvents.filter(a => a.type === 'auth').length },
@@ -652,15 +595,15 @@ export const AdminDashboard: React.FC = () => {
                         key={f.id}
                         type="button"
                         onClick={() => setAuditFilter(f.id as any)}
-                        className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 rounded-lg font-bold text-[13.5px] transition-all flex items-center gap-1.5 ${
                           auditFilter === f.id 
-                            ? 'bg-[#38BDF8] text-slate-950 shadow-md font-extrabold' 
-                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            ? 'bg-red text-on-red  font-bold' 
+                            : 'text-muted hover:text-ink hover:bg-sunk'
                         }`}
                       >
                         <span>{f.label}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                          auditFilter === f.id ? 'bg-slate-900/30 text-slate-950 font-black' : 'bg-slate-800 text-slate-400'
+                        <span className={`text-[12.5px] px-1.5 py-0.2 rounded-full font-bold ${
+                          auditFilter === f.id ? 'bg-sunk text-ink font-bold' : 'bg-sunk text-muted'
                         }`}>
                           {f.count}
                         </span>
@@ -674,7 +617,7 @@ export const AdminDashboard: React.FC = () => {
                       setFeedback({ type: 'success', message: 'Cryptographic security audit trail exported in signed JSON format.' });
                       setTimeout(() => setFeedback(null), 3000);
                     }}
-                    className="btn btn-secondary text-xs py-1.5 px-3 rounded-xl font-bold flex items-center gap-1.5 shrink-0"
+                    className="btn btn-secondary text-[13.5px] py-1.5 px-3 rounded-xl font-bold flex items-center gap-1.5 shrink-0"
                   >
                     <Download size={13} />
                     <span>Export JSON</span>
@@ -683,24 +626,24 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Status Banner */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                <div className="p-2.5 rounded-xl bg-slate-950/70 border border-white/5 flex items-center justify-between">
-                  <span className="text-slate-400">Ledger Seal</span>
-                  <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[13.5px]">
+                <div className="p-2.5 rounded-xl bg-sunk border border-line flex items-center justify-between">
+                  <span className="text-muted">Ledger Seal</span>
+                  <span className="text-ok-ink font-bold flex items-center gap-1">
                     <Check size={12} /> Verified (0 Alterations)
                   </span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-950/70 border border-white/5 flex items-center justify-between">
-                  <span className="text-slate-400">Row Level Security</span>
-                  <span className="text-sky-400 font-bold">12 / 12 Rules Active</span>
+                <div className="p-2.5 rounded-xl bg-sunk border border-line flex items-center justify-between">
+                  <span className="text-muted">Row Level Security</span>
+                  <span className="text-info-ink font-bold">12 / 12 Rules Active</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-950/70 border border-white/5 flex items-center justify-between">
-                  <span className="text-slate-400">Mutation Policy</span>
-                  <span className="text-purple-400 font-bold">INSERT ONLY</span>
+                <div className="p-2.5 rounded-xl bg-sunk border border-line flex items-center justify-between">
+                  <span className="text-muted">Mutation Policy</span>
+                  <span className="text-info-ink font-bold">INSERT ONLY</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-950/70 border border-white/5 flex items-center justify-between">
-                  <span className="text-slate-400">UPDATE / DELETE</span>
-                  <span className="text-rose-400 font-bold text-[11px]">BLOCKED BY TRIGGER</span>
+                <div className="p-2.5 rounded-xl bg-sunk border border-line flex items-center justify-between">
+                  <span className="text-muted">UPDATE / DELETE</span>
+                  <span className="text-red-ink font-bold text-[12.5px]">BLOCKED BY TRIGGER</span>
                 </div>
               </div>
 
@@ -714,46 +657,46 @@ export const AdminDashboard: React.FC = () => {
                       <div 
                         key={log.id}
                         style={{
-                          background: 'rgba(15, 23, 42, 0.78)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          background: 'var(--surface)',
+                          border: '1px solid var(--line)',
                           borderRadius: '16px',
                           padding: '1.15rem 1.35rem',
                         }}
-                        className="hover:border-sky-500/30 transition-all shadow-sm flex justify-between items-center gap-4 flex-wrap"
+                        className="hover:border-line-strong transition-all shadow-sm flex justify-between items-center gap-4 flex-wrap"
                       >
                         <div className="space-y-1.5 flex-1 min-w-[240px]">
                           <div className="flex items-center gap-2 flex-wrap">
                             {/* Category Badge */}
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider border font-mono ${
+                            <span className={`text-[12.5px] font-bold px-2 py-0.5 rounded-md  border font-mono ${
                               log.type === 'auth' 
-                                ? 'bg-sky-500/15 text-sky-300 border-sky-500/30' 
+                                ? 'bg-info-wash text-info-ink border-line' 
                                 : log.type === 'request'
-                                ? 'bg-rose-500/15 text-rose-300 border-rose-500/30'
-                                : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                ? 'bg-red-wash text-red-ink border-line'
+                                : 'bg-ok-wash text-ok-ink border-line'
                             }`}>
                               {log.type}
                             </span>
 
                             {/* Monospaced Log ID */}
-                            <span className="font-mono text-[11px] text-slate-300 bg-slate-950 px-2 py-0.5 rounded border border-white/5 font-semibold">
+                            <span className="font-mono text-[12.5px] text-muted bg-sunk px-2 py-0.5 rounded border border-line font-semibold">
                               {log.id}
                             </span>
 
                             {/* Action Name */}
-                            <span className="font-bold text-white text-xs sm:text-sm tracking-wide font-mono">
+                            <span className="font-bold text-ink text-[13.5px] sm:text-[15px] tracking-wide font-mono">
                               {log.action}
                             </span>
                           </div>
 
                           {/* Actor & Details */}
-                          <div className="flex items-center gap-2 text-xs text-slate-300">
-                            <span className="text-slate-400">Target/User:</span>
-                            <span className="font-semibold text-slate-200">{log.user}</span>
+                          <div className="flex items-center gap-2 text-[13.5px] text-muted">
+                            <span className="text-muted">Target/User:</span>
+                            <span className="font-semibold text-ink">{log.user}</span>
                           </div>
 
                           {/* Cryptographic Hash snippet */}
-                          <div className="font-mono text-[10px] text-slate-400 flex items-center gap-1.5 truncate">
-                            <Hash size={11} className="text-slate-500 shrink-0" />
+                          <div className="font-mono text-[12.5px] text-muted flex items-center gap-1.5 truncate">
+                            <Hash size={11} className="text-faint shrink-0" />
                             <span className="truncate">SHA-256: {log.hash.slice(0, 24)}... (Immutable block)</span>
                           </div>
                         </div>
@@ -761,23 +704,23 @@ export const AdminDashboard: React.FC = () => {
                         {/* Status and Timestamp details on right */}
                         <div className="flex flex-col items-end gap-1.5 shrink-0 text-right">
                           <span 
-                            className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${
+                            className={`text-[12.5px] font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${
                               isSuperuser
-                                ? 'bg-purple-950/80 text-purple-300 border-purple-500/40'
+                                ? 'bg-info-wash text-info-ink border-line'
                                 : isSuccess 
-                                ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40' 
-                                : 'bg-sky-950/80 text-sky-400 border-sky-500/40'
+                                ? 'bg-ok-wash text-ok-ink border-line' 
+                                : 'bg-info-wash text-info-ink border-line'
                             }`}
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                             {log.status}
                           </span>
 
-                          <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                          <div className="flex items-center gap-2 text-[12.5px] text-muted">
                             <span className="font-mono">{log.ip}</span>
                             <span>•</span>
-                            <span className="flex items-center gap-1 text-slate-400">
-                              <Clock size={12} className="text-slate-500" />
+                            <span className="flex items-center gap-1 text-muted">
+                              <Clock size={12} className="text-faint" />
                               {log.time}
                             </span>
                           </div>
@@ -788,9 +731,9 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
               {/* Bottom Footer Note */}
-              <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
+              <div className="pt-3 border-t border-line flex flex-col sm:flex-row justify-between items-center gap-2 text-[13.5px] text-muted">
                 <div className="flex items-center gap-1.5">
-                  <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
+                  <ShieldCheck size={14} className="text-ok-ink shrink-0" />
                   <span>Every critical lifecycle transition is cryptographically signed with an immutable SHA-256 block hash adhering to NBTC medical record governance standards.</span>
                 </div>
                 <button
@@ -799,7 +742,7 @@ export const AdminDashboard: React.FC = () => {
                     setFeedback({ type: 'success', message: 'Audit summary report generated for medical accreditation compliance.' });
                     setTimeout(() => setFeedback(null), 3000);
                   }}
-                  className="text-xs text-slate-400 hover:text-white transition-all font-semibold flex items-center gap-1 shrink-0"
+                  className="text-[13.5px] text-muted hover:text-ink transition-all font-semibold flex items-center gap-1 shrink-0"
                 >
                   <FileSpreadsheet size={13} />
                   <span>Download CSV</span>
@@ -815,28 +758,28 @@ export const AdminDashboard: React.FC = () => {
             <div 
               style={{
                 padding: '1.75rem',
-                background: 'rgba(11, 17, 32, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--surface)',
+                border: '1px solid var(--line)',
                 borderRadius: '16px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                backdropFilter: 'blur(20px)',
+                boxShadow: 'none',
+                
               }}
               className="space-y-6"
             >
               {/* Header */}
-              <div className="flex justify-between items-center gap-3 flex-wrap pb-4 border-b border-white/10">
+              <div className="flex justify-between items-center gap-3 flex-wrap pb-4 border-b border-line">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-[#38BDF8] shrink-0">
+                  <span className="p-2 rounded-xl bg-info-wash border border-line text-info-ink shrink-0">
                     <ShieldCheck size={22} />
                   </span>
                   <div className="min-w-0">
-                    <h2 className="text-lg font-bold text-white tracking-tight">AI Clinical Governance & Privacy Shield</h2>
-                    <p className="text-xs text-slate-400 mt-0.5 truncate">Gemini 1.5 Pro Medical Triage Guardrails & Regulatory Compliance Architecture</p>
+                    <h2 className="text-lg font-bold text-ink tracking-tight">AI Clinical Governance & Privacy Shield</h2>
+                    <p className="text-[13.5px] text-muted mt-0.5 truncate">Gemini 1.5 Pro Medical Triage Guardrails & Regulatory Compliance Architecture</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0">
+                  <span className="text-[12.5px] px-3 py-1 rounded-full bg-ok-wash text-ok-ink border border-line font-bold  flex items-center gap-1.5 shrink-0">
                     <CheckCheck size={14} /> 100% REGULATORY COMPLIANT
                   </span>
                   <button
@@ -845,7 +788,7 @@ export const AdminDashboard: React.FC = () => {
                       setFeedback({ type: 'success', message: 'Full AI governance and privacy audit report exported in signed JSON format.' });
                       setTimeout(() => setFeedback(null), 3000);
                     }}
-                    className="btn btn-secondary text-xs py-1.5 px-3 rounded-xl font-bold flex items-center gap-1.5 shrink-0"
+                    className="btn btn-secondary text-[13.5px] py-1.5 px-3 rounded-xl font-bold flex items-center gap-1.5 shrink-0"
                   >
                     <Download size={13} />
                     <span>Export JSON</span>
@@ -855,25 +798,25 @@ export const AdminDashboard: React.FC = () => {
 
               {/* 4-Stat Telemetry & Certification Bar (Across full width) */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 text-center">
-                  <div className="text-[10px] text-slate-400">Average Latency</div>
-                  <div className="text-base font-black text-[#38BDF8] mt-0.5">24 ms</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Sub-second triage</div>
+                <div className="p-3 rounded-xl bg-sunk border border-line text-center">
+                  <div className="text-[12.5px] text-muted">Average Latency</div>
+                  <div className="text-base font-bold text-info-ink mt-0.5">24 ms</div>
+                  <div className="text-[12.5px] text-faint mt-0.5">Sub-second triage</div>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 text-center">
-                  <div className="text-[10px] text-slate-400">Breach Rate</div>
-                  <div className="text-base font-black text-[#10B981] mt-0.5">0.00%</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Zero injection leaks</div>
+                <div className="p-3 rounded-xl bg-sunk border border-line text-center">
+                  <div className="text-[12.5px] text-muted">Breach Rate</div>
+                  <div className="text-base font-bold text-ok-ink mt-0.5">0.00%</div>
+                  <div className="text-[12.5px] text-faint mt-0.5">Zero injection leaks</div>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 text-center">
-                  <div className="text-[10px] text-slate-400">Triage Confidence</div>
-                  <div className="text-base font-black text-white mt-0.5">98.6%</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Gemini 1.5 Pro</div>
+                <div className="p-3 rounded-xl bg-sunk border border-line text-center">
+                  <div className="text-[12.5px] text-muted">Triage Confidence</div>
+                  <div className="text-base font-bold text-ink mt-0.5">98.6%</div>
+                  <div className="text-[12.5px] text-faint mt-0.5">Gemini 1.5 Pro</div>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 text-center">
-                  <div className="text-[10px] text-slate-400">Regulatory Certifications</div>
-                  <div className="text-base font-black text-emerald-400 mt-0.5">Certified</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">HIPAA • GDPR • NBTC</div>
+                <div className="p-3 rounded-xl bg-sunk border border-line text-center">
+                  <div className="text-[12.5px] text-muted">Regulatory Certifications</div>
+                  <div className="text-base font-bold text-ok-ink mt-0.5">Certified</div>
+                  <div className="text-[12.5px] text-faint mt-0.5">HIPAA, GDPR, NBTC</div>
                 </div>
               </div>
 
@@ -882,8 +825,8 @@ export const AdminDashboard: React.FC = () => {
                 {/* Guardrail 1: PII Sanitization */}
                 <div 
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'var(--surface)',
+                    border: '1px solid var(--line)',
                     borderRadius: '14px',
                     padding: '1.25rem',
                   }}
@@ -891,25 +834,25 @@ export const AdminDashboard: React.FC = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <Lock size={16} className="text-[#38BDF8]" />
-                      <h3 className="font-bold text-white text-sm">PII Data Sanitization Layer</h3>
+                      <Lock size={16} className="text-info-ink" />
+                      <h3 className="font-bold text-ink text-[15px]">PII Data Sanitization Layer</h3>
                     </div>
-                    <span className="badge badge-success text-[10px]">100% REDACTED</span>
+                    <span className="badge badge-success text-[12.5px]">100% REDACTED</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-[13.5px] text-muted leading-relaxed">
                     All patient identifiers, phone numbers, and addresses are stripped before AI triage prompt evaluation.
                   </p>
-                  <div className="pt-2 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-400">
+                  <div className="pt-2 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2 text-[13.5px] text-muted">
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>SHA-256 irreversible hashing</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>1 km fuzzy bounding box</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>Zero ephemeral retention</span>
                     </div>
                   </div>
@@ -918,8 +861,8 @@ export const AdminDashboard: React.FC = () => {
                 {/* Guardrail 2: Adversarial Injection Defense */}
                 <div 
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'var(--surface)',
+                    border: '1px solid var(--line)',
                     borderRadius: '14px',
                     padding: '1.25rem',
                   }}
@@ -927,25 +870,25 @@ export const AdminDashboard: React.FC = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <ShieldAlert size={16} className="text-[#FF2E54]" />
-                      <h3 className="font-bold text-white text-sm">Adversarial Prompt Injection Defense</h3>
+                      <ShieldAlert size={16} className="text-red-ink" />
+                      <h3 className="font-bold text-ink text-[15px]">Adversarial Prompt Injection Defense</h3>
                     </div>
-                    <span className="badge badge-success text-[10px]">ZERO BREACHES</span>
+                    <span className="badge badge-success text-[12.5px]">ZERO BREACHES</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-[13.5px] text-muted leading-relaxed">
                     Regular expression and semantic token filters actively reject jailbreak attempts and system prompt exfiltration.
                   </p>
-                  <div className="pt-2 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-400">
+                  <div className="pt-2 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2 text-[13.5px] text-muted">
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>System prompt boundary lockdown</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>Adversarial payload detection</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>Semantic anomaly inspection</span>
                     </div>
                   </div>
@@ -954,8 +897,8 @@ export const AdminDashboard: React.FC = () => {
                 {/* Guardrail 3: Clinical Disclaimer */}
                 <div 
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'var(--surface)',
+                    border: '1px solid var(--line)',
                     borderRadius: '14px',
                     padding: '1.25rem',
                   }}
@@ -963,25 +906,25 @@ export const AdminDashboard: React.FC = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <FileText size={16} className="text-[#10B981]" />
-                      <h3 className="font-bold text-white text-sm">Mandatory Clinical Disclaimer Injection</h3>
+                      <FileText size={16} className="text-ok-ink" />
+                      <h3 className="font-bold text-ink text-[15px]">Mandatory Clinical Disclaimer Injection</h3>
                     </div>
-                    <span className="badge badge-success text-[10px]">ENFORCED</span>
+                    <span className="badge badge-success text-[12.5px]">ENFORCED</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-[13.5px] text-muted leading-relaxed">
                     All AI triage responses enforce the mandatory academic non-diagnostic disclaimer in compliance with regulations.
                   </p>
-                  <div className="pt-2 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-400">
+                  <div className="pt-2 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2 text-[13.5px] text-muted">
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>NBTC emergency clinical disclaimer</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>Mandatory physician confirmation</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-400 shrink-0" />
+                      <Check size={13} className="text-ok-ink shrink-0" />
                       <span>Academic research demonstration notice</span>
                     </div>
                   </div>
@@ -989,17 +932,17 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Bottom Regulatory Row */}
-              <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-400">
+              <div className="pt-3 border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3 text-[13.5px] text-muted">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                  <span className="flex items-center gap-1 text-ok-ink font-semibold">
                     <Shield size={13} /> HIPAA Safe Harbor (45 CFR § 164.514)
                   </span>
                   <span>•</span>
-                  <span className="text-slate-300">GDPR Article 9 Compliant</span>
+                  <span className="text-muted">GDPR Article 9 Compliant</span>
                   <span>•</span>
-                  <span className="text-slate-300">NBTC Protocols Certified</span>
+                  <span className="text-muted">NBTC Protocols Certified</span>
                 </div>
-                <span className="text-[11px] text-slate-500 font-mono">
+                <span className="text-[12.5px] text-faint font-mono">
                   SHA-256 Signed Audit Ledger
                 </span>
               </div>

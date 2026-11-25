@@ -1,14 +1,135 @@
-# LIFNEX — Connecting Lives When Every Second Matters
+# Lifnex: Connecting Lives When Every Second Matters
 
-[![CI Tests](https://img.shields.io/badge/pytest-95%20passed-brightgreen.svg)]()
-[![Platform](https://img.shields.io/badge/python-3.11.9-blue.svg)]()
-[![Frontend](https://img.shields.io/badge/React-18.3.1%20%2F%20Vite%208-blueviolet.svg)]()
-[![Database](https://img.shields.io/badge/Supabase-Lifnex--Staging%20Connected-emerald.svg)]()
-[![Auth](https://img.shields.io/badge/Auth-Supabase%20Native%20OTP-blue.svg)]()
-[![AI Engine](https://img.shields.io/badge/Google%20Gemini-1.5%20Pro-orange.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+Emergency blood donor coordination. React + Vite frontend, Flask API, Supabase database.
 
-> **LIFNEX** is an AI-assisted emergency blood donor coordination and hospital triage dispatch platform. Built with a high-performance React 18 frontend, Python Flask REST API gateway, and Supabase PostgreSQL with strict Row-Level Security, Lifnex eliminates operational latency during clinical blood emergencies through mathematical proximity matching and automated biological compatibility filtering.
+## Easiest way: let Antigravity do it
+
+1. Unzip this file somewhere short, such as `C:\Lifnex` (long folder paths can break on Windows).
+2. In Antigravity choose **Open Folder** and pick the `Lifnex` folder that contains this README.
+3. Paste this into the Gemini agent chat:
+
+> Read README.md and follow "Run it yourself" for my operating system. Delete any existing node_modules and venv folders first, then install, build and start the app. Do not edit code, .env, package versions or the database. When http://localhost:5000 and http://localhost:5000/api/v1/health both return 200, open the site and give me the link. If something fails, use the Troubleshooting table.
+
+## Run it yourself
+
+Install first: [Node.js 22 LTS](https://nodejs.org) (20.19+ also works) and [Python 3.11 or newer](https://python.org) (on Windows, tick "Add Python to PATH"). Then open a terminal **inside this folder**, where `package.json` and `run.py` are.
+
+**Windows (PowerShell)**
+
+```powershell
+npm install
+npm run build
+python -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements.txt
+.\.venv\Scripts\python run.py
+```
+
+**macOS / Linux**
+
+```bash
+rm -rf node_modules
+npm install
+npm run build
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements.txt
+./.venv/bin/python run.py
+```
+
+Open **http://localhost:5000**. One server runs both the site and the API. Stop it with Ctrl+C.
+
+Next time, only the last command is needed. After changing frontend code, run `npm run build` again.
+
+**Live reload while editing:** keep `run.py` running, run `npm run dev` in a second terminal, and open http://localhost:5173.
+
+## Signing in
+
+The sign-in page has demo buttons: Patient, Donor, Hospital, Admin. Pick one and press **Sign in**.
+
+- **Without a `.env` file** the app runs in offline demo mode and these accounts always work. This is the mode that was tested.
+- **With the included `.env`** it uses the real Supabase project, so accounts must exist there and requests are saved for real.
+
+To try it offline, rename `.env` to `.env.off` and restart. Rename it back for real data.
+
+## Environment variables
+
+Copy `.env.example` to `.env` if you don't have one.
+
+| Name | Needed for |
+|---|---|
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWKS_URL` | Real accounts and data |
+| `SECRET_KEY` | Production |
+| `GEMINI_API_KEY` | AI triage (optional) |
+| `SMTP_*` | Email through your own provider (optional) |
+| `CORS_ORIGINS` | Only if site and API are on different domains |
+
+**Never upload `.env` to GitHub or share it publicly.** Its secret key has full database access. If this zip went to anyone outside the team, change that key in Supabase.
+
+New database? In the Supabase SQL Editor run `backend/migrations/001_initial_schema.sql`, then `002_security_hardening.sql`.
+
+## Make it live
+
+**Render (recommended, one service).** `render.yaml` is ready.
+
+1. Push this folder to a GitHub repository (`.gitignore` already leaves out `.env`).
+2. On [render.com](https://render.com): New > Blueprint > pick the repository.
+3. Fill in the Supabase variables when asked, then deploy.
+
+Any other Python host: build with `npm install --include=dev && npm run build && pip install -r requirements.txt`, start with `gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`.
+
+The build step is required. Without it every page is blank.
+
+**Vercel.** Import the repository, add the variables and deploy. If the home page shows 404, replace `vercel.json` with:
+
+```json
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/((?!api/|static/|assets/).*)", "destination": "/index.html" }
+  ]
+}
+```
+
+Neither host has been tried live with this version yet.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `node` or `python` not recognized | Install it, then close and reopen the terminal |
+| `npm install` ERESOLVE error | Make sure the `.npmrc` file is in the folder (it is hidden on macOS/Linux) |
+| Vite or rolldown "native binding" error | Delete `node_modules`, run `npm install` again |
+| Vite asks for a newer Node | Install Node 22 LTS |
+| Blank page | Run `npm run build`, then hard refresh (Ctrl+Shift+R) |
+| Port 5000 busy (common on macOS) | `./.venv/bin/python -m flask --app run run --port 5001`, then open port 5001. On Windows use `.\.venv\Scripts\python`. |
+| Port 5173 pages load but data doesn't | `run.py` must also be running on port 5000 |
+| Demo sign-in fails | Use offline mode, see Signing in |
+| "Filename too long" | Move the folder to `C:\Lifnex` |
+
+## Checks
+
+```powershell
+npm run build
+.\.venv\Scripts\python -m pytest backend/tests
+```
+
+Expected without Supabase: 93 passed, 4 errors. Those 4 tests need a live Supabase project. `scripts/browser_live_test.py` targets the old pages and is out of date.
+
+## Where things are
+
+| Path | What |
+|---|---|
+| `frontend/src/pages` | Screens |
+| `frontend/src/styles/tokens.css` | All colours, day and night |
+| `frontend/src/lib/liquid.ts` | Theme and page transitions |
+| `frontend/src/components/3d/BloodStream.tsx` | 3D hero |
+| `frontend/src/components/reactbits` | React Bits components and their licence |
+| `scripts/make-shells.js` | Regenerates the HTML shells (`npm run shells`) |
+| `backend/app` | Flask API |
+
+UI credits: [React Bits](https://reactbits.dev) by David Haz (MIT + Commons Clause), Mona Sans (SIL OFL), Three.js, Framer Motion, Lucide.
 
 ---
 
@@ -45,7 +166,7 @@ Lifnex is **not** a blood bank, does not store or distribute physical blood prod
 | **AI Governance** | Google Gemini 1.5 Pro / Flash |
 | **Mapping Engine** | Leaflet 1.9.4 / OpenStreetMap |
 | **Mobile App** | React Native 0.74.5, Expo SDK 51 (EAS Build standalone APK) |
-| **Automated Testing** | Pytest 9.2.0 (81 tests, 100% pass rate) |
+| **Automated Testing** | Pytest |
 
 ---
 
@@ -77,115 +198,6 @@ Lifnex/
 
 ---
 
-## ⚙️ Installation & Local Setup
-
-### 1. Prerequisites
-- **Python:** 3.11+
-- **Node.js:** v18+ with `npm`
-- **Git**
-
-### 2. Clone the Repository
-```bash
-git clone https://github.com/ujjwalgupta107-sudo/Lifnex.git
-cd Lifnex
-```
-
-### 3. Backend Setup
-```bash
-# Create and activate Python virtual environment
-python -m venv venv
-.\venv\Scripts\activate   # Windows PowerShell
-# source venv/bin/activate  # macOS / Linux
-
-# Install dependencies
-pip install -r requirements.txt
-pip install reportlab markdown
-```
-
-### 4. Frontend Setup
-```bash
-# Install frontend npm dependencies
-npm install
-
-# Build static production assets
-npm run build
-```
-
----
-
-## 🔐 Environment Configuration
-
-Create a `.env` file in the project root directory (`c:\Users\Ujjwal\Desktop\Lifnex\.env`):
-
-```env
-# ==============================================================================
-# LIFNEX APPLICATION ENVIRONMENT CONFIGURATION
-# ==============================================================================
-
-# Supabase Project Configuration (From your Supabase project 'Lifnex')
-SUPABASE_URL=https://<your-project-ref>.supabase.co
-SUPABASE_PUBLISHABLE_KEY=<your-anon-publishable-key>
-SUPABASE_SECRET_KEY=<your-service-role-secret-key>
-SUPABASE_JWKS_URL=https://<your-project-ref>.supabase.co/auth/v1/.well-known/jwks.json
-
-# Google Gemini AI Configuration (Optional)
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Flask Application Settings
-FLASK_APP=backend.app:create_app
-FLASK_ENV=development
-FLASK_DEBUG=1
-SECRET_KEY=lifnex-super-secret-session-key-dev-only-change-in-prod
-PORT=5000
-CORS_ORIGINS=*
-```
-
-> **Security Note:** Never commit `.env` to GitHub. The repository `.gitignore` strictly protects `.env`, `backend/.env`, and all credentials.
-
----
-
-## 🗄️ Database Setup & Migrations (Supabase)
-
-Lifnex requires nine relational tables with 45 Row-Level Security policies:
-1. Open your [Supabase Dashboard](https://supabase.com/dashboard).
-2. Go to the **SQL Editor**.
-3. Run `backend/migrations/001_initial_schema.sql` to initialize all 9 tables, indexes, and constraints.
-4. Run `backend/migrations/002_security_hardening.sql` to enforce Row-Level Security (RLS) policies.
-
----
-
-## 🚀 Running Locally
-
-### Start Backend API Server (Port 5000)
-```powershell
-$env:PYTHONPATH="."
-.\venv\Scripts\python run.py
-```
-*API will be live at `http://127.0.0.1:5000`.*
-
-### Start Frontend Development Server (Port 5173)
-```powershell
-npm run dev
-```
-*Web application will be live at `http://localhost:5173`.*
-
----
-
-## 🧪 Testing Suite Execution
-
-Lifnex includes an automated regression test suite covering all modules:
-
-```powershell
-# Run the complete test suite (81 tests)
-$env:LIFNEX_FORCE_OFFLINE="1"
-$env:PYTHONPATH="."
-.\venv\Scripts\pytest -p no:asyncio backend/tests/ -v
-```
-
-**Verified Test Result:** `81 passed in 1.49s (100% Pass Rate)`.
-
----
-
 ## 📱 Mobile Application (Android APK)
 
 The companion mobile app is configured in `mobile/`:
@@ -196,17 +208,6 @@ npm install
 # Build standalone preview Android APK via EAS
 eas build -p android --profile preview
 ```
-
----
-
-## 📄 Key Project Documentation
-
-- **Master Project Proposal:** [docs/LIFNEX_COMPLETE_PROJECT_PROPOSAL.md](docs/LIFNEX_COMPLETE_PROJECT_PROPOSAL.md) / [docs/LIFNEX_COMPLETE_PROJECT_PROPOSAL.pdf](docs/LIFNEX_COMPLETE_PROJECT_PROPOSAL.pdf)
-- **Current Progress Report:** [CURRENT_PROGRESS.md](CURRENT_PROGRESS.md)
-- **Previous Git Commit Log:** [PREVIOUS_COMMIT.md](PREVIOUS_COMMIT.md)
-- **Full Project Proposal (Root):** [PROJECT_PROPOSAL.md](PROJECT_PROPOSAL.md)
-- **Supabase Integration Guide:** [docs/SUPABASE_INTEGRATION_GUIDE.md](docs/SUPABASE_INTEGRATION_GUIDE.md)
-- **System Architecture Audit:** [docs/SYSTEM_ARCHITECTURE_AUDIT.md](docs/SYSTEM_ARCHITECTURE_AUDIT.md)
 
 ---
 

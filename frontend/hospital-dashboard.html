@@ -1,271 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hospital Dashboard — Lifnex Healthcare</title>
-
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="/static/css/dashboards.css">
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Hospital portal, Lifnex</title>
+  <meta name="description" content="Manage requisitions, donors and blood stock.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Hospital portal, Lifnex">
+  <meta property="og:description" content="Manage requisitions, donors and blood stock.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
 </head>
 <body>
-
-  <!-- Demo Disclaimer Banner -->
-  <div class="demo-banner">
-    <div class="container flex justify-between items-center">
-      <div class="demo-banner-text">
-        <span class="demo-tag">Hospital Portal</span>
-        <span>Accredited clinical coordination center and emergency blood bank inventory management.</span>
-      </div>
-      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Return to Public Site</a>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
-
-  <div class="dashboard-wrapper">
-    <!-- Sidebar (Showcase White Design) -->
-    <aside class="dashboard-sidebar" id="dashboardSidebar">
-      <div class="sidebar-brand">
-        <a href="index.html" class="brand-link">
-          <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" class="brand-logo-img">
-          <div class="brand-title-wrap">
-            <span class="brand-name">Lif<span class="brand-nex">nex</span></span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="sidebar-nav">
-        <a href="hospital-dashboard.html" class="sidebar-item active">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          </span>
-          <span>Dashboard</span>
-        </a>
-        <a href="#recentRequestsSection" class="sidebar-item">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-          </span>
-          <span>Requests</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Patients', '14 Active clinical inpatient requisitions on file.', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-          </span>
-          <span>Patients</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Donor Coordination', '26 Donors confirmed in transit this week.', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-          </span>
-          <span>Donor Coordination</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Blood Inventory', 'Cold storage reserve: O- (2 units), A+ (12 units), B+ (8 units)', 'success')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-          </span>
-          <span>Blood Inventory</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Accreditation', 'City Care Hospital license: HOSP-DELHI-2026-001 (Verified)', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </span>
-          <span>Verification</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Notifications', 'No unread notifications.', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          </span>
-          <span>Notifications</span>
-        </a>
-        <a href="#" class="sidebar-item" onclick="Toast.show('Profile', 'Hospital Coordinator: Dr. Arthur Vance', 'info')">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          </span>
-          <span>Profile</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <a href="login.html" class="sidebar-item" style="color: #e11d48;">
-          <span class="sidebar-item-icon">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          </span>
-          <span>Logout</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="dashboard-main">
-      <!-- Topbar with Portal Badge, Bell and Initial Avatar -->
-      <header class="dashboard-topbar">
-        <div class="topbar-left">
-          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Menu">&#9776;</button>
-          <div class="badge-portal badge-portal-hospital">
-            <span>🏥</span>
-            <span>Hospital Dashboard</span>
-          </div>
-        </div>
-
-        <div class="topbar-right">
-          <!-- Notification Bell -->
-          <button class="topbar-bell-btn" id="notifBellBtn" title="Notifications">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <span class="topbar-bell-dot"></span>
-          </button>
-
-          <!-- User Initial Avatar (Hospital) -->
-          <div class="topbar-user-avatar" title="City Care Super Specialty Hospital">H</div>
-        </div>
-      </header>
-
-      <!-- Dashboard Body -->
-      <div class="dashboard-body">
-        
-        <!-- Hospital Header Card (Showcase Aligned) -->
-        <div class="hospital-header-card">
-          <div class="hospital-building-icon">🏥</div>
-          <div>
-            <div class="hospital-title-row">
-              <h2>City Care Hospital</h2>
-              <span class="verified-blue-badge" title="Verified Hospital Account">✔</span>
-            </div>
-            <p class="hospital-subtitle">Verified Hospital Account</p>
-          </div>
-        </div>
-
-        <!-- Showcase 4-Stat KPI Metrics Row -->
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-val val-navy">12</div>
-            <div class="metric-lbl">Active Requests</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">26</div>
-            <div class="metric-lbl">Donor Responses</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">8</div>
-            <div class="metric-lbl">Fulfilled</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-val val-navy">98%</div>
-            <div class="metric-lbl">Coordination</div>
-          </div>
-        </div>
-
-        <!-- Showcase Recent Requests Table Card -->
-        <div class="showcase-card" id="recentRequestsSection">
-          <div class="showcase-card-header">
-            <div class="showcase-card-title">Recent Requests</div>
-            <a href="#" class="showcase-view-all">View All &rarr;</a>
-          </div>
-
-          <table class="showcase-table">
-            <thead>
-              <tr>
-                <th>Patient</th>
-                <th>Blood Group</th>
-                <th>Urgency</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>R. Sharma</strong></td>
-                <td><strong>O-</strong></td>
-                <td><span class="text-urgency-critical">Critical</span></td>
-                <td><span class="badge-status-pill badge-status-matched">Matched</span></td>
-              </tr>
-              <tr>
-                <td><strong>P. Verma</strong></td>
-                <td><strong>A+</strong></td>
-                <td><span class="text-urgency-high">High</span></td>
-                <td><span class="badge-status-pill badge-status-pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td><strong>S. Patel</strong></td>
-                <td><strong>B+</strong></td>
-                <td><span class="text-urgency-medium">Medium</span></td>
-                <td><span class="badge-status-pill badge-status-progress">In Progress</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Action Row: Broadcast Requisition Button -->
-        <div class="flex justify-end mb-6">
-          <button class="btn btn-primary" data-modal-open="createRequestModal">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Broadcast Emergency Blood Shortage &rarr;
-          </button>
-        </div>
-
-      </div>
-    </main>
-  </div>
-
-  <!-- Broadcast Shortage Modal -->
-  <div class="modal" id="createRequestModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 class="modal-title font-bold text-lg text-slate-900">Broadcast Hospital Emergency Shortage</h3>
-        <button class="modal-close-btn" data-modal-close>&times;</button>
-      </div>
-      <form id="emergencyRequestForm">
-        <div class="modal-body space-y-4">
-          <div class="grid-2 gap-4">
-            <div class="form-group">
-              <label for="reqBloodGroup" class="form-label">Blood Group <span class="required">*</span></label>
-              <select id="reqBloodGroup" class="form-select" required>
-                <option value="O-">O Negative (O-)</option>
-                <option value="O+">O Positive (O+)</option>
-                <option value="A-">A Negative (A-)</option>
-                <option value="A+">A Positive (A+)</option>
-                <option value="B-">B Negative (B-)</option>
-                <option value="B+">B Positive (B+)</option>
-                <option value="AB-">AB Negative (AB-)</option>
-                <option value="AB+">AB Positive (AB+)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="reqUnits" class="form-label">Units Needed <span class="required">*</span></label>
-              <input type="number" id="reqUnits" class="form-input" min="1" max="20" value="4" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="reqUrgency" class="form-label">Urgency <span class="required">*</span></label>
-            <select id="reqUrgency" class="form-select" required>
-              <option value="critical">Critical (ICU / Emergency Surgery)</option>
-              <option value="urgent">Urgent (&lt; 6 Hours)</option>
-              <option value="normal">Routine Resupply</option>
-            </select>
-          </div>
-
-          <input type="hidden" id="reqHospital" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11">
-
-          <div class="form-group">
-            <label for="reqNotes" class="form-label">Clinical Notes</label>
-            <textarea id="reqNotes" class="form-textarea" rows="2" placeholder="e.g. Major surgery requirements. Voluntary donors urgently requested."></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
-          <button type="submit" class="btn btn-primary">Dispatch Broadcast Live &rarr;</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="/static/js/main.js"></script>
-  <script src="/static/js/dashboards.js"></script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

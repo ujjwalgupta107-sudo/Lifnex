@@ -1,20 +1,45 @@
 @import "tailwindcss";
-@import "./design-tokens.css";
+@import "@fontsource-variable/mona-sans/wdth.css";
+@import "./tokens.css";
+@import "./base.css";
 @import "./components.css";
+@import "./dashboard.css";
+@import "./transitions.css";
 
-/* Custom utility overrides */
-.highlight {
-  color: var(--crimson-600);
+@custom-variant night (&:where([data-theme="night"], [data-theme="night"] *));
+
+/* Semantic utilities. Every colour in the app resolves through these,
+   so day and night stay one system: bg-surface, text-ink, border-line... */
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-body);
+
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-red: var(--red);
+  --color-red-deep: var(--red-deep);
+  --color-red-ink: var(--red-ink);
+  --color-red-wash: var(--red-wash);
+  --color-on-red: var(--on-red);
+  --color-venous: var(--venous);
+  --color-on-venous: var(--on-venous);
+  --color-plasma: var(--plasma);
+  --color-plasma-ink: var(--plasma-ink);
+  --color-plasma-wash: var(--plasma-wash);
+  --color-ok: var(--ok);
+  --color-ok-ink: var(--ok-ink);
+  --color-ok-wash: var(--ok-wash);
+  --color-info-ink: var(--info-ink);
+  --color-info-wash: var(--info-wash);
+
+  --radius-control: 12px;
+  --radius-card: 22px;
+  --radius-panel: 34px;
 }
-
-.bg-gradient-brand {
-  background: linear-gradient(135deg, var(--crimson-600) 0%, var(--crimson-800) 100%);
-}
-
-.bg-mesh-subtle {
-  background-color: var(--bg-body);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(15, 157, 138, 0.05) 0px, transparent 50%);
-}
-

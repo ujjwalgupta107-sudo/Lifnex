@@ -1,281 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How Lifnex Works — Step-by-Step Coordination Workflow</title>
-  <meta name="description" content="Detailed walkthrough of how Lifnex coordinates emergency blood requests between patients, nearby voluntary donors, and hospital transfusion centers.">
-
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>How Lifnex works</title>
+  <meta name="description" content="How Lifnex coordinates emergency blood requests between patients, nearby voluntary donors and accredited hospitals in five stages.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="How Lifnex works">
+  <meta property="og:description" content="How Lifnex coordinates emergency blood requests between patients, nearby voluntary donors and accredited hospitals in five stages.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
+  </style>
 </head>
 <body>
-
-  <!-- Demo Disclaimer Banner -->
-  <div class="demo-banner">
-    <div class="container flex justify-between items-center">
-      <div class="demo-banner-text">
-        <span class="demo-tag">Synthetic Demo Environment</span>
-        <span>Simulated workflows and synthetic medical scenarios for demonstration purposes.</span>
-      </div>
-      <a href="index.html" class="text-xs text-cyan-200 hover:underline">&larr; Back to Home</a>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
   </div>
-
-  <!-- Header -->
-  <header class="navbar">
-    <div class="container nav-container">
-      <a href="index.html" class="brand-link">
-        <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Official Logo" class="brand-logo-img">
-        <div class="brand-title">
-          <span class="brand-name">Lifnex</span>
-          <span class="brand-tagline-sub">Emergency Donor Network</span>
-        </div>
-      </a>
-
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="how-it-works.html" class="nav-link active">How It Works</a>
-        <a href="hospitals.html" class="nav-link">Hospitals & Blood Banks</a>
-        <a href="contact.html" class="nav-link">Contact</a>
-      </nav>
-
-      <div class="nav-actions">
-        <a href="login.html" class="btn btn-secondary btn-sm">Sign In</a>
-        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
-        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu">&#9776;</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Page Header -->
-  <section class="section section-alt" style="padding: 3.5rem 0;">
-    <div class="container text-center">
-      <span class="section-subtitle">System Workflow & Lifecycle</span>
-      <h1 class="section-title">How Lifnex Coordinates Life-Saving Blood In Minutes</h1>
-      <p class="section-desc" style="max-width: 760px; margin: 0 auto;">
-        From the initial medical requisition to the verified clinical donation, Lifnex synchronizes three critical stakeholders: the Patient/Attending Family, the Voluntary Donor, and the Hospital Transfusion Center.
-      </p>
-    </div>
-  </section>
-
-  <!-- 3-Way Workflows -->
-  <section class="section">
-    <div class="container">
-      
-      <!-- 1. Patient Workflow -->
-      <div class="card mb-8 p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="user-avatar-circle" style="background:#e11d48;">1</div>
-          <div>
-            <h3 class="card-title">Patient & Attending Family Workflow</h3>
-            <span class="text-xs text-muted">Rapid requisition submission with zero bureaucratic friction</span>
-          </div>
-        </div>
-
-        <div class="grid-3 gap-4">
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step A: Initiate Emergency Broadcast</div>
-            <p class="text-xs text-slate-600">
-              Submit blood type, units required, urgency (Normal, Urgent, Critical), and target hospital. Alternatively, use Gemini AI triage to extract parameters from clinical notes.
-            </p>
-          </div>
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step B: Hospital Verification</div>
-            <p class="text-xs text-slate-600">
-              The target hospital or blood bank verifies the patient case in their coordination portal, upgrading the request to verified status and preventing duplicate or spam requests.
-            </p>
-          </div>
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step C: Live Donor Tracking</div>
-            <p class="text-xs text-slate-600">
-              Monitor incoming responses in real-time. View accepted donors with estimated times of arrival (ETA) at the hospital without exposing private donor telephone numbers prematurely.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Donor Workflow -->
-      <div class="card mb-8 p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="user-avatar-circle" style="background:#059669;">2</div>
-          <div>
-            <h3 class="card-title">Voluntary Donor Workflow</h3>
-            <span class="text-xs text-muted">Location-aware matching with complete schedule autonomy</span>
-          </div>
-        </div>
-
-        <div class="grid-3 gap-4">
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step A: Registration & Availability</div>
-            <p class="text-xs text-slate-600">
-              Set verified blood group, preferred travel radius (e.g. 15 km), and toggle the availability switch. When busy or traveling, flip the toggle to pause all emergency pings.
-            </p>
-          </div>
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step B: Compatible Emergency Alert</div>
-            <p class="text-xs text-slate-600">
-              Receive instant alerts when a compatible patient at a nearby hospital requires blood. Review distance, urgency level, and clinical notes before deciding.
-            </p>
-          </div>
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step C: One-Click Response & Navigation</div>
-            <p class="text-xs text-slate-600">
-              Accept the request, declare estimated arrival time, and obtain direct GPS hospital navigation. After donating, the hospital certifies the donation, starting a 90-day cooldown period.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Hospital Workflow -->
-      <div class="card p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="user-avatar-circle" style="background:#2563eb;">3</div>
-          <div>
-            <h3 class="card-title">Hospital & Blood Bank Workflow</h3>
-            <span class="text-xs text-muted">Accredited clinical supervision and donation certification</span>
-          </div>
-        </div>
-
-        <div class="grid-3 gap-4">
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step A: Verification & Triage</div>
-            <p class="text-xs text-slate-600">
-              Hospital coordinators review incoming patient requests, validating clinical doctor prescriptions and cross-checking internal blood bank inventory before broadcasting.
-            </p>
-          </div>
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step B: Donor Arrival & Cross-Matching</div>
-            <p class="text-xs text-slate-600">
-              When responding donors arrive, laboratory staff perform standard pre-donation screening (hemoglobin test, vitals, ABO/Rh cross-matching) under official medical standards.
-            </p>
-          </div>
-          <div class="p-4 bg-slate-50 rounded border border-slate-200">
-            <div class="font-bold text-sm mb-1 text-slate-800">Step C: Certification & Cooldown</div>
-            <p class="text-xs text-slate-600">
-              Upon successful collection, the hospital issues a verified digital certificate, increments the donor’s contribution ledger, and automatically switches the donor to a 90-day recovery cooldown.
-            </p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Infographic Visual Section (From static assets clinical-verification.jpg) -->
-  <section class="section section-alt">
-    <div class="container">
-      <div class="grid-2 items-center">
-        <div>
-          <span class="section-subtitle">Clinical Safety First</span>
-          <h2 class="section-title">Strict Healthcare Screening Protocol</h2>
-          <p class="text-base mb-4">
-            Voluntary blood donation is governed by stringent physiological and biochemical safety standards. Lifnex integrates verification touchpoints to ensure donors are never pressured to donate outside clinical deferral windows.
-          </p>
-          <ul class="text-sm space-y-2 text-slate-700 mb-6">
-            <li class="flex items-center gap-2">
-              <span class="badge badge-success">✓</span> Minimum 90-day cooldown between red blood cell donations.
-            </li>
-            <li class="flex items-center gap-2">
-              <span class="badge badge-success">✓</span> Mandatory on-site hemoglobin and blood pressure screening.
-            </li>
-            <li class="flex items-center gap-2">
-              <span class="badge badge-success">✓</span> Full biological cross-matching by certified blood bank pathologists.
-            </li>
-          </ul>
-          <a href="hospitals.html" class="btn btn-primary">Find Accredited Centers</a>
-        </div>
-
-        <div class="card p-4" style="max-width: 440px; margin: 0 auto; background: var(--bg-surface); border: 1px solid var(--border-light); box-shadow: var(--shadow-md); border-radius: var(--radius-lg);">
-          <img src="/static/assets/images/clinical-verification.jpg" alt="Clinical Verification Timeline" style="border-radius: var(--radius-md); width: 100%; height: auto;">
-          <div class="text-center text-xs mt-2" style="color: var(--text-muted);">
-            Clinical Safety Protocol Illustration (Certified Transfusion Verification)
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Platform Interface Preview -->
-  <section class="section">
-    <div class="container text-center">
-      <span class="section-subtitle">Real-Time Interface Experience</span>
-      <h2 class="section-title">Designed for Calm, Decisive Emergency Coordination</h2>
-      <p class="section-desc" style="max-width: 680px; margin: 0 auto 2rem;">
-        Engineered with intuitive ergonomics, high contrast alerts, and instantaneous status transitions to minimize cognitive fatigue during critical events.
-      </p>
-      <div class="card p-3" style="max-width: 900px; margin: 0 auto; box-shadow: var(--shadow-xl); overflow: hidden; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-light);">
-        <img src="/static/assets/images/Lifnex Healthcare UI Showcase.png" alt="Lifnex Healthcare Platform UI Showcase" style="width: 100%; height: auto; border-radius: var(--radius-md); display: block;">
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="flex items-center gap-2 mb-2">
-            <img src="/static/assets/logo/lifnex-logo.png" alt="Lifnex Logo" style="height: 32px; width: auto;">
-            <span class="text-white font-bold text-lg">Lifnex</span>
-          </div>
-          <p>AI-Powered Emergency Blood Donor Coordination Platform. Connecting lives when every second matters.</p>
-        </div>
-
-        <div class="footer-col">
-          <h5>Quick Links</h5>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About Mission</a></li>
-            <li><a href="how-it-works.html">How It Works</a></li>
-            <li><a href="hospitals.html">Hospitals & Blood Banks</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5>Portals</h5>
-          <ul>
-            <li><a href="patient-dashboard.html">Patient Portal</a></li>
-            <li><a href="donor-dashboard.html">Donor Hub</a></li>
-            <li><a href="hospital-dashboard.html">Hospital Coordination</a></li>
-            <li><a href="admin-dashboard.html">Admin Analytics</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5>Demonstration</h5>
-          <p class="text-xs text-slate-400">Academic Project Prototype</p>
-          <div class="text-sm font-bold text-white mt-1">Metropolis District Demo</div>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div>&copy; 2026 Lifnex Platform. All rights reserved.</div>
-        <div class="flex gap-4">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <script src="/static/js/main.js"></script>
-  <script>
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-  </script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
-

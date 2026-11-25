@@ -1,141 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In — LIFNEX Neural Blood Grid</title>
-  <link rel="icon" type="image/svg+xml" href="/static/assets/branding/favicon.svg">
-  <link rel="stylesheet" href="/static/css/variables.css">
-  <link rel="stylesheet" href="/static/css/base.css">
-  <link rel="stylesheet" href="/static/css/components.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  
+  <title>Sign in to Lifnex</title>
+  <meta name="description" content="Sign in to your Lifnex portal.">
+  <meta name="theme-color" content="#f8f5f6">
+  <meta property="og:title" content="Sign in to Lifnex">
+  <meta property="og:description" content="Sign in to your Lifnex portal.">
+  <link rel="icon" type="image/png" href="/static/assets/logo/lifnex-mark.png">
+  <script>
+    /* set day or night before first paint */
+    (function () {
+      var t;
+      try { t = localStorage.getItem('lifnex_theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <style>
-    body {
-      background: radial-gradient(circle at 50% 20%, rgba(255, 46, 84, 0.08) 0%, #050811 70%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-    .login-box-compact {
-      max-width: 440px;
-      width: 100%;
-      background: rgba(15, 23, 42, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius-xl);
-      padding: 2.25rem 2rem;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 46, 84, 0.1);
-      backdrop-filter: blur(20px);
-    }
-    .demo-role-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-    }
-    .btn-demo-pill {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--slate-300);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.5rem 0.25rem;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      text-align: center;
-    }
-    .btn-demo-pill:hover {
-      background: rgba(255, 46, 84, 0.2);
-      border-color: #FF2E54;
-      color: #FFFFFF;
-    }
+    html { background: #f8f5f6; }
+    html[data-theme="night"] { background: #17080b; }
   </style>
 </head>
 <body>
-
-  <!-- Floating Compact Brand Header -->
-  <div style="text-align: center; margin-bottom: 1.5rem;">
-    <a href="index.html" style="display: inline-block;">
-      <img src="/static/assets/branding/logo.svg" alt="Lifnex Official Logo" style="height: 42px; margin: 0 auto;">
-    </a>
-  </div>
-
-  <!-- Compact 440px Card -->
-  <div class="login-box-compact">
-    <div style="text-align: center; margin-bottom: 1.5rem;">
-      <h1 style="font-size: 1.6rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">Welcome Back</h1>
-      <p style="font-size: 0.8125rem; color: var(--slate-400); margin-top: 0.25rem;">Sign in to your emergency portal</p>
+  <div id="root">
+    <div style="display:none;">
+      <h1>Lifnex</h1>
+      <p>Connecting Lives When Every Second Matters.</p>
     </div>
-
-    <form id="loginForm">
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <label class="form-label" style="font-size: 0.8rem;">Email Address</label>
-        <input type="email" id="loginEmail" class="form-control" placeholder="patient@lifnex.org" value="patient@lifnex.org" required style="padding: 0.65rem 0.85rem; font-size: 0.875rem;">
-      </div>
-
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-          <label class="form-label" style="margin: 0; font-size: 0.8rem;">Password</label>
-          <a href="forgot-password.html" style="font-size: 0.75rem; color: #FF2E54; text-decoration: none;">Forgot?</a>
-        </div>
-        <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" value="Patient@123" required style="padding: 0.65rem 0.85rem; font-size: 0.875rem;">
-      </div>
-
-      <div style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--slate-400);">
-        <input type="checkbox" id="rememberMe" checked style="accent-color: #FF2E54;">
-        <label for="rememberMe">Remember terminal session</label>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem; font-size: 0.9rem; font-weight: 700;">
-        Sign In to Portal &rarr;
-      </button>
-
-      <!-- Quick Test Preset Roles -->
-      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-        <div style="font-size: 0.7rem; font-weight: 700; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.75px; text-align: center;">
-          One-Click Demo Roles
-        </div>
-        <div class="demo-role-grid">
-          <button type="button" class="btn-demo-pill" onclick="setDemoRole('patient')">Patient</button>
-          <button type="button" class="btn-demo-pill" onclick="setDemoRole('donor')">Donor</button>
-          <button type="button" class="btn-demo-pill" onclick="setDemoRole('hospital')">Hospital</button>
-          <button type="button" class="btn-demo-pill" onclick="setDemoRole('admin')">Admin</button>
-        </div>
-      </div>
-
-      <div style="text-align: center; margin-top: 1.25rem; font-size: 0.8rem; color: var(--slate-400);">
-        Don't have an account? <a href="register.html" style="color: #FF2E54; font-weight: 700; text-decoration: none;">Register Now</a>
-      </div>
-    </form>
   </div>
-
-  <script src="/static/js/main.js"></script>
-  <script src="/static/js/auth.js"></script>
-  <script>
-    function setDemoRole(role) {
-      const email = document.getElementById("loginEmail");
-      const pass = document.getElementById("loginPassword");
-      if (role === 'patient') {
-        email.value = 'patient@lifnex.org';
-        pass.value = 'Patient@123';
-      } else if (role === 'donor') {
-        email.value = 'donor@lifnex.org';
-        pass.value = 'Donor@123';
-      } else if (role === 'hospital') {
-        email.value = 'hospital@lifnex.org';
-        pass.value = 'Hospital@123';
-      } else if (role === 'admin') {
-        email.value = 'admin@lifnex.org';
-        pass.value = 'Admin@123';
-      }
-      if (window.Toast) {
-        Toast.show("Role Preset Loaded", "Loaded " + role.toUpperCase() + " credentials.", "info");
-      }
-    }
-  </script>
+  <noscript>Lifnex needs JavaScript to run. Emergency desk: 1800-LIFNEX-EMG.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
