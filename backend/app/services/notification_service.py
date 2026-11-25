@@ -29,7 +29,12 @@ def create_notification(
     }
 
     admin = get_supabase_admin()
-    if not admin:
+    from flask import current_app
+    is_testing = bool(current_app and current_app.config.get("TESTING"))
+    is_synthetic_id = str(recipient_id).startswith("demo-") or (
+        reference_request_id is not None and str(reference_request_id).startswith("demo-")
+    )
+    if not admin or is_testing or is_synthetic_id:
         logger.info(f"[Demo Notification] To: {recipient_id} | Type: {notification_type} | Message: {message}")
         notif_record["id"] = "demo-notif-uuid"
         return notif_record

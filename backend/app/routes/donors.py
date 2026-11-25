@@ -48,7 +48,8 @@ DEMO_RESPONSES = []
 @donors_bp.route("/availability", methods=["PATCH"])
 def update_availability():
     """
-    Toggles donor availability status (available, busy, inactive)
+    Toggles donor availability status (available, busy, inactive).
+    In live environments, enforces Bearer JWT authentication and donor ownership.
     """
     payload = request.get_json() or {}
     status = payload.get("availability_status")
@@ -61,15 +62,43 @@ def update_availability():
         }), 400
 
     admin = get_supabase_admin()
-    if not admin or current_app.config.get("TESTING") or (hasattr(g, "user") and g.user.get("is_demo")):
+    if not admin or current_app.config.get("TESTING"):
         return jsonify({
             "success": True,
             "data": {"donor_id": donor_id, "availability_status": status},
             "message": f"Availability updated to {status} (Demo mode)."
         }), 200
 
+    # Live authentication and ownership enforcement
+    from backend.app.utils.auth_guard import get_auth_token_from_header, verify_token
+    token = get_auth_token_from_header()
+    if not token:
+        return jsonify({"success": False, "error": {"code": "UNAUTHORIZED", "message": "Authentication required."}}), 401
+    token_payload = verify_token(token)
+    if not token_payload or not token_payload.get("sub"):
+        return jsonify({"success": False, "error": {"code": "INVALID_OR_EXPIRED_TOKEN", "message": "Invalid or expired token."}}), 401
+
+    caller_res = admin.table("users").select("id, role, is_active, is_demo").eq("id", token_payload["sub"]).execute()
+    if not caller_res.data:
+        return jsonify({"success": False, "error": {"code": "USER_NOT_FOUND", "message": "User not found."}}), 401
+    caller = caller_res.data[0]
+    if caller.get("is_active") is False:
+        return jsonify({"success": False, "error": {"code": "ACCOUNT_SUSPENDED", "message": "Account is inactive."}}), 403
+    if caller.get("role") not in ("donor", "admin"):
+        return jsonify({"success": False, "error": {"code": "FORBIDDEN", "message": "Only donors or admins can update donor availability."}}), 403
+
+    if caller.get("is_demo"):
+        return jsonify({
+            "success": True,
+            "data": {"donor_id": donor_id or caller["id"], "availability_status": status},
+            "message": f"Availability updated to {status} (Isolated demo mode)."
+        }), 200
+
     try:
-        res = admin.table("donor_profiles").update({"availability_status": status}).eq("id", donor_id).execute()
+        target_user_id = caller["id"] if caller["role"] == "donor" else (donor_id or caller["id"])
+        res = admin.table("donor_profiles").update({"availability_status": status}).eq("user_id", target_user_id).execute()
+        if not res.data and caller["role"] == "admin" and donor_id:
+            res = admin.table("donor_profiles").update({"availability_status": status}).eq("id", donor_id).execute()
         return jsonify({
             "success": True,
             "data": res.data[0] if res.data else {},
@@ -87,10 +116,21 @@ def donor_feed():
     blood group compatibility and travel radius.
     """
     user_id = g.user.get("id") if hasattr(g, "user") and g.user else None
+    is_demo_user = bool(g.user.get("is_demo")) if hasattr(g, "user") and g.user else False
     admin = get_supabase_admin()
 
+    if not admin or current_app.config.get("TESTING") or is_demo_user:
+        from backend.app.routes.blood_requests import DEMO_BLOOD_REQUESTS
+        ranked = rank_requests_for_donor(DEMO_DONORS[0], DEMO_BLOOD_REQUESTS)
+        return jsonify({
+            "success": True,
+            "data": ranked,
+            "donor_blood_group": DEMO_DONORS[0].get("blood_group"),
+            "disclaimer": "Final compatibility must be verified on-site by certified medical personnel."
+        }), 200
+
     donor_profile = None
-    if admin and user_id:
+    if user_id:
         try:
             res = admin.table("donor_profiles").select("*").eq("user_id", user_id).execute()
             if res.data:
@@ -99,22 +139,20 @@ def donor_feed():
             pass
 
     if not donor_profile:
-        # Fallback to demo profile matching donor's role
-        donor_profile = DEMO_DONORS[0]
+        return jsonify({
+            "success": True,
+            "data": [],
+            "donor_blood_group": None,
+            "disclaimer": "Final compatibility must be verified on-site by certified medical personnel."
+        }), 200
 
-    # Fetch active requisitions
     requests_pool = []
-    if admin:
-        try:
-            res = admin.table("blood_requests").select("*, hospitals(name, city)").in_("status", ["open", "in_progress"]).execute()
-            if res.data:
-                requests_pool = res.data
-        except Exception:
-            pass
-
-    if not requests_pool:
-        from backend.app.routes.blood_requests import DEMO_BLOOD_REQUESTS
-        requests_pool = DEMO_BLOOD_REQUESTS
+    try:
+        res = admin.table("blood_requests").select("*, hospitals(name, city)").in_("status", ["open", "in_progress"]).eq("is_demo", False).execute()
+        if res.data:
+            requests_pool = res.data
+    except Exception:
+        pass
 
     ranked = rank_requests_for_donor(donor_profile, requests_pool)
     return jsonify({
@@ -170,28 +208,34 @@ def respond_to_request():
         }), 201
 
     try:
-        # Resolve donor_profile_id if caller provided user_id
-        donor_profile_id = data.donor_id
-        dp_res = admin.table("donor_profiles").select("id").eq("id", data.donor_id).execute()
-        if not dp_res.data:
-            dp_user_res = admin.table("donor_profiles").select("id").eq("user_id", data.donor_id).execute()
-            if dp_user_res.data:
-                donor_profile_id = dp_user_res.data[0]["id"]
+        # Resolve donor_profile_id safely: donors can only respond on their own behalf
+        caller_id = g.user.get("id")
+        caller_role = g.user.get("role")
+        lookup_uid = caller_id if caller_role == "donor" else data.donor_id
+
+        dp_user_res = admin.table("donor_profiles").select("id, user_id").eq("user_id", lookup_uid).execute()
+        if dp_user_res.data:
+            donor_profile_id = dp_user_res.data[0]["id"]
+        else:
+            dp_res = admin.table("donor_profiles").select("id, user_id").eq("id", data.donor_id).execute()
+            if dp_res.data:
+                if caller_role == "donor" and dp_res.data[0].get("user_id") != caller_id:
+                    return jsonify({"success": False, "error": {"code": "FORBIDDEN", "message": "Cannot submit a response for another donor."}}), 403
+                donor_profile_id = dp_res.data[0]["id"]
             else:
                 new_dp = {
-                    "user_id": data.donor_id,
+                    "user_id": lookup_uid,
                     "blood_group": "O-",
                     "date_of_birth": "2000-01-01",
                     "latitude": 28.6139,
                     "longitude": 77.2090,
-                    "city": "New Delhi",
+                    "city": "Metropolis",
                     "travel_radius_km": 15,
                     "availability_status": "available",
                     "is_verified": False
                 }
                 dp_ins = admin.table("donor_profiles").insert(new_dp).execute()
-                if dp_ins.data:
-                    donor_profile_id = dp_ins.data[0]["id"]
+                donor_profile_id = dp_ins.data[0]["id"] if dp_ins.data else data.donor_id
 
         insert_payload = data.model_dump()
         insert_payload["donor_id"] = donor_profile_id

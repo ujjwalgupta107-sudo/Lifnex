@@ -27,6 +27,8 @@ class RegisterRequest(BaseModel):
     # Conditional Hospital fields
     hospital_name: Optional[str] = None
     license_number: Optional[str] = None
+    address: Optional[str] = None
+    emergency_phone: Optional[str] = None
 
     @field_validator("role")
     @classmethod

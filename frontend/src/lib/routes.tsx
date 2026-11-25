@@ -12,6 +12,7 @@ const load: Record<string, () => Promise<any>> = {
   '/register': () => import('../pages/auth/RegisterPage'),
   '/verify-otp': () => import('../pages/auth/VerifyOtpPage'),
   '/forgot-password': () => import('../pages/auth/ForgotPasswordPage'),
+  '/reset-password': () => import('../pages/auth/ResetPasswordPage'),
   '/dashboard/patient': () => import('../pages/dashboards/PatientDashboard'),
   '/dashboard/donor': () => import('../pages/dashboards/DonorDashboard'),
   '/dashboard/hospital': () => import('../pages/dashboards/HospitalDashboard'),
@@ -29,6 +30,7 @@ export const LoginPage = page('/login', 'LoginPage');
 export const RegisterPage = page('/register', 'RegisterPage');
 export const VerifyOtpPage = page('/verify-otp', 'VerifyOtpPage');
 export const ForgotPasswordPage = page('/forgot-password', 'ForgotPasswordPage');
+export const ResetPasswordPage = page('/reset-password', 'ResetPasswordPage');
 export const PatientDashboard = page('/dashboard/patient', 'PatientDashboard');
 export const DonorDashboard = page('/dashboard/donor', 'DonorDashboard');
 export const HospitalDashboard = page('/dashboard/hospital', 'HospitalDashboard');

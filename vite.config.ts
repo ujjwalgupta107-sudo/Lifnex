@@ -33,6 +33,7 @@ export default defineConfig({
         login: resolve(__dirname, 'frontend/login.html'),
         register: resolve(__dirname, 'frontend/register.html'),
         forgotPassword: resolve(__dirname, 'frontend/forgot-password.html'),
+        resetPassword: resolve(__dirname, 'frontend/reset-password.html'),
         patientDashboard: resolve(__dirname, 'frontend/patient-dashboard.html'),
         donorDashboard: resolve(__dirname, 'frontend/donor-dashboard.html'),
         hospitalDashboard: resolve(__dirname, 'frontend/hospital-dashboard.html'),

@@ -147,6 +147,24 @@ export const api = {
     return safeJson(res);
   },
 
+  async forgotPassword(email: string) {
+    const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    return safeJson(res);
+  },
+
+  async resetPassword(access_token: string, new_password: string) {
+    const res = await fetch(`${API_BASE}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token, new_password }),
+    });
+    return safeJson(res);
+  },
+
   async refreshSession(refreshToken: string) {
     const res = await fetch(`${API_BASE}/auth/refresh`, {
       method: 'POST',

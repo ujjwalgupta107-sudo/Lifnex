@@ -20,6 +20,7 @@ import {
   LoginPage,
   PatientDashboard,
   RegisterPage,
+  ResetPasswordPage,
   RouteTransitions,
   VerifyOtpPage,
 } from './lib/routes';
@@ -34,6 +35,7 @@ const TITLES: Record<string, string> = {
   '/register': 'Join Lifnex',
   '/verify-otp': 'Verify your email, Lifnex',
   '/forgot-password': 'Reset your Lifnex password',
+  '/reset-password': 'Set a new Lifnex password',
   '/dashboard/patient': 'Patient portal, Lifnex',
   '/dashboard/donor': 'Donor portal, Lifnex',
   '/dashboard/hospital': 'Hospital portal, Lifnex',
@@ -162,6 +164,7 @@ const Shell: React.FC = () => {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verify-otp" element={<VerifyOtpPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/dashboard/patient" element={<RequireVerifiedAuth allowedRoles={['patient', 'admin']}><PatientDashboard /></RequireVerifiedAuth>} />
               <Route path="/dashboard/donor" element={<RequireVerifiedAuth allowedRoles={['donor', 'admin']}><DonorDashboard /></RequireVerifiedAuth>} />
               <Route path="/dashboard/hospital" element={<RequireVerifiedAuth allowedRoles={['hospital', 'admin']}><HospitalDashboard /></RequireVerifiedAuth>} />

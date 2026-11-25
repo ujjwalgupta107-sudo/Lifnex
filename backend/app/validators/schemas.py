@@ -70,6 +70,8 @@ class HospitalCreate(BaseModel):
     current_inventory_status: Optional[Dict[str, Any]] = None
 
 # 4. Blood Request Schema
+from datetime import timedelta, timezone as _tz
+
 class BloodRequestCreate(BaseModel):
     patient_id: str
     hospital_id: str
@@ -77,10 +79,17 @@ class BloodRequestCreate(BaseModel):
     units_required: int = Field(..., ge=1, le=20)
     urgency_level: UrgencyLevelType = 'urgent'
     clinical_notes: Optional[str] = None
-    latitude: float = Field(..., ge=-90.0, le=90.0)
-    longitude: float = Field(..., ge=-180.0, le=180.0)
-    required_by: datetime
+    latitude: float = Field(28.6139, ge=-90.0, le=90.0)
+    longitude: float = Field(77.2090, ge=-180.0, le=180.0)
+    required_by: datetime = Field(default_factory=lambda: datetime.now(_tz.utc) + timedelta(hours=6))
     is_demo: bool = True
+
+    @field_validator("urgency_level", mode="before")
+    @classmethod
+    def normalize_urgency(cls, v):
+        if isinstance(v, str) and v.lower().strip() == "routine":
+            return "normal"
+        return v.lower().strip() if isinstance(v, str) else v
 
 # 5. Donor Response Schema
 class DonorResponseCreate(BaseModel):

@@ -576,3 +576,34 @@ def test_live_reset_password_requires_valid_jwt_and_rejects_raw_uuid(monkeypatch
             })
             assert res_ok.status_code == 200
             admin.auth.admin.update_user_by_id.assert_called_once_with(uid, {"password": "NewStrongPassword123!"})
+
+
+def test_live_donor_availability_and_blood_requests_security(monkeypatch):
+    """Tests unauthenticated donor availability block, sanitized public blood feed, and routine urgency normalization."""
+    app, admin, anon = _make_live_app_and_clients(monkeypatch)
+    public_feed_q = _make_mock_query([{"request_id": "req-pub-1", "blood_group": "O-", "urgency_level": "critical"}])
+    admin.table.side_effect = lambda name: public_feed_q if name == "emergency_blood_requests_public_feed" else _make_mock_query([])
+
+    with patch("backend.app.routes.donors.get_supabase_admin", return_value=admin), \
+         patch("backend.app.routes.blood_requests.get_supabase_admin", return_value=admin):
+        with app.test_client() as c:
+            # 1. Unauthenticated donor availability toggle must fail (401)
+            res_avail = c.patch("/api/v1/donors/availability", json={"availability_status": "busy"})
+            assert res_avail.status_code == 401
+
+            # 2. Unauthenticated GET /blood-requests returns sanitized public view (no patient_id/GPS)
+            res_reqs = c.get("/api/v1/blood-requests")
+            assert res_reqs.status_code == 200
+            assert res_reqs.get_json()["data"][0]["request_id"] == "req-pub-1"
+
+    # 3. BloodRequestCreate normalizes 'routine' -> 'normal' and defaults location/required_by
+    from backend.app.validators.schemas import BloodRequestCreate
+    req = BloodRequestCreate(
+        patient_id="p1",
+        hospital_id="h1",
+        blood_group="A+",
+        units_required=1,
+        urgency_level="routine",
+    )
+    assert req.urgency_level == "normal"
+    assert req.latitude == 28.6139

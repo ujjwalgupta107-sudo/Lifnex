@@ -14,6 +14,7 @@ const PAGES = {
   'register.html': ['Join Lifnex', 'Create a Lifnex account as a patient, voluntary donor or hospital.'],
   'verify-otp.html': ['Verify your email, Lifnex', 'Enter the 6-digit code to verify your Lifnex account.'],
   'forgot-password.html': ['Reset your Lifnex password', 'Reset the password of your Lifnex account.'],
+  'reset-password.html': ['Set a new Lifnex password', 'Set a new password for your Lifnex account.'],
   'patient-dashboard.html': ['Patient portal, Lifnex', 'Create and follow emergency blood requests.'],
   'donor-dashboard.html': ['Donor portal, Lifnex', 'See nearby alerts and respond to emergency requests.'],
   'hospital-dashboard.html': ['Hospital portal, Lifnex', 'Manage requisitions, donors and blood stock.'],

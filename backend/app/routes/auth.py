@@ -413,20 +413,24 @@ def register():
                 "availability_status": "available",
                 "is_verified": False
             }
-            admin.table("donor_profiles").upsert(donor_record).execute()
+            admin.table("donor_profiles").upsert(donor_record, on_conflict="user_id").execute()
 
-        # 5. If role is hospital, prepare corresponding hospitals record
+        # 5. If role is hospital, prepare corresponding hospitals record (satisfies all NOT NULL constraints)
         if data.role == "hospital":
+            city_val = data.city or "Metropolis"
             hospital_record = {
                 "user_id": user_id,
                 "name": getattr(data, "hospital_name", None) or data.full_name,
                 "license_number": getattr(data, "license_number", None) or f"HOSP-LIC-{user_id[:8].upper()}",
-                "city": data.city or "Metropolis",
+                "address": getattr(data, "address", None) or f"{city_val} Medical Campus",
+                "city": city_val,
                 "latitude": data.latitude or 28.6139,
                 "longitude": data.longitude or 77.2090,
+                "emergency_phone": getattr(data, "emergency_phone", None) or data.phone_number or "+1-555-010-0000",
+                "contact_person": data.full_name,
                 "is_verified": False
             }
-            admin.table("hospitals").upsert(hospital_record).execute()
+            admin.table("hospitals").upsert(hospital_record, on_conflict="user_id").execute()
 
         # 6. Record OTP dispatch in audit_logs (valid UUID actor/entity + email in JSONB for serverless cooldown)
         record_otp_dispatch_cooldown(norm_email)

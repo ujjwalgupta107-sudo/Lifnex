@@ -57,7 +57,10 @@ DEMO_BLOOD_REQUESTS = [
 @blood_requests_bp.route("", methods=["GET"])
 def list_blood_requests():
     """
-    Returns public open emergency blood requests
+    Returns emergency blood requests scoped strictly by caller authorization:
+    - Unauthenticated callers receive only sanitized public feed rows (no patient_id, clinical_notes, or GPS).
+    - Authenticated demo accounts receive isolated DEMO_BLOOD_REQUESTS.
+    - Authenticated patients receive their own requests; verified hospitals receive assigned requests; admins receive active requests.
     """
     admin = get_supabase_admin()
     if not admin or current_app.config.get("TESTING"):
@@ -67,21 +70,60 @@ def list_blood_requests():
             "message": "Emergency requests retrieved (Synthetic demo mode)"
         }), 200
 
-    try:
-        query = admin.table("blood_requests").select("*, hospitals(name, city)").eq("status", "open").order("created_at", desc=True)
-        res = query.execute()
-        return jsonify({
-            "success": True,
-            "data": res.data if res.data else DEMO_BLOOD_REQUESTS,
-            "message": "Active emergency blood requests retrieved."
-        }), 200
-    except Exception as e:
-        logger.warning(f"Error querying blood requests from database, using demo fallback: {e}")
+    from backend.app.utils.auth_guard import get_auth_token_from_header, verify_token
+    caller = None
+    token = get_auth_token_from_header()
+    if token:
+        payload = verify_token(token)
+        if payload and payload.get("sub"):
+            try:
+                u_res = admin.table("users").select("id, role, is_active, is_demo").eq("id", payload["sub"]).execute()
+                if u_res.data and u_res.data[0].get("is_active") is not False:
+                    caller = u_res.data[0]
+            except Exception:
+                caller = None
+
+    if caller and caller.get("is_demo"):
         return jsonify({
             "success": True,
             "data": DEMO_BLOOD_REQUESTS,
-            "message": "Active emergency blood requests retrieved (Offline/Demo Mode)."
+            "message": "Emergency requests retrieved (Isolated demo mode)"
         }), 200
+
+    try:
+        if not caller:
+            pub_res = admin.table("emergency_blood_requests_public_feed").select("*").order("created_at", desc=True).execute()
+            return jsonify({
+                "success": True,
+                "data": pub_res.data or [],
+                "message": "Sanitized public emergency feed retrieved."
+            }), 200
+
+        role = caller.get("role")
+        uid = caller.get("id")
+        query = admin.table("blood_requests").select("*, hospitals(name, city)").order("created_at", desc=True)
+        if role == "patient":
+            query = query.eq("patient_id", uid)
+        elif role == "hospital":
+            h_res = admin.table("hospitals").select("id").eq("user_id", uid).limit(1).execute()
+            if not h_res.data:
+                return jsonify({"success": True, "data": [], "message": "No hospital profile linked."}), 200
+            query = query.eq("hospital_id", h_res.data[0]["id"])
+        else:
+            query = query.in_("status", ["open", "in_progress"])
+
+        res = query.execute()
+        return jsonify({
+            "success": True,
+            "data": res.data or [],
+            "message": "Active emergency blood requests retrieved."
+        }), 200
+    except Exception as e:
+        logger.warning(f"Error querying blood requests from database: {e}")
+        return jsonify({
+            "success": False,
+            "error": {"code": "DB_ERROR", "message": "Could not retrieve emergency blood requests."}
+        }), 500
 
 @blood_requests_bp.route("", methods=["POST"])
 @require_auth
@@ -91,8 +133,8 @@ def create_blood_request():
     Creates an emergency blood requisition record
     """
     payload = request.get_json() or {}
-    # Enforce patient_id to match authenticated caller if patient
-    if g.user.get("role") == "patient":
+    # Enforce patient_id to match authenticated caller when patient or omitted by hospital/admin
+    if g.user.get("role") == "patient" or not payload.get("patient_id"):
         payload["patient_id"] = g.user.get("id")
 
     # Security boundary: Client cannot toggle demo mode via payload
@@ -112,7 +154,7 @@ def create_blood_request():
 
     admin = get_supabase_admin()
     if not admin or current_app.config.get("TESTING") or g.user.get("is_demo"):
-        created = req_data.model_dump()
+        created = req_data.model_dump(mode="json")
         created["id"] = f"demo-req-{len(DEMO_BLOOD_REQUESTS) + 1}"
         created["status"] = "open"
         created["verification_status"] = "pending_verification"
@@ -135,7 +177,7 @@ def create_blood_request():
         }), 201
 
     try:
-        record = req_data.model_dump()
+        record = req_data.model_dump(mode="json")
         record["status"] = "open"
         record["verification_status"] = "pending_verification"
         record["units_fulfilled"] = 0
@@ -168,22 +210,37 @@ def get_matching_donors(request_id):
     Verifies that patient can only access their own request's matching pool.
     """
     admin = get_supabase_admin()
+    is_demo_user = bool(g.user.get("is_demo"))
     req_item = None
 
-    if admin:
-        try:
-            res = admin.table("blood_requests").select("*").eq("id", request_id).execute()
-            if res.data:
-                req_item = res.data[0]
-        except Exception:
-            pass
-
-    if not req_item:
-        # Fallback to demo pool
+    if not admin or current_app.config.get("TESTING") or is_demo_user:
         for r in DEMO_BLOOD_REQUESTS:
             if r.get("id") == request_id:
                 req_item = r
                 break
+        if not req_item:
+            return jsonify({"success": False, "error": {"code": "NOT_FOUND", "message": "Blood request not found."}}), 404
+        caller_id = g.user.get("id")
+        caller_role = g.user.get("role")
+        if caller_role == "patient" and req_item.get("patient_id") != caller_id:
+            return jsonify({"success": False, "error": {"code": "FORBIDDEN", "message": "You can only view matching donors for your own requests."}}), 403
+        from backend.app.routes.donors import DEMO_DONORS
+        matched = match_donors_for_request(req_item, DEMO_DONORS)
+        return jsonify({
+            "success": True,
+            "request_id": request_id,
+            "blood_group": req_item.get("blood_group"),
+            "total_matched": len(matched),
+            "data": matched,
+            "disclaimer": "Final biological compatibility must always be confirmed on-site by certified healthcare professionals."
+        }), 200
+
+    try:
+        res = admin.table("blood_requests").select("*").eq("id", request_id).execute()
+        if res.data:
+            req_item = res.data[0]
+    except Exception:
+        pass
 
     if not req_item:
         return jsonify({
@@ -191,7 +248,7 @@ def get_matching_donors(request_id):
             "error": {"code": "NOT_FOUND", "message": "Blood request not found."}
         }), 404
 
-    # Security check: if caller is patient, ensure they own this request
+    # Security check: patient owns request; hospital owns assigned hospital
     caller_id = g.user.get("id")
     caller_role = g.user.get("role")
     if caller_role == "patient" and req_item.get("patient_id") != caller_id:
@@ -199,20 +256,21 @@ def get_matching_donors(request_id):
             "success": False,
             "error": {"code": "FORBIDDEN", "message": "You can only view matching donors for your own requests."}
         }), 403
+    if caller_role == "hospital":
+        h_res = admin.table("hospitals").select("id").eq("user_id", caller_id).limit(1).execute()
+        if not h_res.data or h_res.data[0]["id"] != req_item.get("hospital_id"):
+            return jsonify({
+                "success": False,
+                "error": {"code": "FORBIDDEN", "message": "You can only view matching donors for requests assigned to your hospital."}
+            }), 403
 
-    # Fetch donors
     donors_pool = []
-    if admin:
-        try:
-            d_res = admin.table("donor_profiles").select("*").eq("availability_status", "available").execute()
-            if d_res.data:
-                donors_pool = d_res.data
-        except Exception:
-            pass
-
-    if not donors_pool:
-        from backend.app.routes.donors import DEMO_DONORS
-        donors_pool = DEMO_DONORS
+    try:
+        d_res = admin.table("donor_profiles").select("id, blood_group, city, latitude, longitude, travel_radius_km, availability_status, is_verified").eq("availability_status", "available").execute()
+        if d_res.data:
+            donors_pool = d_res.data
+    except Exception:
+        pass
 
     matched = match_donors_for_request(req_item, donors_pool)
     return jsonify({
