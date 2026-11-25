@@ -1,5 +1,27 @@
 const API_BASE = '/api/v1';
 
+async function safeJson(res: Response) {
+  const ct = res.headers.get('content-type') || '';
+  const text = await res.text();
+  if (ct.includes('application/json') || text.trim().startsWith('{') || text.trim().startsWith('[')) {
+    try {
+      return JSON.parse(text);
+    } catch {
+      // Fall through to safe error envelope
+    }
+  }
+  return {
+    success: false,
+    error: {
+      code: res.status >= 500 ? 'SERVER_ERROR' : 'INVALID_RESPONSE',
+      message:
+        res.status >= 500
+          ? 'Service temporarily unavailable. Please try again in a moment.'
+          : `Unexpected response from server (HTTP ${res.status}).`,
+    },
+  };
+}
+
 function getAuthHeaders(token?: string) {
   const t = token || localStorage.getItem('lifnex_token') || '';
   const headers: Record<string, string> = {
@@ -15,7 +37,7 @@ export const api = {
   // Health
   async getHealth() {
     const res = await fetch(`${API_BASE}/health`);
-    return res.json();
+    return safeJson(res);
   },
 
   // Auth
@@ -25,7 +47,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async register(data: Record<string, any>) {
@@ -34,7 +56,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async verifyOtp(email: string, otp: string) {
@@ -43,7 +65,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, otp }),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async resendOtp(email: string) {
@@ -52,14 +74,14 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async getMe(token?: string) {
     const res = await fetch(`${API_BASE}/auth/me`, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   // Donors
@@ -67,7 +89,7 @@ export const api = {
     const res = await fetch(`${API_BASE}/donors/feed`, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async updateDonorAvailability(status: 'available' | 'busy' | 'inactive', donorId?: string, token?: string) {
@@ -76,7 +98,7 @@ export const api = {
       headers: getAuthHeaders(token),
       body: JSON.stringify({ availability_status: status, donor_id: donorId }),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async respondToRequest(data: { request_id: string; donor_id: string; response_status: 'interested' | 'accepted' | 'declined'; estimated_arrival_minutes?: number }, token?: string) {
@@ -85,7 +107,7 @@ export const api = {
       headers: getAuthHeaders(token),
       body: JSON.stringify(data),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   // Blood Requests
@@ -93,7 +115,7 @@ export const api = {
     const res = await fetch(`${API_BASE}/blood-requests`, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async createBloodRequest(data: Record<string, any>, token?: string) {
@@ -102,21 +124,21 @@ export const api = {
       headers: getAuthHeaders(token),
       body: JSON.stringify(data),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async getMatchingDonors(requestId: string, token?: string) {
     const res = await fetch(`${API_BASE}/blood-requests/${requestId}/matching-donors`, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async getDonorResponses(requestId: string, token?: string) {
     const res = await fetch(`${API_BASE}/blood-requests/${requestId}/responses`, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async cancelBloodRequest(requestId: string, token?: string) {
@@ -124,14 +146,14 @@ export const api = {
       method: 'POST',
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   // Hospitals
   async getHospitals(city?: string) {
     const url = city ? `${API_BASE}/hospitals?city=${encodeURIComponent(city)}` : `${API_BASE}/hospitals`;
     const res = await fetch(url);
-    return res.json();
+    return safeJson(res);
   },
 
   async verifyHospital(hospitalId: string, token?: string) {
@@ -139,7 +161,7 @@ export const api = {
       method: 'POST',
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   // Notifications
@@ -148,7 +170,7 @@ export const api = {
     const res = await fetch(url, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async markNotificationRead(notifId: string, token?: string) {
@@ -156,7 +178,7 @@ export const api = {
       method: 'PATCH',
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async markAllNotificationsRead(token?: string) {
@@ -164,7 +186,7 @@ export const api = {
       method: 'PATCH',
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   // AI
@@ -174,13 +196,13 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clinical_notes: notes }),
     });
-    return res.json();
+    return safeJson(res);
   },
 
   async aiAdminInsights(token?: string) {
     const res = await fetch(`${API_BASE}/ai/admin-insights`, {
       headers: getAuthHeaders(token),
     });
-    return res.json();
+    return safeJson(res);
   },
 };
