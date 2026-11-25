@@ -36,6 +36,23 @@ logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__)
 
+def _get_site_url(path: str = "") -> str:
+    """
+    Dynamically returns the frontend site URL based on request Origin, Host,
+    FRONTEND_URL env var, or fallback.
+    """
+    origin = request.headers.get("Origin") or request.headers.get("Referer")
+    if origin:
+        # Strip trailing slash or path from origin/referer
+        from urllib.parse import urlparse
+        parsed = urlparse(origin)
+        base = f"{parsed.scheme}://{parsed.netloc}"
+        if base.startswith("http"):
+            return f"{base.rstrip('/')}/{path.lstrip('/')}"
+    frontend_env = Config.FRONTEND_URL or "https://lifnex.vercel.app"
+    return f"{frontend_env.rstrip('/')}/{path.lstrip('/')}"
+
+
 @auth_bp.route("/register", methods=["POST"])
 def register():
     """
@@ -146,7 +163,7 @@ def register():
                         "role": data.role,
                         "blood_group": data.blood_group
                     },
-                    "email_redirect_to": "http://localhost:5173/verify-otp"
+                    "email_redirect_to": _get_site_url("verify-otp")
                 }
             })
             if signup_resp and signup_resp.user:
@@ -461,7 +478,7 @@ def resend_otp():
             "type": otp_type,
             "email": data.email,
             "options": {
-                "email_redirect_to": "http://localhost:5173/verify-otp"
+                "email_redirect_to": _get_site_url("verify-otp")
             }
         })
 
@@ -700,7 +717,7 @@ def forgot_password():
     if anon:
         try:
             anon.auth.reset_password_for_email(data.email, {
-                "redirect_to": "http://localhost:5173/reset-password"
+                "redirect_to": _get_site_url("reset-password")
             })
         except Exception as e:
             logger.warning(f"Supabase native reset password notice: {e}")
