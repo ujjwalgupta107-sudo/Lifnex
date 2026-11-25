@@ -218,6 +218,19 @@ def require_auth(f):
                 }
             }), 403
 
+        # Enforce read-only mode for Demo Admin accounts
+        if user_record.get("is_demo") and user_record.get("role") == "admin":
+            if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+                allowed_demo_admin_paths = ("/api/v1/auth/logout", "/api/v1/auth/refresh")
+                if request.path not in allowed_demo_admin_paths:
+                    return jsonify({
+                        "success": False,
+                        "error": {
+                            "code": "DEMO_READ_ONLY",
+                            "message": "Demo Admin is read-only. Privileged mutations are disabled in demo mode."
+                        }
+                    }), 403
+
         g.user = user_record
         g.token = token
         return f(*args, **kwargs)

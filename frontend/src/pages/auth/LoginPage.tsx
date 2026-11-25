@@ -7,8 +7,8 @@ import { useGo } from '../../lib/routes';
 import { Lock, Mail, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('patient@lifnex.org');
-  const [password, setPassword] = useState('Patient@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -60,21 +60,39 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const setDemoRole = (role: string) => {
+  const setDemoRole = async (role: string) => {
     setError('');
+    setIsUnverified(false);
     setSuccess('');
-    if (role === 'patient') {
-      setEmail('patient@lifnex.org');
-      setPassword('Patient@123');
-    } else if (role === 'donor') {
-      setEmail('donor@lifnex.org');
-      setPassword('Donor@123');
-    } else if (role === 'hospital') {
-      setEmail('hospital@lifnex.org');
-      setPassword('Hospital@123');
-    } else if (role === 'admin') {
-      setEmail('admin@lifnex.org');
-      setPassword('Admin@123');
+    setLoading(true);
+    try {
+      const res = await api.demoLogin(role);
+      const token = res.data?.session?.access_token || res.token || res.access_token;
+      const refreshToken = res.data?.session?.refresh_token;
+      const user = res.data?.user || res.user;
+
+      if (res.success && token && user) {
+        localStorage.setItem('lifnex_token', token);
+        if (refreshToken) {
+          localStorage.setItem('lifnex_refresh_token', refreshToken);
+        }
+        localStorage.setItem('lifnex_user', JSON.stringify(user));
+        setSuccess('Demo session verified! Redirecting to portal...');
+
+        const userRole = (user.role || role || 'patient').toLowerCase();
+        setTimeout(() => {
+          if (userRole === 'donor') navigate('/dashboard/donor');
+          else if (userRole === 'hospital') navigate('/dashboard/hospital');
+          else if (userRole === 'admin') navigate('/dashboard/admin');
+          else navigate('/dashboard/patient');
+        }, 500);
+      } else {
+        setError(res.error?.message || res.message || 'Demo login failed.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Network error communicating with authentication service.');
+    } finally {
+      setLoading(false);
     }
   };
 

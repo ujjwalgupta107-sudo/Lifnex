@@ -1289,3 +1289,110 @@ def get_current_user():
         },
         "message": "User profile retrieved."
     }), 200
+
+
+_DEMO_RATE_LIMIT: dict = {}
+
+
+@auth_bp.route("/demo-login", methods=["POST"])
+def demo_login():
+    """
+    POST /api/v1/auth/demo-login
+    Authenticates one of the 4 synthetic demo accounts (is_demo = True)
+    using server-side credentials without exposing passwords to the client.
+    Demo Admin sessions are strictly read-only.
+    """
+    import os
+    import time
+
+    client_ip = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip()
+    now = time.time()
+    window = [t for t in _DEMO_RATE_LIMIT.get(client_ip, []) if now - t < 60]
+    if len(window) >= 10:
+        return jsonify({
+            "success": False,
+            "error": {"code": "RATE_LIMITED", "message": "Too many demo login attempts. Please try again in a minute."}
+        }), 429
+    window.append(now)
+    _DEMO_RATE_LIMIT[client_ip] = window
+
+    payload = request.get_json(silent=True) or {}
+    role = str(payload.get("role", "")).strip().lower()
+    if role not in ("patient", "donor", "hospital", "admin"):
+        return jsonify({
+            "success": False,
+            "error": {"code": "INVALID_ROLE", "message": "Demo role must be one of: patient, donor, hospital, admin."}
+        }), 400
+
+    demo_email = f"{role}@lifnex.org"
+    demo_password = os.getenv(f"DEMO_PASSWORD_{role.upper()}")
+    if not demo_password:
+        return jsonify({
+            "success": False,
+            "error": {"code": "DEMO_UNAVAILABLE", "message": "Demo credentials are not configured on the server."}
+        }), 503
+
+    admin = get_supabase_admin()
+    anon = get_supabase_anon()
+    if not admin or not anon:
+        return jsonify({
+            "success": False,
+            "error": {"code": "SERVICE_UNAVAILABLE", "message": "Authentication service is unavailable."}
+        }), 503
+
+    try:
+        user_res = (
+            admin.table("users")
+            .select("*")
+            .eq("email", demo_email)
+            .eq("is_demo", True)
+            .eq("is_active", True)
+            .limit(1)
+            .execute()
+        )
+        if not user_res.data:
+            return jsonify({
+                "success": False,
+                "error": {"code": "DEMO_ACCOUNT_MISSING", "message": "Demo account is not provisioned."}
+            }), 404
+        user_row = user_res.data[0]
+
+        auth_res = anon.auth.sign_in_with_password({"email": demo_email, "password": demo_password})
+        if not auth_res or not auth_res.session or not auth_res.user:
+            return jsonify({
+                "success": False,
+                "error": {"code": "INVALID_CREDENTIALS", "message": "Demo authentication failed."}
+            }), 401
+
+        log_audit_event(
+            user_id=user_row["id"],
+            action="DEMO_LOGIN",
+            resource_type="auth",
+            details={"role": role, "is_demo": True, "ip": client_ip}
+        )
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "user": {
+                    "id": user_row["id"],
+                    "email": user_row["email"],
+                    "full_name": user_row.get("full_name", f"Demo {role.title()}"),
+                    "role": user_row.get("role", role),
+                    "is_demo": True,
+                    "read_only": role == "admin",
+                },
+                "session": {
+                    "access_token": auth_res.session.access_token,
+                    "refresh_token": auth_res.session.refresh_token,
+                    "expires_in": getattr(auth_res.session, "expires_in", 3600),
+                },
+            },
+            "message": f"Demo {role} session authenticated."
+        }), 200
+    except Exception as e:
+        logger.error(f"Demo login error for role {role}: {e}")
+        return jsonify({
+            "success": False,
+            "error": {"code": "DEMO_LOGIN_FAILED", "message": "Could not authenticate demo session."}
+        }), 500

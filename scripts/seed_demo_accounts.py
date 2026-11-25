@@ -100,7 +100,7 @@ def seed():
                 "full_name": name,
                 "role": role,
                 "is_active": True,
-                "is_demo": False
+                "is_demo": True
             }
             try:
                 admin.table("users").upsert(db_user).execute()

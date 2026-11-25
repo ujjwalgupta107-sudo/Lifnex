@@ -120,6 +120,15 @@ export const api = {
     return safeJson(res);
   },
 
+  async demoLogin(role: string) {
+    const res = await fetch(`${API_BASE}/auth/demo-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role }),
+    });
+    return safeJson(res);
+  },
+
   async register(data: Record<string, any>) {
     const res = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
