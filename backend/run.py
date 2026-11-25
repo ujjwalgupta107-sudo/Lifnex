@@ -5,6 +5,27 @@ import traceback
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _PARENT = os.path.abspath(os.path.join(_HERE, ".."))
+
+# Auto-discover site-packages installed by uv, pip, or virtualenv
+_potential_site_packages = []
+for base in [_HERE, _PARENT, "/var/task", "/var"]:
+    if not os.path.isdir(base):
+        continue
+    # Check .venv
+    for root, dirs, _ in os.walk(base):
+        # Don't recurse excessively deep
+        depth = root[len(base):].count(os.sep)
+        if depth > 4:
+            continue
+        for d in dirs:
+            if d in ("site-packages", "dist-packages"):
+                full_sp = os.path.join(root, d)
+                if full_sp not in sys.path and full_sp not in _potential_site_packages:
+                    _potential_site_packages.append(full_sp)
+
+for sp in _potential_site_packages:
+    sys.path.insert(0, sp)
+
 for p in [_HERE, _PARENT]:
     if p not in sys.path:
         sys.path.insert(0, p)
@@ -21,8 +42,9 @@ except Exception as e:
         "error_message": str(e),
         "traceback": traceback.format_exc(),
         "sys_path": sys.path,
+        "discovered_site_packages": _potential_site_packages,
         "cwd": os.getcwd(),
-        "dir_contents": os.listdir(_HERE),
+        "dir_contents": os.listdir(_HERE) if os.path.isdir(_HERE) else [],
     }
 
 class WSGIApplication:
