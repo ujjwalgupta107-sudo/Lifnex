@@ -16,9 +16,26 @@ except ModuleNotFoundError:
     _pkg.__path__ = [_HERE]
     sys.modules["backend"] = _pkg
 
-from backend.app import create_app
+try:
+    from backend.app import create_app
+    app = create_app()
+except Exception as _startup_err:
+    from flask import Flask, jsonify
+    app = Flask(__name__)
+    _err_type = type(_startup_err).__name__
+    _err_msg = str(_startup_err)
 
-app = create_app()
+    @app.route("/api/<path:_sub>", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
+    @app.route("/", defaults={"_sub": ""}, methods=["GET", "POST"])
+    def _startup_error(_sub=""):
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "BACKEND_STARTUP_ERROR",
+                "type": _err_type,
+                "message": _err_msg,
+            },
+        }), 500
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5000"))
