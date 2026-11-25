@@ -135,18 +135,35 @@ def register():
                 }
             }), 409
 
-        # Check Supabase auth.users for confirmed user
+        # Check Supabase auth.users for both confirmed AND unconfirmed users.
+        # This prevents duplicate Supabase Auth user records for the same email,
+        # which would otherwise occur when generate_link is called repeatedly
+        # for the same unverified email (admin abuse / accidental re-registration).
         try:
             auth_users = admin.auth.admin.list_users()
             for au in auth_users:
-                if au.email and au.email.lower() == data.email.lower() and getattr(au, "email_confirmed_at", None):
-                    return jsonify({
-                        "success": False,
-                        "error": {
-                            "code": "EMAIL_ALREADY_REGISTERED",
-                            "message": "An account with this email address is already verified. Please sign in."
-                        }
-                    }), 409
+                if au.email and au.email.lower() == data.email.lower():
+                    if getattr(au, "email_confirmed_at", None):
+                        return jsonify({
+                            "success": False,
+                            "error": {
+                                "code": "EMAIL_ALREADY_REGISTERED",
+                                "message": "An account with this email address is already verified. Please sign in."
+                            }
+                        }), 409
+                    else:
+                        # Unconfirmed user exists: guide them to verify or resend OTP
+                        return jsonify({
+                            "success": False,
+                            "error": {
+                                "code": "REGISTRATION_PENDING_VERIFICATION",
+                                "message": (
+                                    "A registration for this email is already pending verification. "
+                                    "Please check your inbox for the verification code, or use "
+                                    "'Resend Code' to get a new one."
+                                )
+                            }
+                        }), 409
         except Exception as list_err:
             logger.warning(f"Notice during duplicate email scan: {list_err}")
 
@@ -206,13 +223,27 @@ def register():
                                 email_delivery_channel = "BACKEND_SMTP_RELAY"
                                 logger.info(f"Dispatched Supabase OTP ({token}) to {data.email} via custom SMTP relay.")
                         elif token:
-                            # Stored in OTP session for resilient fallback
-                            generate_and_store_otp(
-                                email=data.email,
-                                user_id=user_id,
-                                metadata={"role": data.role, "full_name": data.full_name, "blood_group": data.blood_group}
+                            # BUG-FIX: No SMTP configured — the generate_link OTP cannot be delivered
+                            # to the user. Returning HTTP 201 "code dispatched" here would be a lie.
+                            # Return an honest RATE_LIMITED error instead.
+                            # The Supabase Auth user record was created as unconfirmed; subsequent
+                            # registration attempts will be caught by REGISTRATION_PENDING_VERIFICATION.
+                            logger.warning(
+                                f"generate_link succeeded for {data.email} but no SMTP is configured — "
+                                "OTP cannot be delivered. Returning honest RATE_LIMITED response."
                             )
-                            email_delivery_channel = "SUPABASE_LINK_GENERATED"
+                            return jsonify({
+                                "success": False,
+                                "error": {
+                                    "code": "RATE_LIMITED",
+                                    "message": (
+                                        "Email verification is temporarily unavailable due to email sending limits. "
+                                        "Please wait at least 60 seconds and try registering again. "
+                                        "If the problem persists, contact support."
+                                    ),
+                                    "retry_after": 60
+                                }
+                            }), 429
                 except Exception as admin_err:
                     admin_err_str = str(admin_err).lower()
                     logger.error(f"Admin generate_link error: {admin_err}")
@@ -604,17 +635,22 @@ def resend_otp():
         match = re.search(r"after (\d+) seconds", err_msg)
         seconds = int(match.group(1)) if match else 60
         if "security purposes" in err_msg.lower() or "rate limit" in err_msg.lower() or "over_email" in err_msg.lower():
+            # BUG-FIX: The old fallback called admin.generate_link with a hardcoded password
+            # ("Password123!") which created a NEW duplicate Supabase Auth user record for the
+            # same email rather than operating on the existing unverified user.
+            # This is removed entirely. When no SMTP is configured, we cannot deliver a new OTP;
+            # return an honest RATE_LIMITED error so the user understands they need to wait.
             admin = get_supabase_admin()
-            if admin:
+            if admin and is_smtp_configured():
+                # Only attempt generate_link if we can actually deliver the OTP via custom SMTP.
+                # This path is only reachable when SMTP_HOST/USERNAME/PASSWORD are all set.
                 try:
-                    # Attempt admin generate_link to provide real code without failing
                     resend_link = admin.auth.admin.generate_link({
-                        "type": "signup",
+                        "type": "magiclink",  # Use magiclink instead of signup to avoid duplicate user creation
                         "email": data.email,
-                        "password": "Password123!"  # Placeholder for link generation
                     })
                     token = getattr(resend_link.properties, "email_otp", None)
-                    if token and is_smtp_configured():
+                    if token:
                         send_otp_email(data.email, token)
                         return jsonify({
                             "success": True,
@@ -624,8 +660,8 @@ def resend_otp():
                                 "cooldown_seconds": 60
                             }
                         }), 200
-                except Exception:
-                    pass
+                except Exception as resend_admin_err:
+                    logger.warning(f"Admin resend fallback failed: {resend_admin_err}")
 
             return jsonify({
                 "success": False,

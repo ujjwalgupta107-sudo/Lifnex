@@ -15,7 +15,25 @@ from backend.app.config import Config
 
 logger = logging.getLogger(__name__)
 
-# Thread-safe in-memory OTP session cache
+# Thread-safe in-memory OTP session cache.
+# ⚠️  SERVERLESS LIMITATION: This dict is per-process and NOT shared across
+# Vercel serverless function invocations. In production, _otp_sessions is
+# effectively stateless — OTPs and cooldowns stored here are lost between
+# /api/v1/auth/register and /api/v1/auth/verify-otp requests when each
+# runs in a different Lambda cold-start container.
+#
+# CURRENT IMPACT:
+#   • The 60-second resend cooldown (`can_resend_otp`) is NOT enforced in production.
+#   • Locally-generated OTPs (`generate_and_store_otp`) cannot be verified in production.
+#
+# FUTURE FIX (when scaling):
+#   • Replace _otp_sessions with a Supabase table (e.g. `otp_sessions`) or
+#     Redis/Upstash for persistent, cross-invocation state.
+#   • The current architecture relies on Supabase Auth's native OTP management
+#     (via anon.auth.sign_up / anon.auth.resend), which is serverless-safe.
+#
+# This module is used today only for the TESTING harness (TESTING=True) and
+# the generate_link+SMTP relay path, which is guarded by is_smtp_configured().
 _otp_lock = threading.Lock()
 _otp_sessions: Dict[str, Dict[str, Any]] = {}
 
