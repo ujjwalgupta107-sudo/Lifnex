@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="frontend/src/assets/logo/lifnex-logo.png" alt="Lifnex Logo" width="160" />
+  <img src="frontend/static/assets/logo/lifnex-mark.png" alt="Lifnex Official Mark" width="96" />
 
   <h1>LIFNEX</h1>
   <p><strong>Connecting Lives When Every Second Matters.</strong></p>
@@ -29,7 +29,9 @@
   </p>
 
   <br />
-  <img src="frontend/src/assets/images/platform-preview-1.png" alt="Lifnex Platform Preview" width="900" />
+  <img src="docs/screenshots/landing-hero.png" alt="Lifnex Live Landing Page with 3D BloodStream WebGL Hero" width="900" />
+  <br />
+  <sub><em>Live Lifnex landing page featuring the interactive Three.js <code>BloodStream</code> 3D red blood cell visualization and variable-proximity typography.</em></sub>
 </div>
 
 ---
@@ -67,13 +69,25 @@
 
 ## 🎯 Project Overview
 
-### Problem Statement
-Emergency blood coordination in critical care frequently suffers from structural bottlenecks:
-- **Fragmented Donor Discovery:** Compatible voluntary donors are often scattered across uncoordinated spreadsheets and messaging groups.
-- **Communication Latency:** Urgent requisitions lose critical time to manual phone trees and unverified broadcasts.
-- **Geographic Opacity:** Nearby compatible donors remain unaware of urgent hospital needs within their travel radius.
-- **Lack of Status Visibility:** Patients and hospital intake desks lack centralized visibility into whether requests were received, accepted, or fulfilled.
-- **Multi-Request Complexity:** Hospitals and coordinators struggle to prioritize simultaneous urgent and critical requisitions.
+<table>
+  <tr>
+    <td width="58%" valign="top">
+      <h3>Problem Statement</h3>
+      <p>Emergency blood coordination in critical care frequently suffers from structural bottlenecks:</p>
+      <ul>
+        <li><strong>Fragmented Donor Discovery:</strong> Compatible voluntary donors are scattered across uncoordinated registries and informal chat groups.</li>
+        <li><strong>Communication Latency:</strong> Urgent requisitions lose critical minutes to manual phone trees and unverified broadcasts.</li>
+        <li><strong>Geographic Opacity:</strong> Nearby compatible donors remain unaware of urgent hospital needs within their travel radius.</li>
+        <li><strong>Lack of Status Visibility:</strong> Patients and hospital intake desks lack centralized visibility into whether requests were received, accepted, or fulfilled.</li>
+        <li><strong>Multi-Request Complexity:</strong> Hospitals and coordinators struggle to prioritize simultaneous urgent and critical requisitions.</li>
+      </ul>
+    </td>
+    <td width="42%" align="center" valign="middle">
+      <img src="frontend/static/assets/images/hero-medical-team.jpg" alt="Lifnex Clinical Coordination Artwork" width="320" /><br />
+      <sub><em>Editorial clinical coordination artwork used in <code>AboutPage.tsx</code> (<code>frontend/static/assets/images/hero-medical-team.jpg</code>).</em></sub>
+    </td>
+  </tr>
+</table>
 
 ### Proposed Solution
 Lifnex unifies four role-isolated portals (**Patient**, **Donor**, **Hospital**, **Admin**) backed by a Python Flask REST API, Supabase Auth, and PostgreSQL with Row-Level Security (RLS):
@@ -95,8 +109,8 @@ Lifnex unifies four role-isolated portals (**Patient**, **Donor**, **Hospital**,
 
 | Status | Capabilities Verified in Source Code |
 |---|---|
-| **Implemented** | Multi-role React 18 SPA, 3D WebGL hero (`BloodStream.tsx`), Flask REST API (7 active blueprints), Supabase Auth native signup & 6-digit email OTP, JWKS (`ES256`/`RS256`) + `HS256` auth guard, ABO/Rh compatibility matrix, Haversine distance ranking, duplicate-safe donor handshake, persisted notifications, Gemini AI triage with PII scrubbing & fallback, 9-table PostgreSQL schema + `002_security_hardening.sql` RLS, 97 automated Pytest tests. |
-| **Partially Implemented** | Real-time delivery uses persisted `public.notifications` queried via REST polling rather than live WebSockets/push; hospital cryo-reserve UI telemetry uses hybrid live/demo state; `mobile/` provides an Expo SDK 51 WebView container without native push bindings. |
+| **Implemented** | Multi-role React 18 SPA with Three.js `BloodStream` 3D visuals & ReactBits primitives, Flask REST API (7 active blueprints), Supabase Auth native signup & 6-digit email OTP, JWKS (`ES256`/`RS256`) + `HS256` auth guard, ABO/Rh compatibility matrix, Haversine distance ranking, duplicate-safe donor handshake, persisted notifications, Gemini AI triage with PII scrubbing & fallback, 9-table PostgreSQL schema + `002_security_hardening.sql` RLS, 97 automated Pytest tests. |
+| **Partially Implemented** | Real-time delivery uses persisted `public.notifications` queried via REST polling rather than live WebSockets/push; hospital cryo-reserve telemetry and admin trend charts combine API state with demonstration datasets; React SPA geolocation uses canvas `GeofenceRadar` while `leaflet` (`1.9.4`) is present in `package.json` and legacy `frontend/static/js/maps.js`; `mobile/` provides an Expo SDK 51 WebView container without native push bindings. |
 | **Deferred / Planned** | Physical Android `.apk` build via EAS (`mobile/eas.json` configured, build deferred); Azure Database for PostgreSQL Flexible Server DR target; e-RaktKosh blood bank API integration; Redis-backed distributed rate limiting. |
 | **Out of Scope** | Physical blood storage/transport, medical eligibility certification, automated clinical cross-matching, or autonomous medical diagnosis. |
 
@@ -110,24 +124,57 @@ Lifnex unifies four role-isolated portals (**Patient**, **Donor**, **Hospital**,
 - **Donor Matching & Tracking:** Fetches ranked compatible donors via `GET /api/v1/blood-requests/<id>/matching-donors` and donor responses via `GET /api/v1/blood-requests/<id>/responses`. Enforces ownership check (`403` if another patient requests it).
 - **Cancellation:** Cancels `open` or `in_progress` requisitions via `PATCH /api/v1/blood-requests/<id>/cancel`.
 
+<div align="center">
+  <img src="docs/screenshots/patient-dashboard.png" alt="Lifnex Patient Emergency Portal" width="820" /><br />
+  <sub><em>Actual Patient Emergency Portal showing active requisitions, matching donor panel, and status controls.</em></sub>
+</div>
+
 ### 2. Donor Module (`frontend/src/pages/dashboards/DonorDashboard.tsx`, `backend/app/routes/donors.py`)
 - **Availability Management:** Toggles `available`, `busy`, or `inactive` via `PATCH /api/v1/donors/availability`.
-- **Ranked Emergency Feed:** `GET /api/v1/donors/feed` retrieves open/in-progress requests filtered by ABO/Rh compatibility and `travel_radius_km`, ranked by urgency (`critical` > `urgent` > `normal`) then Haversine distance.
+- **Ranked Emergency Feed & Geofence Radar:** `GET /api/v1/donors/feed` retrieves open/in-progress requests filtered by ABO/Rh compatibility and `travel_radius_km`, ranked by urgency (`critical` > `urgent` > `normal`) then Haversine distance, paired with `GeofenceRadar.tsx`.
 - **Bilateral Handshake:** `POST /api/v1/donors/respond` records `accepted`/`declined`/`en_route` responses with `estimated_arrival_minutes`. Enforces duplicate prevention (`409 DUPLICATE_RESPONSE` in both Python and PostgreSQL `UNIQUE (request_id, donor_id)`), notifies the patient, and logs an audit entry.
 - **Donation History:** `GET /api/v1/donors/history` returns past responses and verified donation records.
 
-### 3. Hospital Module (`frontend/src/pages/dashboards/HospitalDashboard.tsx`, `backend/app/routes/hospitals.py`)
+<div align="center">
+  <img src="docs/screenshots/donor-dashboard.png" alt="Lifnex Voluntary Donor Portal" width="820" /><br />
+  <sub><em>Actual Voluntary Donor Portal with live availability switch, travel radius metric, and emergency priority feed.</em></sub>
+</div>
+
+### 3. Hospital Module (`frontend/src/pages/dashboards/HospitalDashboard.tsx`, `frontend/src/pages/public/HospitalsPage.tsx`, `backend/app/routes/hospitals.py`)
 - **Facility Directory:** `GET /api/v1/hospitals` lists verified facilities with optional `?city=` case-insensitive filtering.
 - **Facility Registration & Accreditation:** `POST /api/v1/hospitals` registers a facility with `license_number`, coordinates, and `current_inventory_status` JSONB. Non-admin registrations default to `is_verified = false` until accredited.
 
+<div align="center">
+  <img src="docs/screenshots/hospital-dashboard.png" alt="Lifnex Hospital Coordination Desk" width="820" /><br />
+  <sub><em>Actual Hospital Coordination Desk showing active trauma cases, cold-chain reserve status, and requisition triage actions.</em></sub>
+</div>
+
 ### 4. Admin Module (`frontend/src/pages/dashboards/AdminDashboard.tsx`, `backend/app/routes/hospitals.py`, `backend/app/routes/ai.py`)
 - **Hospital Accreditation:** `PATCH /api/v1/hospitals/<id>/verify` (restricted to `@require_roles("admin")`) sets `is_verified = true` and records `HOSPITAL_VERIFIED` in `audit_logs`.
-- **AI Demand Insights:** `GET`/`POST /api/v1/ai/admin-insights` (restricted to `@require_roles("admin")`) summarizes platform demand metrics and logs `AI_ADMIN_INSIGHTS_GENERATED`.
+- **AI Demand Insights & Audit Oversight:** `GET`/`POST /api/v1/ai/admin-insights` (restricted to `@require_roles("admin")`) summarizes platform demand metrics and logs `AI_ADMIN_INSIGHTS_GENERATED`. *(Note: Compliance labels such as "HIPAA, GDPR, NBTC" shown in the UI cards are demonstration UI indicators rather than verified external legal certifications.)*
+
+<div align="center">
+  <img src="docs/screenshots/admin-dashboard.png" alt="Lifnex Executive Command Terminal" width="820" /><br />
+  <sub><em>Actual Admin Executive Command Terminal with Recharts 7-day dispatch telemetry and command navigation.</em></sub>
+</div>
 
 ### 5. Supporting Systems
 - **Notifications (`backend/app/routes/notifications.py`):** Owner-scoped listing (`?unread_only=true`), single-item read (`PATCH /notifications/<id>/read`), and bulk mark-read (`PATCH /notifications/mark-all-read`).
-- **Geospatial & Compatibility (`backend/app/api/v1/matching.py`):** Public compatibility lookup (`GET /api/v1/matching/compatibility`) and Haversine preview (`POST /api/v1/matching/distance-preview`), paired with Leaflet (`leaflet` `1.9.4`) mapping in the frontend.
+- **Geospatial & Compatibility (`backend/app/api/v1/matching.py`, `GeofenceRadar.tsx`):** Public compatibility lookup (`GET /api/v1/matching/compatibility`) and Haversine preview (`POST /api/v1/matching/distance-preview`), rendered on the donor portal via `GeofenceRadar` and in legacy static templates via `leaflet` (`1.9.4`).
 - **Audit Logging (`backend/app/services/audit_service.py`):** Persists actor, action, entity type/ID, client IP, and JSONB `old_values`/`new_values` to `public.audit_logs`.
+
+<table>
+  <tr>
+    <td width="55%" align="center" valign="middle">
+      <img src="docs/screenshots/donor-geofence-radar.png" alt="Lifnex Local Dispatch Mesh Radar" width="100%" /><br />
+      <sub><em>Live <code>GeofenceRadar</code> component in <code>DonorDashboard.tsx</code> visualizing the donor's 15 km dispatch geofence.</em></sub>
+    </td>
+    <td width="45%" align="center" valign="middle">
+      <img src="frontend/static/assets/images/clinical-verification.jpg" alt="Clinical Blood Sample Verification Artwork" width="260" /><br />
+      <sub><em>Editorial specimen verification graphic used in <code>AboutPage.tsx</code> (<code>frontend/static/assets/images/clinical-verification.jpg</code>).</em></sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -183,7 +230,7 @@ flowchart TB
 ```
 
 ### Key Architectural Decisions
-- **Unified Single-Origin Serving:** In production (`run.py` / Render) and serverless (`api/index.py` / Vercel), Flask serves both `/api/v1/*` and the compiled Vite `frontend/dist/` bundle, eliminating cross-origin cookie/header friction.
+- **Unified Single-Origin Serving:** In production (`run.py` / Render) and serverless (`api/index.py` / Vercel), Flask serves both `/api/v1/*` and the compiled Vite `frontend/dist/` bundle, eliminating cross-origin header friction.
 - **Zero-Trust Backend Proxy for Database Mutations:** The frontend never embeds `SUPABASE_SECRET_KEY`. All privileged mutations pass through Flask `@require_auth` / `@require_roles` middleware and Pydantic validation before reaching PostgreSQL.
 - **Multi-Entry HTML Shells:** `scripts/make-shells.js` generates 17 HTML entrypoints (`login.html`, `dashboard/patient.html`, etc.) in `vite.config.ts` so direct deep links resolve cleanly without SPA 404s.
 
@@ -353,6 +400,23 @@ erDiagram
 - **Environment Isolation (`config.py`):** Explicitly allows only approved staging refs (`jejnuespiisksqfgqwsg`) and blocks production refs (`ygbprigcrooveopipkcl`, `krvxybseqaxeculpgveg`).
 - **HTTP Hardening (`__init__.py`):** Sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy`.
 
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="docs/screenshots/login-page.png" alt="Lifnex Login Portal" /><br />
+      <sub><strong>Sign In Portal</strong> — One-click demo roles &amp; <code>Silk</code> WebGL panel</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/screenshots/register-page.png" alt="Lifnex Registration Screen" /><br />
+      <sub><strong>Registration</strong> — Restricted to Patient, Donor &amp; Hospital</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/screenshots/otp-verification.png" alt="Lifnex 6-Digit Email OTP Screen" /><br />
+      <sub><strong>Email OTP Verification</strong> — Native Supabase 6-digit check</sub>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## 🤖 AI & Intelligent Features
@@ -363,6 +427,11 @@ Implemented in `backend/app/services/gemini_service.py` and `backend/app/routes/
 - **Pre-Execution PII Redaction:** `_sanitize_input()` truncates inputs to 1,000 characters and masks emails (`[REDACTED_EMAIL]`) and phone numbers (`[REDACTED_PHONE]`) before external transmission.
 - **Prompt Injection Defense:** `_detect_prompt_injection()` intercepts command-override phrases (e.g., `"ignore previous instructions"`, `"grant admin"`).
 - **Mandatory Clinical Boundary:** Every AI payload appends `MEDICAL_DISCLAIMER` stating that Lifnex AI provides coordination guidance only and never medical diagnoses or blood compatibility verification.
+
+<div align="center">
+  <img src="docs/screenshots/admin-ai-insights.png" alt="Lifnex Admin AI Clinical Governance Interface" width="820" /><br />
+  <sub><em>Actual Admin AI Clinical Governance tab displaying PII sanitization and prompt injection protection controls.</em></sub>
+</div>
 
 ---
 
@@ -459,43 +528,73 @@ Executed and verified directly on the repository:
 
 ## 📸 Website UI & Product Screenshots
 
-All screenshots below are genuine captures of the Lifnex web application using synthetic demo data.
+All visuals below are genuine captures of the current running Lifnex application (`http://localhost:5173`) and original visual assets present in the Lifnex frontend codebase. *(Mobile screenshots are omitted as native APK compilation is currently deferred.)*
 
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/screenshots/register-page.png" alt="Lifnex Registration Page" /><br />
-      <sub><strong>Role-Based Registration</strong> — Public signup for Patient, Donor &amp; Hospital</sub>
+      <img src="docs/screenshots/landing-hero.png" alt="Lifnex Landing Hero" /><br />
+      <sub><strong>Landing Page Hero</strong> — Three.js <code>BloodStream</code> 3D cells &amp; CTAs</sub>
     </td>
     <td align="center" width="50%">
-      <img src="docs/screenshots/otp-verification.png" alt="Lifnex OTP Verification" /><br />
-      <sub><strong>6-Digit Email OTP Verification</strong> — Native Supabase Auth verification flow</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <img src="docs/screenshots/patient-dashboard.png" alt="Patient Emergency Portal" /><br />
-      <sub><strong>Patient Emergency Portal</strong> — Requisition dispatch &amp; matched donor radar</sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="docs/screenshots/donor-dashboard.png" alt="Donor Portal" /><br />
-      <sub><strong>Voluntary Donor Portal</strong> — Availability toggle &amp; ranked local requests</sub>
+      <img src="docs/screenshots/landing-capabilities.png" alt="Lifnex Emergency Protocol Stack" /><br />
+      <sub><strong>Emergency Protocol Cards</strong> — Scroll-stacked 5-stage triage timeline</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/screenshots/hospital-dashboard.png" alt="Hospital Clinical Desk" /><br />
-      <sub><strong>Hospital Clinical Desk</strong> — Requisition coordination &amp; cryo-reserve telemetry</sub>
+      <img src="docs/screenshots/about-medical-coordination.png" alt="About Lifnex Medical Coordination" /><br />
+      <sub><strong>About Page</strong> — 3D stream &amp; <code>hero-medical-team.jpg</code> editorial graphic</sub>
     </td>
     <td align="center" width="50%">
-      <img src="docs/screenshots/admin-ai-insights.png" alt="Admin AI Insights" /><br />
-      <sub><strong>Admin AI Insights</strong> — Demand analytics with mandatory NBTC disclaimer</sub>
+      <img src="docs/screenshots/hospitals-directory.png" alt="Lifnex Verified Hospitals Directory" /><br />
+      <sub><strong>Hospital Directory</strong> — Search &amp; city filter across verified centers</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/login-page.png" alt="Lifnex Login Screen" /><br />
+      <sub><strong>Sign In Portal</strong> — One-click demo roles &amp; <code>Silk</code> shader panel</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/register-page.png" alt="Lifnex Registration Screen" /><br />
+      <sub><strong>Account Registration</strong> — Patient, Donor &amp; Hospital onboarding</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/otp-verification.png" alt="Lifnex 6-Digit Email OTP Screen" /><br />
+      <sub><strong>6-Digit Email OTP</strong> — Native Supabase verification workflow</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/patient-dashboard.png" alt="Lifnex Patient Emergency Portal" /><br />
+      <sub><strong>Patient Dashboard</strong> — Emergency requisition dispatch &amp; donor tracking</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/donor-dashboard.png" alt="Lifnex Donor Dashboard" /><br />
+      <sub><strong>Donor Dashboard</strong> — Live availability toggle &amp; compatibility feed</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/donor-geofence-radar.png" alt="Lifnex Donor Geofence Radar" /><br />
+      <sub><strong>Donor Geofence Radar</strong> — 15 km local dispatch radar sweep</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/hospital-dashboard.png" alt="Lifnex Hospital Coordination Desk" /><br />
+      <sub><strong>Hospital Desk</strong> — Live emergency roster &amp; cold-chain reserve</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/admin-dashboard.png" alt="Lifnex Admin Command Terminal" /><br />
+      <sub><strong>Admin Terminal</strong> — 7-day Recharts dispatch trend &amp; oversight</sub>
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
-      <img src="docs/screenshots/admin-audit-ledger.png" alt="Admin Audit Trail" width="680" /><br />
-      <sub><strong>Admin Audit Ledger</strong> — Activity monitoring &amp; facility accreditation controls</sub>
+      <img src="docs/screenshots/admin-ai-insights.png" alt="Lifnex Admin AI Clinical Governance" width="700" /><br />
+      <sub><strong>AI Clinical Governance</strong> — PII sanitization &amp; prompt-injection defense controls</sub>
     </td>
   </tr>
 </table>
@@ -507,50 +606,51 @@ All screenshots below are genuine captures of the Lifnex web application using s
 ```text
 Lifnex/
 ├── api/
-│   └── index.py                     # Vercel serverless WSGI entrypoint
+│   └── index.py                       # Vercel serverless WSGI entrypoint
 ├── backend/
 │   ├── app/
-│   │   ├── __init__.py              # Flask create_app() factory, Blueprints & SPA serving
-│   │   ├── config.py                # Env loader & Staging/Production project guardrails
-│   │   ├── api/v1/matching.py       # /api/v1/matching compatibility & distance preview
-│   │   ├── core/                    # Config & Supabase client factories
-│   │   ├── database/                # Supabase client & schema helpers
-│   │   ├── routes/                  # auth, blood_requests, donors, hospitals, notifications, ai, health
-│   │   ├── services/                # matching_engine, matching_service, gemini_service, notification_service, audit_service
-│   │   ├── utils/                   # auth_guard (JWKS/PyJWT), geo_utils, audit_logger
-│   │   └── validators/              # Pydantic v2 schemas (schemas.py, auth_schemas.py)
+│   │   ├── __init__.py                # Flask create_app() factory, Blueprints & SPA serving
+│   │   ├── config.py                  # Env loader & Staging/Production project guardrails
+│   │   ├── api/v1/matching.py         # /api/v1/matching compatibility & distance preview
+│   │   ├── core/                      # Config & Supabase client factories
+│   │   ├── database/                  # Supabase client & schema helpers
+│   │   ├── routes/                    # auth, blood_requests, donors, hospitals, notifications, ai, health
+│   │   ├── services/                  # matching_engine, matching_service, gemini_service, notification_service, audit_service
+│   │   ├── utils/                     # auth_guard (JWKS/PyJWT), geo_utils, audit_logger
+│   │   └── validators/                # Pydantic v2 schemas (schemas.py, auth_schemas.py)
 │   ├── migrations/
-│   │   ├── 001_initial_schema.sql   # 9 relational tables, indexes, fail-closed RLS
+│   │   ├── 001_initial_schema.sql     # 9 relational tables, indexes, fail-closed RLS
 │   │   └── 002_security_hardening.sql # SECURITY DEFINER helpers & 36+ RLS policies
-│   └── tests/                       # 12 Pytest modules (97 automated tests)
+│   └── tests/                         # 12 Pytest modules (97 automated tests)
 ├── docs/
-│   ├── screenshots/                 # Verified UI captures
-│   ├── ARCHITECTURE.md              # System & component architecture
-│   ├── DATABASE_DESIGN.md           # ER diagram, tables, indexes, RLS
-│   ├── API_REFERENCE.md             # Complete REST endpoint reference
-│   ├── SECURITY_ARCHITECTURE.md     # Auth, JWKS, RBAC, BOLA, RLS controls
-│   ├── ALGORITHMS_AND_COMPLEXITY.md # Complexity analysis & scale limits
-│   ├── USER_WORKFLOWS.md            # End-to-end Mermaid sequence & flow diagrams
-│   ├── DEPLOYMENT_GUIDE.md          # Local, Render, Vercel & Mobile setup
-│   ├── TESTING_GUIDE.md             # Test execution & module coverage
-│   └── README_DOCUMENTATION_AUDIT.md# Verification & source audit log
+│   ├── screenshots/                   # 13 genuine live UI captures of the current app
+│   ├── ARCHITECTURE.md                # System & component architecture
+│   ├── DATABASE_DESIGN.md             # ER diagram, tables, indexes, RLS
+│   ├── API_REFERENCE.md               # Complete REST endpoint reference
+│   ├── SECURITY_ARCHITECTURE.md       # Auth, JWKS, RBAC, BOLA, RLS controls
+│   ├── ALGORITHMS_AND_COMPLEXITY.md   # Complexity analysis & scale limits
+│   ├── USER_WORKFLOWS.md              # End-to-end Mermaid sequence & flow diagrams
+│   ├── DEPLOYMENT_GUIDE.md            # Local, Render, Vercel & Mobile setup
+│   ├── TESTING_GUIDE.md               # Test execution & module coverage
+│   └── README_DOCUMENTATION_AUDIT.md  # Verification & source audit log
 ├── frontend/
 │   ├── src/
-│   │   ├── components/              # 3D BloodStream, ReactBits, navigation, site UI
-│   │   ├── pages/                   # public/, auth/, dashboards/
-│   │   ├── services/api.ts          # Typed REST client
-│   │   ├── lib/                     # routes.tsx, theme.tsx, liquid.ts, hooks.ts
-│   │   └── styles/                  # Design tokens (day/night) & Tailwind CSS
-│   └── static/                      # Static assets & legacy map/script fallbacks
-├── mobile/                          # Expo SDK 51 React Native WebView container (APK deferred)
-├── scripts/                         # make-shells.js, copy-static.js, seed_demo_accounts.py
-├── PROJECT_PROPOSAL.md              # Original engineering proposal
-├── CURRENT_PROGRESS.md              # Engineering status report
-├── render.yaml                      # Render unified deployment config
-├── vercel.json                      # Vercel rewrite & build config
-├── vite.config.ts                   # Multi-entry Vite 8 build config
-├── run.py                           # Flask server entrypoint (Port 5000)
-└── LICENSE                          # MIT License
+│   │   ├── components/                # 3D BloodStream, ReactBits, navigation, site UI
+│   │   ├── pages/                     # public/, auth/, dashboards/
+│   │   ├── services/api.ts            # Typed REST client
+│   │   ├── lib/                       # routes.tsx, theme.tsx, liquid.ts, hooks.ts
+│   │   └── styles/                    # Design tokens (day/night) & Tailwind CSS
+│   └── static/
+│       └── assets/                    # Original brand mark (lifnex-mark.png) & editorial art
+├── mobile/                            # Expo SDK 51 React Native WebView container (APK deferred)
+├── scripts/                           # make-shells.js, copy-static.js, seed_demo_accounts.py
+├── PROJECT_PROPOSAL.md                # Original engineering proposal
+├── CURRENT_PROGRESS.md                # Engineering status report
+├── render.yaml                        # Render unified deployment config
+├── vercel.json                        # Vercel rewrite & build config
+├── vite.config.ts                     # Multi-entry Vite 8 build config
+├── run.py                             # Flask server entrypoint (Port 5000)
+└── LICENSE                            # MIT License
 ```
 
 ---
@@ -573,7 +673,7 @@ Lifnex/
 - **Mobile APK Deferred:** `mobile/eas.json` is configured, but no binary `.apk` has been compiled yet.
 
 ### Roadmap
-- **Completed:** Multi-role React 18 SPA, 3D WebGL hero, Flask REST API, Supabase native OTP, 9-table schema + RLS hardening, Gemini AI guardrails, 97 passing backend tests.
+- **Completed:** Multi-role React 18 SPA with Three.js `BloodStream`, Flask REST API, Supabase native OTP, 9-table schema + RLS hardening, Gemini AI guardrails, 97 passing backend tests.
 - **In Progress:** Final release documentation & staging validation.
 - **Planned:** PostGIS spatial indexing (`ST_DWithin`), Supabase Realtime WebSocket push alerts, Redis rate limiting, standalone Android APK build via EAS, and Azure PostgreSQL DR deployment.
 

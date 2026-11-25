@@ -1,7 +1,7 @@
 # Lifnex — README & Technical Documentation Audit
 
 **Audit Date:** 2026-11-25  
-**Scope:** Complete transformation of `README.md` and creation of supporting technical documentation in `docs/` without modifying application code, database schemas, or `.env` configuration.
+**Scope:** Complete transformation of `README.md` and creation of supporting technical documentation in `docs/`, strictly reusing original Lifnex frontend assets and freshly captured genuine screenshots of the running application (`http://localhost:5173`).
 
 ---
 
@@ -14,49 +14,44 @@
 | **Backend Routes** | `backend/app/routes/auth.py`, `blood_requests.py`, `donors.py`, `hospitals.py`, `notifications.py`, `ai.py`, `health.py`, `backend/app/api/v1/matching.py` |
 | **Backend Services** | `backend/app/services/matching_engine.py`, `matching_service.py`, `gemini_service.py`, `notification_service.py`, `audit_service.py` |
 | **Database Migrations** | `backend/migrations/001_initial_schema.sql`, `backend/migrations/002_security_hardening.sql` |
-| **Frontend & Mobile** | `frontend/src/App.tsx`, `frontend/src/lib/routes.tsx`, `frontend/src/services/api.ts`, `frontend/src/pages/auth/LoginPage.tsx`, `mobile/package.json`, `mobile/app.json`, `mobile/eas.json`, `mobile/App.js` |
+| **Frontend Assets & Components** | `frontend/src/App.tsx`, `frontend/src/lib/routes.tsx`, `frontend/src/services/api.ts`, `frontend/src/pages/public/HomePage.tsx`, `AboutPage.tsx`, `HowItWorksPage.tsx`, `HospitalsPage.tsx`, `frontend/src/pages/auth/LoginPage.tsx`, `frontend/src/components/ui/Brand.tsx`, `frontend/src/components/site/AuthShell.tsx`, `GeofenceRadar.tsx`, `frontend/src/components/3d/BloodStream.tsx`, `frontend/static/assets/` |
+| **Mobile App** | `mobile/package.json`, `mobile/app.json`, `mobile/eas.json`, `mobile/App.js` |
 
 ---
 
-## 2. Documentation Created / Updated
+## 2. Original Frontend Assets Reused
 
-- [README.md](../README.md) — Rewritten comprehensive technical presentation
-- [docs/ARCHITECTURE.md](ARCHITECTURE.md) — High-level, frontend, backend, and mobile architecture
-- [docs/DATABASE_DESIGN.md](DATABASE_DESIGN.md) — 9-table ER diagram, constraints, indexes, and RLS design
-- [docs/API_REFERENCE.md](API_REFERENCE.md) — Full `/api/v1` REST endpoint catalog
-- [docs/SECURITY_ARCHITECTURE.md](SECURITY_ARCHITECTURE.md) — Auth, JWKS, RBAC, BOLA/IDOR, and AI privacy controls
-- [docs/ALGORITHMS_AND_COMPLEXITY.md](ALGORITHMS_AND_COMPLEXITY.md) — Big-O analysis & practical scale limits
-- [docs/USER_WORKFLOWS.md](USER_WORKFLOWS.md) — Mermaid sequence and flow diagrams for core workflows
-- [docs/DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) — Local, Render, Vercel, Supabase, and Mobile setup
-- [docs/TESTING_GUIDE.md](TESTING_GUIDE.md) — Verified test results and module breakdown
+Verified directly inside `frontend/src/` and `frontend/static/`:
+- `frontend/static/assets/logo/lifnex-mark.png` — Primary brand mark rendered in `Brand.tsx` and `<link rel="icon">` across all HTML entrypoints.
+- `frontend/static/assets/images/hero-medical-team.jpg` — Clinical editorial artwork rendered inside `AboutPage.tsx`.
+- `frontend/static/assets/images/clinical-verification.jpg` — Specimen verification editorial artwork rendered inside `AboutPage.tsx`.
+
+**Excluded Legacy / Conceptual Files:** Legacy exploration graphics (`platform-preview-1.png`, `platform-preview-2.png`, `Lifnex Healthcare UI Showcase.png`) and unused static stock files (`compatibility-lab.jpg`, `voluntary-donor.jpg`) were intentionally **excluded** from `README.md` so only the authentic current UI and used assets are showcased.
 
 ---
 
-## 3. Verified Technical Evidence & Sources
+## 3. Genuine Live Screenshots Captured (`docs/screenshots/`)
 
-- **Test Execution:** `$env:PYTHONPATH="."; .\venv\Scripts\pytest backend/tests/ -v` executed on 2026-11-25 -> **97 passed in 22.69s** across 12 modules.
-- **Production Build:** `npm run build` executed on 2026-11-25 -> **built in 507ms**, 2,443 modules transformed.
-- **Legacy / Unused Prototypes Noted:** `backend/app/api/v1/donors.py`, `health.py`, and `requests.py` are not registered in `backend/app/__init__.py` and were intentionally excluded from the active API reference.
-
----
-
-## 4. Screenshots Verified & Organized
-
-Copied verified synthetic-data captures into `docs/screenshots/`:
+Captured via headless Chrome (`1440x900`, WebGL SwiftShader enabled) directly from `http://localhost:5173` backed by live Flask API (`http://127.0.0.1:5000`) and Staging Supabase (`jejnuespiisksqfgqwsg`):
+- `docs/screenshots/landing-hero.png`
+- `docs/screenshots/landing-capabilities.png`
+- `docs/screenshots/about-medical-coordination.png`
+- `docs/screenshots/hospitals-directory.png`
+- `docs/screenshots/login-page.png`
 - `docs/screenshots/register-page.png`
 - `docs/screenshots/otp-verification.png`
 - `docs/screenshots/patient-dashboard.png`
 - `docs/screenshots/donor-dashboard.png`
+- `docs/screenshots/donor-geofence-radar.png`
 - `docs/screenshots/hospital-dashboard.png`
+- `docs/screenshots/admin-dashboard.png`
 - `docs/screenshots/admin-ai-insights.png`
-- `docs/screenshots/admin-audit-ledger.png`
-
-Also referenced verified repository asset `frontend/src/assets/logo/lifnex-logo.png` and `frontend/src/assets/images/platform-preview-1.png`.
 
 ---
 
-## 5. Verification Status & Remaining Gaps
+## 4. Verified Technical Evidence & Status
 
-- **Links & Relative Paths:** All internal markdown links and image paths verified against disk files.
-- **Secrets Check:** No `.env` values, API keys, or service-role secrets appear in any documentation file; placeholders are used exclusively.
-- **Information Not Independently Verified Live in This Pass:** Live cloud deployment on Render/Vercel was not triggered (only configuration files `render.yaml`, `vercel.json`, and `test_vercel_entrypoint.py` were verified), and Android `.apk` compilation remains deferred.
+- **Test Execution:** `$env:PYTHONPATH="."; .\venv\Scripts\pytest backend/tests/ -v` -> **97 passed in 22.69s** across 12 modules.
+- **Production Build:** `npm run build` -> **built in 507ms**, 2,443 modules transformed.
+- **Omitted Views:** Native Android mobile screenshots are intentionally omitted because EAS APK compilation (`mobile/eas.json`) is deferred.
+- **UI Compliance Label Clarification:** Noted in `README.md` that compliance badges displayed in `AdminDashboard.tsx` are UI indicators rather than verified external certifications.
