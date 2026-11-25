@@ -1,29 +1,31 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "app": {
-      "root": ".",
-      "framework": "vite",
-      "outputDirectory": "frontend/dist"
-    },
-    "backend": {
-      "root": "backend",
-      "framework": "flask",
-      "entrypoint": "run:app"
-    }
-  },
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": {
-        "service": "backend"
-      }
+      "destination": "/api/index.py"
     },
     {
-      "source": "/(.*)",
-      "destination": {
-        "service": "app"
-      }
+      "source": "/assets/(.*)",
+      "destination": "/frontend/dist/assets/$1"
+    },
+    {
+      "source": "/static/(.*)",
+      "destination": "/frontend/dist/static/$1"
+    },
+    {
+      "source": "/((?!api/|static/|assets/).*\\.(?:html|css|js|png|jpg|jpeg|svg|ico|json|woff|woff2|ttf|map|mp4))",
+      "destination": "/frontend/dist/$1"
+    },
+    {
+      "source": "/((?!api/|static/|assets/).*)",
+      "destination": "/frontend/dist/$1.html"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/dist/index.html"
     }
   ]
 }
