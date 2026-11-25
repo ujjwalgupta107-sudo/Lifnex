@@ -67,7 +67,11 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
                 expected_issuer = f"{Config.SUPABASE_URL.rstrip('/')}/auth/v1"
                 for key in jwks.get("keys", []):
                     if key.get("kid") == kid or not kid:
-                        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+                        kty = key.get("kty", "")
+                        if alg.startswith("ES") or kty == "EC":
+                            public_key = jwt.algorithms.ECAlgorithm.from_jwk(key)
+                        else:
+                            public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
                         payload = jwt.decode(
                             token,
                             public_key,

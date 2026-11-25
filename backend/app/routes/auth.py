@@ -24,7 +24,9 @@ from backend.app.services.otp_service import (
     generate_and_store_otp,
     verify_otp_code,
     can_resend_otp,
-    get_otp_session
+    get_otp_session,
+    check_persistent_resend_cooldown,
+    record_otp_dispatch_cooldown,
 )
 from backend.app.services.email_service import (
     send_otp_email,
@@ -49,8 +51,55 @@ def _get_site_url(path: str = "") -> str:
         base = f"{parsed.scheme}://{parsed.netloc}"
         if base.startswith("http"):
             return f"{base.rstrip('/')}/{path.lstrip('/')}"
-    frontend_env = Config.FRONTEND_URL or "https://lifnex.vercel.app"
+    frontend_env = getattr(Config, "FRONTEND_URL", None) or "https://lifnex.vercel.app"
     return f"{frontend_env.rstrip('/')}/{path.lstrip('/')}"
+
+
+def _find_auth_user_by_email(admin, norm_email: str):
+    """Paginates through Supabase Auth users to locate a matching email safely."""
+    page = 1
+    per_page = 1000
+    while True:
+        batch = admin.auth.admin.list_users(page=page, per_page=per_page)
+        if not batch:
+            return None
+        for au in batch:
+            if au.email and au.email.lower().strip() == norm_email:
+                return au
+        if len(batch) < per_page:
+            return None
+        page += 1
+
+
+def _find_public_user_by_email(admin, norm_email: str):
+    """Finds a matching user record in public.users case-insensitively."""
+    res = admin.table("users").select("id, is_active, role, full_name").ilike("email", norm_email).limit(1).execute()
+    return res.data[0] if res.data else None
+
+
+def _extract_retry_seconds(err_msg: str, default: int = 60) -> int:
+    import re
+    match = re.search(r"after (\d+) seconds", err_msg, re.IGNORECASE)
+    return max(1, int(match.group(1))) if match else default
+
+
+def _is_not_authorized_email_error(err_str: str) -> bool:
+    low = err_str.lower()
+    return (
+        "email_address_not_authorized" in low
+        or "not authorized" in low
+        or "cannot be used as it is not authorized" in low
+    )
+
+
+def _is_rate_limit_error(err_str: str) -> bool:
+    low = err_str.lower()
+    return (
+        "rate limit" in low
+        or "over_email" in low
+        or "too many requests" in low
+        or "security purposes" in low
+    )
 
 
 @auth_bp.route("/register", methods=["POST"])
@@ -123,10 +172,12 @@ def register():
         }), 201
 
     try:
-        # 1. Prevent duplicate account registration
-        # Check public.users first
-        existing_user = admin.table("users").select("id, is_active").eq("email", data.email).execute()
-        if existing_user.data and any(u.get("is_active") for u in existing_user.data):
+        norm_email = data.email.lower().strip()
+
+        # 1. Prevent duplicate account registration & handle incomplete registrations safely
+        # Check public.users first (case-insensitive)
+        pub_user = _find_public_user_by_email(admin, norm_email)
+        if pub_user and pub_user.get("is_active"):
             return jsonify({
                 "success": False,
                 "error": {
@@ -135,48 +186,57 @@ def register():
                 }
             }), 409
 
-        # Check Supabase auth.users for both confirmed AND unconfirmed users.
-        # This prevents duplicate Supabase Auth user records for the same email,
-        # which would otherwise occur when generate_link is called repeatedly
-        # for the same unverified email (admin abuse / accidental re-registration).
+        # Check Supabase auth.users across all pages for both confirmed AND unconfirmed users.
         try:
-            auth_users = admin.auth.admin.list_users()
-            for au in auth_users:
-                if au.email and au.email.lower() == data.email.lower():
-                    if getattr(au, "email_confirmed_at", None):
-                        return jsonify({
-                            "success": False,
-                            "error": {
-                                "code": "EMAIL_ALREADY_REGISTERED",
-                                "message": "An account with this email address is already verified. Please sign in."
-                            }
-                        }), 409
-                    else:
-                        # Unconfirmed user exists: guide them to verify or resend OTP
-                        return jsonify({
-                            "success": False,
-                            "error": {
-                                "code": "REGISTRATION_PENDING_VERIFICATION",
-                                "message": (
-                                    "A registration for this email is already pending verification. "
-                                    "Please check your inbox for the verification code, or use "
-                                    "'Resend Code' to get a new one."
-                                )
-                            }
-                        }), 409
+            auth_user = _find_auth_user_by_email(admin, norm_email)
+            if auth_user is not None:
+                if getattr(auth_user, "email_confirmed_at", None):
+                    return jsonify({
+                        "success": False,
+                        "error": {
+                            "code": "EMAIL_ALREADY_REGISTERED",
+                            "message": "An account with this email address is already verified. Please sign in."
+                        }
+                    }), 409
+                else:
+                    return jsonify({
+                        "success": False,
+                        "error": {
+                            "code": "REGISTRATION_PENDING_VERIFICATION",
+                            "email": norm_email,
+                            "message": (
+                                "A registration for this email is already pending verification. "
+                                "Please enter the verification code from your email, or use 'Resend code' after the cooldown."
+                            )
+                        }
+                    }), 409
         except Exception as list_err:
             logger.warning(f"Notice during duplicate email scan: {list_err}")
 
-        # 2. Register user with Supabase Auth
-        # Primary: If custom SMTP is configured or Supabase default rate limit allows, register natively.
-        # Fallback: When Supabase default email rate limit is exceeded and custom SMTP is configured on backend,
-        # generate a verified signup link via admin.auth.admin.generate_link and dispatch the 6-digit OTP via custom SMTP!
+        # If public.users has an inactive record without an auth.users record (unlikely edge case),
+        # or if public.users is inactive while list_users failed, avoid silently overwriting it.
+        if pub_user and not pub_user.get("is_active"):
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "REGISTRATION_PENDING_VERIFICATION",
+                    "email": norm_email,
+                    "message": (
+                        "A registration for this email is already pending verification. "
+                        "Please enter the verification code from your email, or use 'Resend code' after the cooldown."
+                    )
+                }
+            }), 409
+
+        # 2. Register user with Supabase Auth (source of truth)
+        # Primary: Request Supabase Auth sign_up so Supabase creates the unverified user and sends the genuine OTP.
+        # Only when custom SMTP is explicitly configured AND native mailer is rate-limited do we relay via SMTP.
         user_id = None
         email_delivery_channel = "SUPABASE_NATIVE_EMAIL"
 
         try:
             signup_resp = anon.auth.sign_up({
-                "email": data.email,
+                "email": norm_email,
                 "password": data.password,
                 "options": {
                     "data": {
@@ -188,21 +248,57 @@ def register():
                 }
             })
             if signup_resp and signup_resp.user:
+                identities = getattr(signup_resp.user, "identities", None)
+                if identities is not None and len(identities) == 0:
+                    return jsonify({
+                        "success": False,
+                        "error": {
+                            "code": "EMAIL_ALREADY_REGISTERED",
+                            "message": "An account with this email address already exists. Please sign in instead."
+                        }
+                    }), 409
                 user_id = str(signup_resp.user.id)
         except Exception as signup_err:
-            err_str = str(signup_err).lower()
-            logger.info(f"Supabase native sign_up notice: {signup_err}")
+            err_str = str(signup_err)
+            err_low = err_str.lower()
+            logger.info(f"Supabase native sign_up notice for {norm_email}: {signup_err}")
 
-            # Check if error is email rate limit exceeded
-            if "rate limit" in err_str or "over_email" in err_str:
-                logger.warning(f"Supabase email rate limit triggered for {data.email}. Attempting resilient OTP dispatch.")
-                
-                # Try admin generate_link which registers the user in Supabase Auth and generates the real OTP
-                # without exhausting Supabase's built-in mailer quota
+            if _is_not_authorized_email_error(err_str):
+                return jsonify({
+                    "success": False,
+                    "error": {
+                        "code": "EMAIL_NOT_AUTHORIZED",
+                        "message": (
+                            "Email delivery is currently restricted: Supabase's built-in email provider only sends "
+                            "verification codes to authorized project team addresses until a custom SMTP provider is configured."
+                        )
+                    }
+                }), 403
+
+            if _is_rate_limit_error(err_str):
+                retry_seconds = _extract_retry_seconds(err_str, 60)
+                if not is_smtp_configured():
+                    # No SMTP configured: DO NOT call generate_link (which would create an orphaned
+                    # unverified auth.users account with no way to deliver its OTP).
+                    logger.warning(f"Supabase email rate limit reached for {norm_email} (no custom SMTP configured).")
+                    return jsonify({
+                        "success": False,
+                        "error": {
+                            "code": "RATE_LIMITED",
+                            "message": (
+                                "Email delivery is temporarily unavailable because the email sending rate limit was reached. "
+                                f"Please wait at least {retry_seconds} seconds before trying again."
+                            ),
+                            "retry_after": retry_seconds
+                        }
+                    }), 429
+
+                # Custom SMTP IS configured: generate link and dispatch genuine Supabase OTP via SMTP relay
+                logger.warning(f"Supabase email rate limit triggered for {norm_email}. Dispatching via configured SMTP relay.")
                 try:
                     link_res = admin.auth.admin.generate_link({
                         "type": "signup",
-                        "email": data.email,
+                        "email": norm_email,
                         "password": data.password,
                         "options": {
                             "data": {
@@ -213,37 +309,27 @@ def register():
                         }
                     })
                     if link_res and link_res.user:
-                        user_id = str(link_res.user.id)
                         token = getattr(link_res.properties, "email_otp", None)
-
-                        # If backend custom SMTP is configured, dispatch the branded OTP email directly
-                        if token and is_smtp_configured():
-                            sent, method = send_otp_email(data.email, token, data.full_name)
-                            if sent:
-                                email_delivery_channel = "BACKEND_SMTP_RELAY"
-                                logger.info(f"Dispatched Supabase OTP ({token}) to {data.email} via custom SMTP relay.")
-                        elif token:
-                            # BUG-FIX: No SMTP configured — the generate_link OTP cannot be delivered
-                            # to the user. Returning HTTP 201 "code dispatched" here would be a lie.
-                            # Return an honest RATE_LIMITED error instead.
-                            # The Supabase Auth user record was created as unconfirmed; subsequent
-                            # registration attempts will be caught by REGISTRATION_PENDING_VERIFICATION.
-                            logger.warning(
-                                f"generate_link succeeded for {data.email} but no SMTP is configured — "
-                                "OTP cannot be delivered. Returning honest RATE_LIMITED response."
-                            )
+                        if not token:
                             return jsonify({
                                 "success": False,
                                 "error": {
-                                    "code": "RATE_LIMITED",
-                                    "message": (
-                                        "Email verification is temporarily unavailable due to email sending limits. "
-                                        "Please wait at least 60 seconds and try registering again. "
-                                        "If the problem persists, contact support."
-                                    ),
-                                    "retry_after": 60
+                                    "code": "EMAIL_DELIVERY_UNAVAILABLE",
+                                    "message": "Verification email could not be prepared right now. Please try again later."
                                 }
-                            }), 429
+                            }), 503
+                        sent, _method = send_otp_email(norm_email, token, data.full_name)
+                        if not sent:
+                            return jsonify({
+                                "success": False,
+                                "error": {
+                                    "code": "EMAIL_DELIVERY_UNAVAILABLE",
+                                    "message": "Verification email delivery failed. Please try again later."
+                                }
+                            }), 503
+                        user_id = str(link_res.user.id)
+                        email_delivery_channel = "BACKEND_SMTP_RELAY"
+                        logger.info(f"Dispatched verification email to {norm_email} via custom SMTP relay.")
                 except Exception as admin_err:
                     admin_err_str = str(admin_err).lower()
                     logger.error(f"Admin generate_link error: {admin_err}")
@@ -255,16 +341,17 @@ def register():
                                 "message": "An account with this email address already exists. Please sign in or verify your account."
                             }
                         }), 409
-                    elif "rate limit" in admin_err_str:
+                    elif _is_rate_limit_error(admin_err_str):
                         return jsonify({
                             "success": False,
                             "error": {
                                 "code": "RATE_LIMITED",
-                                "message": "Email delivery service is currently rate limited. Please wait 60 seconds before trying again or configure custom SMTP."
+                                "message": "Email delivery service is currently rate limited. Please wait before trying again.",
+                                "retry_after": 60
                             }
                         }), 429
                     raise admin_err
-            elif "already registered" in err_str or "user already exists" in err_str:
+            elif "already registered" in err_low or "user already exists" in err_low or "email_exists" in err_low:
                 return jsonify({
                     "success": False,
                     "error": {
@@ -272,32 +359,24 @@ def register():
                         "message": "An account with this email address already exists. Please sign in instead."
                     }
                 }), 409
-            elif "invalid email" in err_str or "format" in err_str:
+            elif "invalid email" in err_low or "format" in err_low or "unable to validate email" in err_low:
                 return jsonify({
                     "success": False,
                     "error": {
                         "code": "INVALID_EMAIL",
-                        "message": "The provided email address format is invalid. Please provide a standard domain email."
+                        "message": "The provided email address format is invalid. Please provide a valid email address."
                     }
                 }), 400
-            elif "password" in err_str and ("weak" in err_str or "short" in err_str or "least" in err_str):
+            elif "weak_password" in err_low or ("password" in err_low and ("weak" in err_low or "short" in err_low or "least" in err_low)):
                 return jsonify({
                     "success": False,
                     "error": {
                         "code": "WEAK_PASSWORD",
-                        "message": "Password should be at least 6 characters with a combination of letters and numbers."
+                        "message": "Password must be at least 8 characters and meet strength requirements."
                     }
                 }), 400
             else:
-                # Check for existing identity in public.users
-                try:
-                    existing_check = admin.table("users").select("id").eq("email", data.email).execute()
-                    if existing_check.data:
-                        user_id = existing_check.data[0]["id"]
-                except Exception:
-                    pass
-                if not user_id:
-                    raise signup_err
+                raise signup_err
 
         if not user_id:
             return jsonify({
@@ -311,7 +390,7 @@ def register():
         # 3. Synchronize to public.users table (is_active=False until OTP verified by Supabase)
         user_record = {
             "id": user_id,
-            "email": data.email,
+            "email": norm_email,
             "full_name": data.full_name,
             "phone_number": data.phone_number,
             "role": data.role,
@@ -348,19 +427,20 @@ def register():
             }
             admin.table("hospitals").upsert(hospital_record).execute()
 
-        # 6. Log audit event (Supabase Auth natively dispatches email verification OTP)
+        # 6. Record OTP dispatch in audit_logs (valid UUID actor/entity + email in JSONB for serverless cooldown)
+        record_otp_dispatch_cooldown(norm_email)
         log_audit_event(
-            action="USER_REGISTER_SUPABASE_OTP_DISPATCHED",
+            action="USER_OTP_DISPATCHED",
             entity_type="users",
             entity_id=user_id,
             actor_id=user_id,
             client_ip=request.remote_addr,
-            new_values={"email": data.email, "role": data.role, "provider": "supabase_native"}
+            new_values={"email": norm_email, "role": data.role, "delivery": email_delivery_channel}
         )
 
         resp_data = {
             "user": user_record,
-            "email": data.email,
+            "email": norm_email,
             "role": data.role,
             "otp_required": True,
             "expires_in": 3600,
@@ -371,25 +451,41 @@ def register():
             "success": True,
             "otp_required": True,
             "data": resp_data,
-            "message": f"Verification code dispatched to {data.email}. Please enter the 6-digit code to activate your account."
+            "message": f"Verification email requested for {norm_email}. Please enter the verification code to activate your account."
         }), 201
 
     except Exception as e:
         logger.error(f"Registration error: {e}")
         err_str = str(e)
-        if "rate limit" in err_str.lower() or "over_email" in err_str.lower():
+        if _is_not_authorized_email_error(err_str):
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "EMAIL_NOT_AUTHORIZED",
+                    "message": (
+                        "Email delivery is currently restricted: Supabase's built-in email provider only sends "
+                        "verification codes to authorized project team addresses until a custom SMTP provider is configured."
+                    )
+                }
+            }), 403
+        if _is_rate_limit_error(err_str):
+            retry_seconds = _extract_retry_seconds(err_str, 60)
             return jsonify({
                 "success": False,
                 "error": {
                     "code": "RATE_LIMITED",
-                    "message": "Email delivery service rate limit reached. Please wait a moment before trying again or configure a custom SMTP provider in Supabase."
+                    "message": (
+                        "Email delivery service rate limit reached. "
+                        f"Please wait at least {retry_seconds} seconds before trying again."
+                    ),
+                    "retry_after": retry_seconds
                 }
             }), 429
         return jsonify({
             "success": False,
             "error": {
                 "code": "AUTH_ERROR",
-                "message": err_str
+                "message": "Could not complete registration right now. Please check your details and try again."
             }
         }), 400
 
@@ -468,10 +564,11 @@ def verify_otp():
         }), 500
 
     otp_type = getattr(data, "type", "signup") or "signup"
+    norm_email = data.email.lower().strip()
     try:
         verify_resp = anon.auth.verify_otp({
-            "email": data.email,
-            "token": data.otp,
+            "email": norm_email,
+            "token": data.otp.strip(),
             "type": otp_type
         })
     except Exception as e:
@@ -513,10 +610,20 @@ def verify_otp():
     user_id = str(verify_resp.user.id)
     metadata = verify_resp.user.user_metadata or {}
     role = metadata.get("role", "patient")
+    norm_email = (getattr(verify_resp.user, "email", None) or data.email).lower().strip()
 
-    # 1. Activate public.users record
+    # 1. Activate public.users record only after Supabase Auth confirms the OTP
     try:
-        admin.table("users").update({"is_active": True}).eq("id", user_id).execute()
+        update_res = admin.table("users").update({"is_active": True}).eq("id", user_id).execute()
+        if not update_res.data:
+            admin.table("users").upsert({
+                "id": user_id,
+                "email": norm_email,
+                "full_name": metadata.get("full_name", "Lifnex User"),
+                "role": role if role in ("patient", "donor", "hospital") else "patient",
+                "is_active": True,
+                "is_demo": False,
+            }).execute()
         logger.info(f"public.users activated for user_id={user_id}")
     except Exception as e:
         logger.warning(f"Notice activating public.users: {e}")
@@ -528,16 +635,16 @@ def verify_otp():
         entity_id=user_id,
         actor_id=user_id,
         client_ip=request.remote_addr,
-        new_values={"email": data.email, "is_verified": True, "provider": "supabase_native"}
+        new_values={"email": norm_email, "is_verified": True, "provider": "supabase_native"}
     )
 
     # 3. Session access token from Supabase Auth or fallback
-    access_token = verify_resp.session.access_token if verify_resp.session else generate_token(user_id, data.email, role)
+    access_token = verify_resp.session.access_token if verify_resp.session else generate_token(user_id, norm_email, role)
     expires_in = verify_resp.session.expires_in if verify_resp.session else 86400
 
     user_record = {
         "id": user_id,
-        "email": data.email,
+        "email": norm_email,
         "full_name": metadata.get("full_name", "User"),
         "role": role,
         "is_active": True
@@ -592,6 +699,7 @@ def resend_otp():
         }), 200
 
     anon = get_supabase_anon()
+    admin = get_supabase_admin()
     if not anon:
         return jsonify({
             "success": False,
@@ -601,65 +709,122 @@ def resend_otp():
             }
         }), 500
 
+    norm_email = data.email.lower().strip()
+    user_id = None
+
+    # 1. Check if account is already verified (avoid wasting Supabase email quota)
+    if admin:
+        try:
+            pub_user = _find_public_user_by_email(admin, norm_email)
+            if pub_user:
+                user_id = pub_user.get("id")
+                if pub_user.get("is_active"):
+                    return jsonify({
+                        "success": False,
+                        "error": {
+                            "code": "EMAIL_ALREADY_VERIFIED",
+                            "message": "This email address is already verified. Please sign in."
+                        }
+                    }), 409
+            else:
+                auth_user = _find_auth_user_by_email(admin, norm_email)
+                if auth_user:
+                    user_id = str(auth_user.id)
+                    if getattr(auth_user, "email_confirmed_at", None):
+                        return jsonify({
+                            "success": False,
+                            "error": {
+                                "code": "EMAIL_ALREADY_VERIFIED",
+                                "message": "This email address is already verified. Please sign in."
+                            }
+                        }), 409
+        except Exception as lookup_err:
+            logger.warning(f"Resend pre-check lookup notice: {lookup_err}")
+
+    # 2. Enforce serverless-safe 60-second cooldown backed by PostgreSQL audit_logs
+    allowed, retry_after = check_persistent_resend_cooldown(admin, norm_email, cooldown_seconds=60)
+    if not allowed:
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "RATE_LIMITED",
+                "message": f"Please wait {retry_after} seconds before requesting another verification code.",
+                "retry_after": retry_after
+            }
+        }), 429
+
     otp_type = getattr(data, "type", "signup") or "signup"
     try:
         anon.auth.resend({
             "type": otp_type,
-            "email": data.email,
+            "email": norm_email,
             "options": {
                 "email_redirect_to": _get_site_url("verify-otp")
             }
         })
 
+        record_otp_dispatch_cooldown(norm_email)
         log_audit_event(
-            action="USER_NATIVE_OTP_RESENT",
+            action="USER_OTP_RESENT",
             entity_type="users",
-            entity_id=data.email,
-            actor_id=data.email,
+            entity_id=user_id,
+            actor_id=user_id,
             client_ip=request.remote_addr,
-            new_values={"email": data.email, "delivery": "SUPABASE_NATIVE_RESEND"}
+            new_values={"email": norm_email, "delivery": "SUPABASE_NATIVE_RESEND"}
         )
 
         return jsonify({
             "success": True,
-            "message": f"A new verification code has been dispatched to {data.email} via Supabase Auth.",
+            "message": f"A new verification code has been dispatched to {norm_email} via Supabase Auth.",
             "data": {
-                "email": data.email,
+                "email": norm_email,
                 "cooldown_seconds": 60
             }
         }), 200
 
     except Exception as e:
         err_msg = str(e)
-        import re
-        match = re.search(r"after (\d+) seconds", err_msg)
-        seconds = int(match.group(1)) if match else 60
-        if "security purposes" in err_msg.lower() or "rate limit" in err_msg.lower() or "over_email" in err_msg.lower():
-            # BUG-FIX: The old fallback called admin.generate_link with a hardcoded password
-            # ("Password123!") which created a NEW duplicate Supabase Auth user record for the
-            # same email rather than operating on the existing unverified user.
-            # This is removed entirely. When no SMTP is configured, we cannot deliver a new OTP;
-            # return an honest RATE_LIMITED error so the user understands they need to wait.
-            admin = get_supabase_admin()
+        if _is_not_authorized_email_error(err_msg):
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "EMAIL_NOT_AUTHORIZED",
+                    "message": (
+                        "Email delivery is currently restricted: Supabase's built-in email provider only sends "
+                        "verification codes to authorized project team addresses until a custom SMTP provider is configured."
+                    )
+                }
+            }), 403
+
+        seconds = _extract_retry_seconds(err_msg, 60)
+        if _is_rate_limit_error(err_msg):
             if admin and is_smtp_configured():
-                # Only attempt generate_link if we can actually deliver the OTP via custom SMTP.
-                # This path is only reachable when SMTP_HOST/USERNAME/PASSWORD are all set.
                 try:
                     resend_link = admin.auth.admin.generate_link({
-                        "type": "magiclink",  # Use magiclink instead of signup to avoid duplicate user creation
-                        "email": data.email,
+                        "type": "magiclink",
+                        "email": norm_email,
                     })
                     token = getattr(resend_link.properties, "email_otp", None)
                     if token:
-                        send_otp_email(data.email, token)
-                        return jsonify({
-                            "success": True,
-                            "message": f"A new verification code has been dispatched to {data.email} via custom SMTP.",
-                            "data": {
-                                "email": data.email,
-                                "cooldown_seconds": 60
-                            }
-                        }), 200
+                        sent, _method = send_otp_email(norm_email, token)
+                        if sent:
+                            record_otp_dispatch_cooldown(norm_email)
+                            log_audit_event(
+                                action="USER_OTP_RESENT",
+                                entity_type="users",
+                                entity_id=user_id,
+                                actor_id=user_id,
+                                client_ip=request.remote_addr,
+                                new_values={"email": norm_email, "delivery": "BACKEND_SMTP_RELAY"}
+                            )
+                            return jsonify({
+                                "success": True,
+                                "message": f"A new verification code has been dispatched to {norm_email} via custom SMTP.",
+                                "data": {
+                                    "email": norm_email,
+                                    "cooldown_seconds": 60
+                                }
+                            }), 200
                 except Exception as resend_admin_err:
                     logger.warning(f"Admin resend fallback failed: {resend_admin_err}")
 
@@ -676,7 +841,7 @@ def resend_otp():
             "success": False,
             "error": {
                 "code": "RESEND_FAILED",
-                "message": f"Could not resend verification code: {err_msg}"
+                "message": "Could not resend verification code right now. Please wait and try again."
             }
         }), 400
 
@@ -882,10 +1047,10 @@ def forgot_password():
     log_audit_event(
         action="USER_PASSWORD_RESET_REQUESTED",
         entity_type="users",
-        entity_id=data.email,
-        actor_id=data.email,
+        entity_id=None,
+        actor_id=None,
         client_ip=request.remote_addr,
-        new_values={"email": data.email, "provider": "supabase_native"}
+        new_values={"email": data.email.lower().strip(), "provider": "supabase_native"}
     )
 
     return jsonify({

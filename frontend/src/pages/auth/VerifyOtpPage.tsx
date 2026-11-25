@@ -20,8 +20,18 @@ export const VerifyOtpPage: React.FC = () => {
   const [resending, setResending] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [countdown, setCountdown] = useState<number>(60);
-  const [canResend, setCanResend] = useState(false);
+  const [countdown, setCountdown] = useState<number>(() => {
+    const sentAtRaw = sessionStorage.getItem('lifnex_otp_sent_at');
+    if (!sentAtRaw) return 0;
+    const elapsedSec = Math.floor((Date.now() - Number(sentAtRaw)) / 1000);
+    return elapsedSec >= 0 && elapsedSec < 60 ? 60 - elapsedSec : 0;
+  });
+  const [canResend, setCanResend] = useState<boolean>(() => {
+    const sentAtRaw = sessionStorage.getItem('lifnex_otp_sent_at');
+    if (!sentAtRaw) return true;
+    const elapsedSec = Math.floor((Date.now() - Number(sentAtRaw)) / 1000);
+    return !(elapsedSec >= 0 && elapsedSec < 60);
+  });
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -145,6 +155,7 @@ export const VerifyOtpPage: React.FC = () => {
           localStorage.setItem('lifnex_user', JSON.stringify(user));
           sessionStorage.removeItem('lifnex_pending_email');
           sessionStorage.removeItem('lifnex_pending_role');
+          sessionStorage.removeItem('lifnex_otp_sent_at');
 
           setTimeout(() => {
             const role = user.role || stateRole;
@@ -186,13 +197,21 @@ export const VerifyOtpPage: React.FC = () => {
     try {
       const res = await api.resendOtp(email);
       if (res.success) {
-        setSuccessMsg('A fresh 6-digit verification code has been dispatched to your email.');
-        setCountdown(60);
+        const cooldown = Number(res.data?.cooldown_seconds) || 60;
+        sessionStorage.setItem('lifnex_otp_sent_at', String(Date.now()));
+        setSuccessMsg('A fresh verification code has been requested for your email.');
+        setCountdown(cooldown);
         setCanResend(false);
         setOtp(['', '', '', '', '', '']);
         inputRefs.current[0]?.focus();
         setTimeout(() => setSuccessMsg(''), 5000);
       } else {
+        if (res.error?.code === 'RATE_LIMITED' && res.error?.retry_after) {
+          const retryAfter = Math.max(1, Number(res.error.retry_after));
+          setCountdown(retryAfter);
+          setCanResend(false);
+          sessionStorage.setItem('lifnex_otp_sent_at', String(Date.now() - (60 - Math.min(60, retryAfter)) * 1000));
+        }
         setError(res.error?.message || 'Could not resend code. Please wait and try again.');
       }
     } catch (err: any) {

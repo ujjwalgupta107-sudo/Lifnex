@@ -162,3 +162,72 @@ def get_otp_session(email: str) -> Optional[Dict[str, Any]]:
             "expires_in": max(0, int(s.get("expires_at", 0) - time.time())),
             "attempts": s.get("attempts", 0)
         }
+
+
+OTP_DISPATCH_AUDIT_ACTIONS = [
+    "USER_OTP_DISPATCHED",
+    "USER_OTP_RESENT",
+    "USER_REGISTER_SUPABASE_OTP_DISPATCHED",
+    "USER_NATIVE_OTP_RESENT",
+]
+
+# In-memory resend tracker used only in TESTING/offline mode when Supabase DB is absent
+_in_memory_resend_at: Dict[str, float] = {}
+
+
+def record_otp_dispatch_cooldown(email: str) -> None:
+    """Records an OTP dispatch timestamp in memory (complementing persistent audit_logs)."""
+    norm_email = email.lower().strip()
+    with _otp_lock:
+        _in_memory_resend_at[norm_email] = time.time()
+
+
+def check_persistent_resend_cooldown(
+    admin: Any,
+    email: str,
+    cooldown_seconds: int = 60,
+    use_memory_fallback: bool = False,
+) -> Tuple[bool, int]:
+    """
+    Checks resend cooldown across Vercel serverless invocations using PostgreSQL audit_logs.
+    Falls back to in-memory tracking only when testing/offline (`use_memory_fallback=True` or `admin is None`).
+    Returns (allowed: bool, retry_after_seconds: int).
+    """
+    import math
+    from datetime import datetime, timezone
+
+    norm_email = email.lower().strip()
+
+    if admin is not None and not use_memory_fallback:
+        try:
+            res = (
+                admin.table("audit_logs")
+                .select("created_at")
+                .in_("action", OTP_DISPATCH_AUDIT_ACTIONS)
+                .contains("new_values", {"email": norm_email})
+                .order("created_at", desc=True)
+                .limit(1)
+                .execute()
+            )
+            if res.data:
+                created_raw = res.data[0].get("created_at")
+                if created_raw:
+                    created_dt = datetime.fromisoformat(str(created_raw).replace("Z", "+00:00"))
+                    if created_dt.tzinfo is None:
+                        created_dt = created_dt.replace(tzinfo=timezone.utc)
+                    elapsed = (datetime.now(timezone.utc) - created_dt).total_seconds()
+                    if 0 <= elapsed < cooldown_seconds:
+                        remaining = max(1, math.ceil(cooldown_seconds - elapsed))
+                        return False, remaining
+                    return True, 0
+        except Exception as exc:
+            logger.warning(f"Persistent cooldown query failed; falling back safely: {exc}")
+
+    # Offline / TESTING fallback
+    with _otp_lock:
+        last_sent = _in_memory_resend_at.get(norm_email)
+        if last_sent is not None:
+            elapsed = time.time() - last_sent
+            if 0 <= elapsed < cooldown_seconds:
+                return False, max(1, math.ceil(cooldown_seconds - elapsed))
+    return True, 0

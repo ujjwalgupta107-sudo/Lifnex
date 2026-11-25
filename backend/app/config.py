@@ -63,8 +63,9 @@ class Config:
     SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "1") == "1"
     SMTP_USE_SSL = os.getenv("SMTP_USE_SSL", "0") == "1"
 
-    # CORS
+    # CORS & Frontend URL
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "https://lifnex.vercel.app")
 
     @classmethod
     def get_project_ref(cls) -> str:

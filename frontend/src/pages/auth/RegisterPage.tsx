@@ -25,12 +25,14 @@ export const RegisterPage: React.FC = () => {
   const [bloodGroup, setBloodGroup] = useState('O+');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
   const navigate = useGo();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setPendingEmail('');
 
     try {
       const res = await api.register({
@@ -42,18 +44,20 @@ export const RegisterPage: React.FC = () => {
         hospital_name: role === 'hospital' ? fullName : undefined,
       });
 
-      // When OTP verification is required (standard real flow)
-      if (res.otp_required || res.success) {
-        sessionStorage.setItem('lifnex_pending_email', email);
+      // Only proceed to OTP verification when backend confirms Supabase accepted the verification email request
+      if (res.success && res.otp_required) {
+        const normalizedEmail = (res.data?.email || email).trim().toLowerCase();
+        sessionStorage.setItem('lifnex_pending_email', normalizedEmail);
         sessionStorage.setItem('lifnex_pending_role', role);
         sessionStorage.setItem('lifnex_pending_name', fullName);
+        sessionStorage.setItem('lifnex_otp_sent_at', String(Date.now()));
         if (role === 'donor') {
           sessionStorage.setItem('lifnex_pending_blood_group', bloodGroup);
         }
-        
+
         navigate('/verify-otp', {
           state: {
-            email,
+            email: normalizedEmail,
             role,
             fullName,
             bloodGroup: role === 'donor' ? bloodGroup : undefined,
@@ -65,13 +69,16 @@ export const RegisterPage: React.FC = () => {
       const token = res.data?.session?.access_token || res.token || res.access_token;
       const user = res.data?.user || res.user;
 
-      if (token && user) {
+      if (res.success && token && user && user.is_active !== false) {
         localStorage.setItem('lifnex_token', token);
         localStorage.setItem('lifnex_user', JSON.stringify(user));
         if (role === 'donor') navigate('/dashboard/donor');
         else if (role === 'hospital') navigate('/dashboard/hospital');
         else navigate('/dashboard/patient');
       } else {
+        if (res.error?.code === 'REGISTRATION_PENDING_VERIFICATION') {
+          setPendingEmail(res.error?.email || email.trim().toLowerCase());
+        }
         setError(res.error?.message || res.message || 'Registration failed');
       }
     } catch (err: any) {
@@ -97,7 +104,21 @@ export const RegisterPage: React.FC = () => {
       {error && (
         <div role="alert" className="note note-error panel-in mb-5">
           <AlertCircle size={18} />
-          <p>{error}</p>
+          <div>
+            <p>{error}</p>
+            {pendingEmail && (
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.setItem('lifnex_pending_email', pendingEmail);
+                  navigate('/verify-otp', { state: { email: pendingEmail, role } });
+                }}
+                className="link mt-2"
+              >
+                Continue to email verification
+              </button>
+            )}
+          </div>
         </div>
       )}
 

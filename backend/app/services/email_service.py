@@ -442,6 +442,9 @@ def send_otp_email(to_email: str, otp_code: str, full_name: Optional[str] = None
         if "rate limit" in err_str or "over_email" in err_str:
             logger.warning(f"Supabase default email rate limit reached: {e}")
             return False, "SUPABASE_EMAIL_RATE_LIMITED"
+        if "not authorized" in err_str or "email_address_not_authorized" in err_str:
+            logger.warning(f"Supabase default email recipient restriction triggered: {e}")
+            return False, "SUPABASE_EMAIL_NOT_AUTHORIZED"
         logger.warning(f"Supabase resend attempt note: {e}")
 
     # 3. Fallback when SMTP is unconfigured

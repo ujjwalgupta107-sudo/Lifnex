@@ -63,6 +63,29 @@ const Alias: React.FC<{ to: string }> = ({ to }) => {
   return <Navigate to={to + search} replace />;
 };
 
+const RequireVerifiedAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = localStorage.getItem('lifnex_token');
+  let user: any = null;
+  try {
+    user = JSON.parse(localStorage.getItem('lifnex_user') || 'null');
+  } catch {
+    user = null;
+  }
+
+  if (!token || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.is_active === false) {
+    if (user.email) {
+      sessionStorage.setItem('lifnex_pending_email', user.email);
+    }
+    return <Navigate to="/verify-otp" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const Loading: React.FC = () => (
   <div className="grid min-h-[80vh] place-items-center" role="status" aria-label="Loading">
     <Mark size={64} className="beat" />
@@ -117,10 +140,10 @@ const Shell: React.FC = () => {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verify-otp" element={<VerifyOtpPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/dashboard/patient" element={<PatientDashboard />} />
-              <Route path="/dashboard/donor" element={<DonorDashboard />} />
-              <Route path="/dashboard/hospital" element={<HospitalDashboard />} />
-              <Route path="/dashboard/admin" element={<AdminDashboard />} />
+              <Route path="/dashboard/patient" element={<RequireVerifiedAuth><PatientDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/donor" element={<RequireVerifiedAuth><DonorDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/hospital" element={<RequireVerifiedAuth><HospitalDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/admin" element={<RequireVerifiedAuth><AdminDashboard /></RequireVerifiedAuth>} />
               {ALIASES.map(([from, to]) => (
                 <Route key={from} path={from} element={<Alias to={to} />} />
               ))}
