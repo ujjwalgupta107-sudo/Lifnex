@@ -7,6 +7,7 @@ and unverified user access guards.
 
 import pytest
 import time
+import jwt
 from backend.app import create_app
 from backend.app.services.otp_service import (
     generate_and_store_otp,
@@ -449,3 +450,129 @@ def test_verify_token_supports_supabase_es256_ec_jwks(monkeypatch):
         decoded = verify_token(token)
         assert decoded is not None
         assert decoded["sub"] == "55555555-5555-5555-5555-555555555555"
+
+
+def test_demo_token_rejected_in_vercel_even_if_flask_env_is_dev(monkeypatch):
+    """Demo tokens must never work in non-TESTING Vercel environments even if FLASK_ENV != production."""
+    from backend.app.utils.auth_guard import verify_token
+
+    app = create_app()
+    app.config["TESTING"] = False
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.setattr(Config, "FLASK_ENV", "development")
+
+    with app.app_context():
+        assert verify_token("demo-token-admin") is None
+
+
+def test_live_all_four_roles_login_refresh_me_and_role_guards(monkeypatch):
+    """Tests login, /me profile lookup, refresh token, and role authorization across all 4 roles."""
+    app, admin, anon = _make_live_app_and_clients(monkeypatch)
+    roles = ["patient", "donor", "hospital", "admin"]
+
+    for idx, role in enumerate(roles):
+        uid = f"66666666-6666-6666-6666-66666666666{idx}"
+        email = f"{role}@lifnex.org"
+        jwt_token = jwt.encode(
+            {
+                "sub": uid,
+                "email": email,
+                "role": role,
+                "aud": "authenticated",
+                "exp": int((datetime.now(timezone.utc) + timedelta(hours=1)).timestamp()),
+            },
+            Config.SECRET_KEY,
+            algorithm="HS256",
+        )
+        anon.auth.sign_in_with_password.return_value = SimpleNamespace(
+            user=SimpleNamespace(
+                id=uid,
+                email=email,
+                email_confirmed_at="2026-11-26T00:00:00Z",
+                user_metadata={"full_name": f"Demo {role.title()}", "role": role},
+            ),
+            session=SimpleNamespace(access_token=jwt_token, refresh_token=f"ref-{role}-12345", expires_in=3600),
+        )
+        anon.auth.refresh_session.return_value = SimpleNamespace(
+            user=SimpleNamespace(
+                id=uid,
+                email=email,
+                email_confirmed_at="2026-11-26T00:00:00Z",
+                user_metadata={"full_name": f"Demo {role.title()}", "role": role},
+            ),
+            session=SimpleNamespace(access_token=jwt_token, refresh_token=f"ref-{role}-67890", expires_in=3600),
+        )
+        user_row = {
+            "id": uid,
+            "email": email,
+            "full_name": f"Demo {role.title()}",
+            "role": role,
+            "is_active": True,
+            "is_demo": True,
+        }
+        admin.table.return_value = _make_mock_query([user_row])
+
+        with patch("backend.app.routes.auth.get_supabase_admin", return_value=admin), \
+             patch("backend.app.routes.auth.get_supabase_anon", return_value=anon), \
+             patch("backend.app.utils.auth_guard.get_supabase_admin", return_value=admin), \
+             patch("backend.app.routes.auth.log_audit_event"):
+            with app.test_client() as c:
+                # 1. Login
+                res_login = c.post("/api/v1/auth/login", json={"email": email, "password": "StrongPassword123!"})
+                assert res_login.status_code == 200
+                login_body = res_login.get_json()
+                assert login_body["data"]["user"]["role"] == role
+                assert login_body["data"]["session"]["refresh_token"] == f"ref-{role}-12345"
+
+                # 2. /me with JWT
+                res_me = c.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {jwt_token}"})
+                assert res_me.status_code == 200
+                assert res_me.get_json()["data"]["role"] == role
+
+                # 3. Refresh session
+                res_ref = c.post("/api/v1/auth/refresh", json={"refresh_token": f"ref-{role}-12345"})
+                assert res_ref.status_code == 200
+                assert res_ref.get_json()["data"]["session"]["refresh_token"] == f"ref-{role}-67890"
+
+                # 4. Admin insights role gate
+                res_adm = c.get("/api/v1/ai/admin-insights", headers={"Authorization": f"Bearer {jwt_token}"})
+                if role == "admin":
+                    assert res_adm.status_code == 200
+                else:
+                    assert res_adm.status_code == 403
+
+
+def test_live_reset_password_requires_valid_jwt_and_rejects_raw_uuid(monkeypatch):
+    """reset-password must reject unverified UUIDs with 401 and only update when JWT is valid."""
+    app, admin, anon = _make_live_app_and_clients(monkeypatch)
+    uid = "77777777-7777-7777-7777-777777777777"
+
+    with patch("backend.app.routes.auth.get_supabase_admin", return_value=admin), \
+         patch("backend.app.routes.auth.log_audit_event"):
+        with app.test_client() as c:
+            # Raw UUID must be rejected
+            res_bad = c.post("/api/v1/auth/reset-password", json={
+                "access_token": uid,
+                "new_password": "NewStrongPassword123!"
+            })
+            assert res_bad.status_code == 401
+            admin.auth.admin.update_user_by_id.assert_not_called()
+
+            # Valid JWT succeeds
+            valid_jwt = jwt.encode(
+                {
+                    "sub": uid,
+                    "email": "reset@example.com",
+                    "role": "patient",
+                    "aud": "authenticated",
+                    "exp": int((datetime.now(timezone.utc) + timedelta(minutes=15)).timestamp()),
+                },
+                Config.SECRET_KEY,
+                algorithm="HS256",
+            )
+            res_ok = c.post("/api/v1/auth/reset-password", json={
+                "access_token": valid_jwt,
+                "new_password": "NewStrongPassword123!"
+            })
+            assert res_ok.status_code == 200
+            admin.auth.admin.update_user_by_id.assert_called_once_with(uid, {"password": "NewStrongPassword123!"})

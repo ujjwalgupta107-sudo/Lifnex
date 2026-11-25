@@ -57,7 +57,15 @@ export const Navigation: React.FC = () => {
   }, [isOpen]);
 
   const handleSignOut = () => {
+    const token = localStorage.getItem('lifnex_token') || undefined;
+    if (token) {
+      fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      }).catch(() => undefined);
+    }
     localStorage.removeItem('lifnex_token');
+    localStorage.removeItem('lifnex_refresh_token');
     localStorage.removeItem('lifnex_user');
     setCurrentUser(null);
     go('/');

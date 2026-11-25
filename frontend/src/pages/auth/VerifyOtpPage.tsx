@@ -148,10 +148,14 @@ export const VerifyOtpPage: React.FC = () => {
         setSuccessMsg('Email verified successfully! Activating your account...');
         
         const token = res.data.session?.access_token || res.data.token;
+        const refreshToken = res.data.session?.refresh_token;
         const user = res.data.user;
 
         if (token && user) {
           localStorage.setItem('lifnex_token', token);
+          if (refreshToken) {
+            localStorage.setItem('lifnex_refresh_token', refreshToken);
+          }
           localStorage.setItem('lifnex_user', JSON.stringify(user));
           sessionStorage.removeItem('lifnex_pending_email');
           sessionStorage.removeItem('lifnex_pending_role');

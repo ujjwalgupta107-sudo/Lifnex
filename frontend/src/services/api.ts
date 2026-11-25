@@ -33,6 +33,76 @@ function getAuthHeaders(token?: string) {
   return headers;
 }
 
+let refreshPromise: Promise<string | null> | null = null;
+
+async function tryRefreshAccessToken(): Promise<string | null> {
+  if (refreshPromise) return refreshPromise;
+  const refreshToken = localStorage.getItem('lifnex_refresh_token');
+  if (!refreshToken) return null;
+
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      const json = await safeJson(res);
+      const newToken = json?.data?.session?.access_token;
+      const newRefresh = json?.data?.session?.refresh_token;
+      const user = json?.data?.user;
+      if (res.ok && json?.success && newToken) {
+        localStorage.setItem('lifnex_token', newToken);
+        if (newRefresh) localStorage.setItem('lifnex_refresh_token', newRefresh);
+        if (user) localStorage.setItem('lifnex_user', JSON.stringify(user));
+        return newToken;
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+async function fetchWithAuth(url: string, init: RequestInit = {}, explicitToken?: string) {
+  const res = await fetch(url, {
+    ...init,
+    headers: {
+      ...getAuthHeaders(explicitToken),
+      ...(init.headers || {}),
+    },
+  });
+
+  if (res.status === 401 && !explicitToken && localStorage.getItem('lifnex_token')) {
+    const body = await safeJson(res);
+    const code = body?.error?.code;
+    if (code === 'INVALID_OR_EXPIRED_TOKEN' || code === 'UNAUTHORIZED') {
+      const newToken = await tryRefreshAccessToken();
+      if (newToken) {
+        const retryRes = await fetch(url, {
+          ...init,
+          headers: {
+            ...getAuthHeaders(newToken),
+            ...(init.headers || {}),
+          },
+        });
+        return safeJson(retryRes);
+      }
+      localStorage.removeItem('lifnex_token');
+      localStorage.removeItem('lifnex_refresh_token');
+      localStorage.removeItem('lifnex_user');
+      window.dispatchEvent(new CustomEvent('lifnex:session-expired'));
+    }
+    return body;
+  }
+
+  return safeJson(res);
+}
+
 export const api = {
   // Health
   async getHealth() {
@@ -77,76 +147,70 @@ export const api = {
     return safeJson(res);
   },
 
-  async getMe(token?: string) {
-    const res = await fetch(`${API_BASE}/auth/me`, {
+  async refreshSession(refreshToken: string) {
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+    return safeJson(res);
+  },
+
+  async logout(token?: string) {
+    const res = await fetch(`${API_BASE}/auth/logout`, {
+      method: 'POST',
       headers: getAuthHeaders(token),
     });
     return safeJson(res);
+  },
+
+  async getMe(token?: string) {
+    return fetchWithAuth(`${API_BASE}/auth/me`, {}, token);
   },
 
   // Donors
   async getDonorFeed(token?: string) {
-    const res = await fetch(`${API_BASE}/donors/feed`, {
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/donors/feed`, {}, token);
   },
 
   async updateDonorAvailability(status: 'available' | 'busy' | 'inactive', donorId?: string, token?: string) {
-    const res = await fetch(`${API_BASE}/donors/availability`, {
+    return fetchWithAuth(`${API_BASE}/donors/availability`, {
       method: 'PATCH',
-      headers: getAuthHeaders(token),
       body: JSON.stringify({ availability_status: status, donor_id: donorId }),
-    });
-    return safeJson(res);
+    }, token);
   },
 
   async respondToRequest(data: { request_id: string; donor_id: string; response_status: 'interested' | 'accepted' | 'declined'; estimated_arrival_minutes?: number }, token?: string) {
-    const res = await fetch(`${API_BASE}/donors/respond`, {
+    return fetchWithAuth(`${API_BASE}/donors/respond`, {
       method: 'POST',
-      headers: getAuthHeaders(token),
       body: JSON.stringify(data),
-    });
-    return safeJson(res);
+    }, token);
   },
 
   // Blood Requests
   async getBloodRequests(token?: string) {
-    const res = await fetch(`${API_BASE}/blood-requests`, {
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/blood-requests`, {}, token);
   },
 
   async createBloodRequest(data: Record<string, any>, token?: string) {
-    const res = await fetch(`${API_BASE}/blood-requests`, {
+    return fetchWithAuth(`${API_BASE}/blood-requests`, {
       method: 'POST',
-      headers: getAuthHeaders(token),
       body: JSON.stringify(data),
-    });
-    return safeJson(res);
+    }, token);
   },
 
   async getMatchingDonors(requestId: string, token?: string) {
-    const res = await fetch(`${API_BASE}/blood-requests/${requestId}/matching-donors`, {
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/blood-requests/${requestId}/matching-donors`, {}, token);
   },
 
   async getDonorResponses(requestId: string, token?: string) {
-    const res = await fetch(`${API_BASE}/blood-requests/${requestId}/responses`, {
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/blood-requests/${requestId}/responses`, {}, token);
   },
 
   async cancelBloodRequest(requestId: string, token?: string) {
-    const res = await fetch(`${API_BASE}/blood-requests/${requestId}/cancel`, {
-      method: 'POST',
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/blood-requests/${requestId}/cancel`, {
+      method: 'PATCH',
+    }, token);
   },
 
   // Hospitals
@@ -157,36 +221,27 @@ export const api = {
   },
 
   async verifyHospital(hospitalId: string, token?: string) {
-    const res = await fetch(`${API_BASE}/hospitals/${hospitalId}/verify`, {
-      method: 'POST',
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/hospitals/${hospitalId}/verify`, {
+      method: 'PATCH',
+    }, token);
   },
 
   // Notifications
   async getNotifications(unreadOnly = false, token?: string) {
     const url = unreadOnly ? `${API_BASE}/notifications?unread_only=true` : `${API_BASE}/notifications`;
-    const res = await fetch(url, {
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(url, {}, token);
   },
 
   async markNotificationRead(notifId: string, token?: string) {
-    const res = await fetch(`${API_BASE}/notifications/${notifId}/read`, {
+    return fetchWithAuth(`${API_BASE}/notifications/${notifId}/read`, {
       method: 'PATCH',
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    }, token);
   },
 
   async markAllNotificationsRead(token?: string) {
-    const res = await fetch(`${API_BASE}/notifications/read-all`, {
+    return fetchWithAuth(`${API_BASE}/notifications/mark-all-read`, {
       method: 'PATCH',
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    }, token);
   },
 
   // AI
@@ -194,15 +249,12 @@ export const api = {
     const res = await fetch(`${API_BASE}/ai/triage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clinical_notes: notes }),
+      body: JSON.stringify({ text: notes }),
     });
     return safeJson(res);
   },
 
   async aiAdminInsights(token?: string) {
-    const res = await fetch(`${API_BASE}/ai/admin-insights`, {
-      headers: getAuthHeaders(token),
-    });
-    return safeJson(res);
+    return fetchWithAuth(`${API_BASE}/ai/admin-insights`, {}, token);
   },
 };

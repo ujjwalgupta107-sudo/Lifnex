@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 # Cache JWKS keys in memory
 _jwks_cache: Optional[Dict[str, Any]] = None
 
-def get_jwks() -> Optional[Dict[str, Any]]:
+def get_jwks(force_refresh: bool = False) -> Optional[Dict[str, Any]]:
     """Fetches the JWKS public keys from Supabase Auth"""
     global _jwks_cache
-    if _jwks_cache:
+    if _jwks_cache and not force_refresh:
         return _jwks_cache
     if not Config.SUPABASE_JWKS_URL:
         return None
@@ -31,7 +31,7 @@ def get_jwks() -> Optional[Dict[str, Any]]:
             return _jwks_cache
     except Exception as e:
         logger.warning(f"Could not retrieve JWKS: {e}")
-    return None
+    return _jwks_cache
 
 def verify_token(token: str) -> Optional[Dict[str, Any]]:
     """
@@ -41,11 +41,15 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
     if not token:
         return None
 
-    # Handle demo tokens in test or offline environment
+    # Handle demo tokens strictly in automated test mode or explicit non-Vercel dev opt-in
     if token.startswith("demo-token-"):
-        # Strictly forbid demo tokens in production environment
-        if Config.FLASK_ENV == "production":
-            logger.warning("Attempted to use synthetic demo token in production environment.")
+        import os
+        from flask import current_app
+        is_testing = bool(current_app and current_app.config.get("TESTING"))
+        on_vercel = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV"))
+        allow_demo_tokens = os.getenv("ENABLE_INSECURE_DEMO_TOKENS", "false").lower() == "true"
+        if not is_testing and (on_vercel or Config.FLASK_ENV == "production" or not allow_demo_tokens):
+            logger.warning("Attempted to use synthetic demo token outside test environment.")
             return None
         role = token.replace("demo-token-", "")
         return {
@@ -63,10 +67,13 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
         # 1. Asymmetric verification via Supabase JWKS (for RS256/ES256)
         if alg.startswith("RS") or alg.startswith("ES"):
             jwks = get_jwks()
+            if jwks and kid and not any(k.get("kid") == kid for k in jwks.get("keys", [])):
+                # Refresh JWKS once on key rotation
+                jwks = get_jwks(force_refresh=True)
             if jwks:
                 expected_issuer = f"{Config.SUPABASE_URL.rstrip('/')}/auth/v1"
                 for key in jwks.get("keys", []):
-                    if key.get("kid") == kid or not kid:
+                    if (kid and key.get("kid") == kid) or (not kid):
                         kty = key.get("kty", "")
                         if alg.startswith("ES") or kty == "EC":
                             public_key = jwt.algorithms.ECAlgorithm.from_jwk(key)

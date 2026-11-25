@@ -26,10 +26,14 @@ export const LoginPage: React.FC = () => {
     try {
       const res = await api.login(email, password);
       const token = res.data?.session?.access_token || res.token || res.access_token;
+      const refreshToken = res.data?.session?.refresh_token;
       const user = res.data?.user || res.user;
 
-      if (token && user) {
+      if (res.success && token && user) {
         localStorage.setItem('lifnex_token', token);
+        if (refreshToken) {
+          localStorage.setItem('lifnex_refresh_token', refreshToken);
+        }
         localStorage.setItem('lifnex_user', JSON.stringify(user));
         setSuccess('Authentication verified! Redirecting to secure portal...');
 

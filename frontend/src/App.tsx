@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Navigation } from './components/navigation/Navigation';
 import { Footer } from './components/navigation/Footer';
 import { Mark } from './components/ui/Brand';
@@ -63,7 +63,10 @@ const Alias: React.FC<{ to: string }> = ({ to }) => {
   return <Navigate to={to + search} replace />;
 };
 
-const RequireVerifiedAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const RequireVerifiedAuth: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({
+  children,
+  allowedRoles,
+}) => {
   const token = localStorage.getItem('lifnex_token');
   let user: any = null;
   try {
@@ -81,6 +84,14 @@ const RequireVerifiedAuth: React.FC<{ children: React.ReactNode }> = ({ children
       sessionStorage.setItem('lifnex_pending_email', user.email);
     }
     return <Navigate to="/verify-otp" replace />;
+  }
+
+  const userRole = String(user.role || 'patient').toLowerCase();
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
+    const fallbackPath = ['patient', 'donor', 'hospital', 'admin'].includes(userRole)
+      ? `/dashboard/${userRole}`
+      : '/login';
+    return <Navigate to={fallbackPath} replace />;
   }
 
   return <>{children}</>;
@@ -104,12 +115,23 @@ const NotFound: React.FC = () => (
 
 const Shell: React.FC = () => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const reduced = useReduced();
 
   useEffect(() => {
     document.title = TITLES[pathname] ?? 'Lifnex';
   }, [pathname]);
+
+  useEffect(() => {
+    const onExpired = () => {
+      if (pathname.startsWith('/dashboard')) {
+        navigate('/login', { replace: true });
+      }
+    };
+    window.addEventListener('lifnex:session-expired', onExpired);
+    return () => window.removeEventListener('lifnex:session-expired', onExpired);
+  }, [pathname, navigate]);
 
   return (
     <ClickSpark
@@ -140,10 +162,10 @@ const Shell: React.FC = () => {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verify-otp" element={<VerifyOtpPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/dashboard/patient" element={<RequireVerifiedAuth><PatientDashboard /></RequireVerifiedAuth>} />
-              <Route path="/dashboard/donor" element={<RequireVerifiedAuth><DonorDashboard /></RequireVerifiedAuth>} />
-              <Route path="/dashboard/hospital" element={<RequireVerifiedAuth><HospitalDashboard /></RequireVerifiedAuth>} />
-              <Route path="/dashboard/admin" element={<RequireVerifiedAuth><AdminDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/patient" element={<RequireVerifiedAuth allowedRoles={['patient', 'admin']}><PatientDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/donor" element={<RequireVerifiedAuth allowedRoles={['donor', 'admin']}><DonorDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/hospital" element={<RequireVerifiedAuth allowedRoles={['hospital', 'admin']}><HospitalDashboard /></RequireVerifiedAuth>} />
+              <Route path="/dashboard/admin" element={<RequireVerifiedAuth allowedRoles={['admin']}><AdminDashboard /></RequireVerifiedAuth>} />
               {ALIASES.map(([from, to]) => (
                 <Route key={from} path={from} element={<Alias to={to} />} />
               ))}

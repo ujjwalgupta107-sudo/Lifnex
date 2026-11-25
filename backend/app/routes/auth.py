@@ -15,10 +15,11 @@ from backend.app.validators.auth_schemas import (
     ResetPasswordRequest,
     UserProfileUpdate,
     VerifyOtpRequest,
-    ResendOtpRequest
+    ResendOtpRequest,
+    RefreshTokenRequest
 )
 from backend.app.database.supabase_client import get_supabase_admin, get_supabase_anon
-from backend.app.utils.auth_guard import require_auth, require_roles, generate_token
+from backend.app.utils.auth_guard import require_auth, require_roles, generate_token, verify_token
 from backend.app.utils.audit_logger import log_audit_event
 from backend.app.services.otp_service import (
     generate_and_store_otp,
@@ -551,8 +552,8 @@ def verify_otp():
             }
         }), 200
 
-    # Live verification using Supabase Auth native verify_otp
-    anon = get_supabase_anon()
+    # Live verification using Supabase Auth native verify_otp (fresh client prevents session leak)
+    anon = get_supabase_anon(fresh=True)
     admin = get_supabase_admin()
     if not anon or not admin:
         return jsonify({
@@ -640,6 +641,7 @@ def verify_otp():
 
     # 3. Session access token from Supabase Auth or fallback
     access_token = verify_resp.session.access_token if verify_resp.session else generate_token(user_id, norm_email, role)
+    refresh_token = getattr(verify_resp.session, "refresh_token", None) if verify_resp.session else None
     expires_in = verify_resp.session.expires_in if verify_resp.session else 86400
 
     user_record = {
@@ -650,16 +652,20 @@ def verify_otp():
         "is_active": True
     }
 
+    session_data = {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "expires_in": expires_in
+    }
+    if refresh_token:
+        session_data["refresh_token"] = refresh_token
+
     return jsonify({
         "success": True,
         "message": "Email verified successfully! Your Lifnex account is now active.",
         "data": {
             "user": user_record,
-            "session": {
-                "access_token": access_token,
-                "token_type": "bearer",
-                "expires_in": expires_in
-            }
+            "session": session_data
         }
     }), 200
 
@@ -865,7 +871,7 @@ def login():
         }), 400
 
     admin = get_supabase_admin()
-    anon = get_supabase_anon()
+    anon = get_supabase_anon(fresh=True)
 
     if not admin or not anon or current_app.config.get("TESTING"):
         # For testing unverified rejection
@@ -905,9 +911,10 @@ def login():
             "message": "Login successful (Demo mode)."
         }), 200
 
+    norm_email = data.email.lower().strip()
     try:
         auth_resp = anon.auth.sign_in_with_password({
-            "email": data.email,
+            "email": norm_email,
             "password": data.password
         })
 
@@ -927,19 +934,30 @@ def login():
                 "error": {
                     "code": "EMAIL_NOT_VERIFIED",
                     "message": "Please verify your email address before signing in.",
-                    "email": data.email
+                    "email": norm_email
                 }
             }), 403
 
         user_id = str(auth_resp.user.id)
+        metadata = auth_resp.user.user_metadata or {}
         res = admin.table("users").select("*").eq("id", user_id).execute()
-        user_record = res.data[0] if res.data else {
-            "id": user_id,
-            "email": data.email,
-            "full_name": auth_resp.user.user_metadata.get("full_name", "User"),
-            "role": auth_resp.user.user_metadata.get("role", "patient"),
-            "is_active": True
-        }
+
+        if res.data:
+            user_record = res.data[0]
+        else:
+            # User is email-confirmed in Supabase Auth but missing public.users row:
+            # Synchronize safely so require_auth (which reads public.users) succeeds.
+            meta_role = str(metadata.get("role", "patient")).lower()
+            safe_role = meta_role if meta_role in ("patient", "donor", "hospital") else "patient"
+            user_record = {
+                "id": user_id,
+                "email": norm_email,
+                "full_name": metadata.get("full_name", "Lifnex User"),
+                "role": safe_role,
+                "is_active": True,
+                "is_demo": bool(metadata.get("is_demo", False))
+            }
+            admin.table("users").upsert(user_record).execute()
 
         # Check if active in public.users
         if user_record.get("is_active") is False:
@@ -948,7 +966,7 @@ def login():
                 "error": {
                     "code": "EMAIL_NOT_VERIFIED",
                     "message": "Please verify your email address with the 6-digit OTP before signing in.",
-                    "email": data.email
+                    "email": norm_email
                 }
             }), 403
 
@@ -960,15 +978,20 @@ def login():
             client_ip=request.remote_addr
         )
 
+        session_payload = {
+            "access_token": auth_resp.session.access_token,
+            "token_type": "bearer",
+            "expires_in": auth_resp.session.expires_in
+        }
+        refresh_token = getattr(auth_resp.session, "refresh_token", None)
+        if refresh_token:
+            session_payload["refresh_token"] = refresh_token
+
         return jsonify({
             "success": True,
             "data": {
                 "user": user_record,
-                "session": {
-                    "access_token": auth_resp.session.access_token,
-                    "token_type": "bearer",
-                    "expires_in": auth_resp.session.expires_in
-                }
+                "session": session_payload
             },
             "message": "Login successful."
         }), 200
@@ -981,7 +1004,7 @@ def login():
                 "error": {
                     "code": "EMAIL_NOT_VERIFIED",
                     "message": "Please verify your email address with the 6-digit verification code before signing in.",
-                    "email": data.email
+                    "email": norm_email
                 }
             }), 403
 
@@ -994,6 +1017,125 @@ def login():
             }
         }), 401
 
+
+@auth_bp.route("/refresh", methods=["POST"])
+def refresh_session():
+    """
+    Refreshes an expired Supabase Auth access token using a valid refresh token.
+    Verifies account remains email-confirmed and active in public.users.
+    """
+    body = request.get_json() or {}
+    try:
+        data = RefreshTokenRequest(**body)
+    except ValidationError as err:
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Valid refresh token is required.",
+                "details": err.errors()
+            }
+        }), 400
+
+    admin = get_supabase_admin()
+    anon = get_supabase_anon(fresh=True)
+
+    if not admin or not anon or current_app.config.get("TESTING"):
+        if data.refresh_token == "invalid-refresh-token":
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "INVALID_REFRESH_TOKEN",
+                    "message": "Refresh token is invalid or expired. Please sign in again."
+                }
+            }), 401
+        token = generate_token("demo-user-patient-id", "patient@example.com", "patient")
+        return jsonify({
+            "success": True,
+            "data": {
+                "user": {
+                    "id": "demo-user-patient-id",
+                    "email": "patient@example.com",
+                    "full_name": "Demo Patient",
+                    "role": "patient",
+                    "is_active": True
+                },
+                "session": {
+                    "access_token": token,
+                    "refresh_token": "test-rotated-refresh-token",
+                    "token_type": "bearer",
+                    "expires_in": 3600
+                }
+            }
+        }), 200
+
+    try:
+        refresh_resp = anon.auth.refresh_session(data.refresh_token)
+        if not refresh_resp or not refresh_resp.user or not refresh_resp.session:
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "INVALID_REFRESH_TOKEN",
+                    "message": "Session has expired. Please sign in again."
+                }
+            }), 401
+
+        if not getattr(refresh_resp.user, "email_confirmed_at", None):
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "EMAIL_NOT_VERIFIED",
+                    "message": "Please verify your email address before continuing."
+                }
+            }), 403
+
+        user_id = str(refresh_resp.user.id)
+        res = admin.table("users").select("*").eq("id", user_id).execute()
+        if not res.data:
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "USER_NOT_FOUND",
+                    "message": "User profile not found."
+                }
+            }), 401
+
+        user_record = res.data[0]
+        if user_record.get("is_active") is False:
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "ACCOUNT_SUSPENDED",
+                    "message": "This account is inactive. Please verify your email or contact support."
+                }
+            }), 403
+
+        session_payload = {
+            "access_token": refresh_resp.session.access_token,
+            "token_type": "bearer",
+            "expires_in": refresh_resp.session.expires_in
+        }
+        new_refresh = getattr(refresh_resp.session, "refresh_token", None)
+        if new_refresh:
+            session_payload["refresh_token"] = new_refresh
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "user": user_record,
+                "session": session_payload
+            }
+        }), 200
+    except Exception as e:
+        logger.warning(f"Session refresh failed: {e}")
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "INVALID_REFRESH_TOKEN",
+                "message": "Session has expired. Please sign in again."
+            }
+        }), 401
+
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
@@ -1001,8 +1143,8 @@ def logout():
     Terminates current session
     """
     token = g.token
-    anon = get_supabase_anon()
-    if anon and not token.startswith("demo-token-"):
+    anon = get_supabase_anon(fresh=True)
+    if anon and not token.startswith("demo-token-") and not current_app.config.get("TESTING"):
         try:
             anon.auth.sign_out()
         except Exception as e:
@@ -1035,34 +1177,35 @@ def forgot_password():
             "error": {"code": "VALIDATION_ERROR", "message": "Valid email address required."}
         }), 400
 
+    norm_email = data.email.lower().strip()
     anon = get_supabase_anon()
-    if anon:
+    if anon and not current_app.config.get("TESTING"):
         try:
-            anon.auth.reset_password_for_email(data.email, {
+            anon.auth.reset_password_for_email(norm_email, {
                 "redirect_to": _get_site_url("reset-password")
             })
         except Exception as e:
             logger.warning(f"Supabase native reset password notice: {e}")
 
-    log_audit_event(
-        action="USER_PASSWORD_RESET_REQUESTED",
-        entity_type="users",
-        entity_id=None,
-        actor_id=None,
-        client_ip=request.remote_addr,
-        new_values={"email": data.email.lower().strip(), "provider": "supabase_native"}
-    )
+        log_audit_event(
+            action="USER_PASSWORD_RESET_REQUESTED",
+            entity_type="users",
+            entity_id=None,
+            actor_id=None,
+            client_ip=request.remote_addr,
+            new_values={"email": norm_email, "provider": "supabase_native"}
+        )
 
     return jsonify({
         "success": True,
-        "message": f"If an account matches {data.email}, password recovery instructions have been dispatched by Supabase Auth.",
+        "message": f"If an account matches {norm_email}, password recovery instructions have been dispatched by Supabase Auth.",
         "delivery": "SUPABASE_NATIVE_RECOVERY"
     }), 200
 
 @auth_bp.route("/reset-password", methods=["POST"])
 def reset_password():
     """
-    Updates password using a valid session/recovery access token
+    Updates password after cryptographically verifying the caller's recovery/session JWT.
     """
     body = request.get_json() or {}
     try:
@@ -1073,12 +1216,38 @@ def reset_password():
             "error": {"code": "VALIDATION_ERROR", "message": "Access token and new password (min 8 characters) required."}
         }), 400
 
+    payload = verify_token(data.access_token)
+    if not payload or not payload.get("sub"):
+        return jsonify({
+            "success": False,
+            "error": {
+                "code": "INVALID_OR_EXPIRED_TOKEN",
+                "message": "Recovery token is invalid or has expired. Please request a new password reset."
+            }
+        }), 401
+
+    user_id = str(payload["sub"])
     admin = get_supabase_admin()
-    if admin:
+    if admin and not current_app.config.get("TESTING"):
         try:
-            admin.auth.admin.update_user_by_id(data.access_token, {"password": data.new_password})
+            admin.auth.admin.update_user_by_id(user_id, {"password": data.new_password})
         except Exception as e:
-            logger.warning(f"Reset password notice: {e}")
+            logger.warning(f"Reset password error for user_id={user_id}: {e}")
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "RESET_FAILED",
+                    "message": "Could not update password. Please request a new recovery link."
+                }
+            }), 400
+
+        log_audit_event(
+            action="USER_PASSWORD_RESET_COMPLETED",
+            entity_type="users",
+            entity_id=user_id,
+            actor_id=user_id,
+            client_ip=request.remote_addr
+        )
 
     return jsonify({
         "success": True,

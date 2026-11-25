@@ -39,26 +39,37 @@ def get_supabase_admin() -> Optional[Client]:
                 _supabase_admin_client = None
     return _supabase_admin_client
 
-def get_supabase_anon() -> Optional[Client]:
+def get_supabase_anon(fresh: bool = False) -> Optional[Client]:
     """
     Returns the Supabase Anonymous client (Public).
     Enforces Row Level Security (RLS) policies.
     Refuses connection if not approved staging project.
+    Pass fresh=True for user-scoped GoTrue operations (sign_in, verify_otp, refresh_session)
+    so session state is never shared across concurrent requests on warm serverless containers.
     """
     global _supabase_anon_client
-    if _supabase_anon_client is None:
-        is_valid_project, msg = Config.validate_staging_project()
-        if not is_valid_project:
-            logger.error(f"Cannot initialize Supabase Anon client: {msg}")
+    is_valid_project, msg = Config.validate_staging_project()
+    if not is_valid_project:
+        logger.error(f"Cannot initialize Supabase Anon client: {msg}")
+        return None
+
+    if not (Config.SUPABASE_URL and Config.SUPABASE_PUBLISHABLE_KEY and Config.SUPABASE_PUBLISHABLE_KEY != "sb_publishable_anon_key_here"):
+        return None
+
+    if fresh:
+        try:
+            return create_client(Config.SUPABASE_URL, Config.SUPABASE_PUBLISHABLE_KEY)
+        except Exception as e:
+            logger.error(f"Failed to initialize fresh Supabase Anon client: {e}")
             return None
 
-        if Config.SUPABASE_URL and Config.SUPABASE_PUBLISHABLE_KEY and Config.SUPABASE_PUBLISHABLE_KEY != "sb_publishable_anon_key_here":
-            try:
-                _supabase_anon_client = create_client(Config.SUPABASE_URL, Config.SUPABASE_PUBLISHABLE_KEY)
-                logger.info("Supabase Anon client initialized successfully.")
-            except Exception as e:
-                logger.error(f"Failed to initialize Supabase Anon client: {e}")
-                _supabase_anon_client = None
+    if _supabase_anon_client is None:
+        try:
+            _supabase_anon_client = create_client(Config.SUPABASE_URL, Config.SUPABASE_PUBLISHABLE_KEY)
+            logger.info("Supabase Anon client initialized successfully.")
+        except Exception as e:
+            logger.error(f"Failed to initialize Supabase Anon client: {e}")
+            _supabase_anon_client = None
     return _supabase_anon_client
 
 def check_database_connection() -> dict:
