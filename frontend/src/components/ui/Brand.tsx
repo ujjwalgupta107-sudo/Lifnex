@@ -1,11 +1,12 @@
 import React from 'react';
+import lifnexMark from '../../../static/assets/logo/lifnex-mark.png';
 
 export const Mark: React.FC<{ size?: number; className?: string }> = ({ size = 40, className = '' }) => (
   <img
-    src="/static/assets/logo/lifnex-mark.png"
+    src={lifnexMark}
     width={size}
     height={size}
-    alt=""
+    alt="Lifnex"
     className={className}
     style={{ width: size, height: 'auto' }}
   />
