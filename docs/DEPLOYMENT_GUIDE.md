@@ -31,8 +31,13 @@ For hot-reload frontend development, keep `run.py` active on port `5000` and sta
 - **Start Command:** `gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
 - **Health Check:** `/api/v1/health`
 
-### Option B: Vercel (`vercel.json` + `api/index.py`)
-`vercel.json` builds the Vite bundle (`npm run build`) and routes `/api/(.*)` to the serverless WSGI entrypoint `api/index.py` (verified via `backend/tests/test_vercel_entrypoint.py`).
+### Option B: Vercel Multi-Service Architecture (`vercel.json`)
+`vercel.json` configures two independent services using the Vercel Services schema:
+- **`app` (`root: "."`, `framework: "vite"`):** Builds and serves the React 18 SPA (`frontend/dist/`) for `/`, `/login`, `/dashboard/*`, and all frontend routes.
+- **`backend` (`root: "backend"`, `framework: "flask"`):** Runs the Python Flask REST API (`backend/run.py`, `backend/requirements.txt`) for `/api/*`.
+- **Public Routing:** `/api/(.*)` routes to `backend` (preserving `/api/v1/*`); `/(.*)` routes to `app`.
+- **Service Bindings:** None required — `app` communicates with `backend` via relative `/api/v1/*` paths through the public `/api/*` rewrite.
+- **Local Development:** Run `vercel dev` (requires Vercel CLI) or run `run.py` (port `5000`) + `npm run dev` (port `5173`).
 
 ### Deployment Diagram
 
