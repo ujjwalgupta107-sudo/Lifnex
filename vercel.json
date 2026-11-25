@@ -9,7 +9,7 @@
     "backend": {
       "root": "backend",
       "framework": "flask",
-      "entrypoint": "run:app"
+      "entrypoint": "run.py"
     }
   },
   "rewrites": [
