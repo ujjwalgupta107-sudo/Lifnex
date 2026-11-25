@@ -3,14 +3,17 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/dist",
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/index.py"
     },
     {
-      "source": "/((?!api/|static/|assets/|.*\\..*).*)",
+      "source": "/((?!api/|static/|assets/).*\\.(?:html|css|js|png|jpg|jpeg|svg|ico|json|woff|woff2|ttf|map|mp4))",
+      "destination": "/$1"
+    },
+    {
+      "source": "/((?!api/|static/|assets/).*)",
       "destination": "/index.html"
     }
   ]
