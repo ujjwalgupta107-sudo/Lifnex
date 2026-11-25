@@ -4,6 +4,7 @@ import { Navigation } from './components/navigation/Navigation';
 import { Footer } from './components/navigation/Footer';
 import { Mark } from './components/ui/Brand';
 import { ThemeProvider, useTheme } from './lib/theme';
+import { IntroOverlay } from './components/site/IntroOverlay';
 import ClickSpark from './components/reactbits/ClickSpark';
 import { useReduced } from './lib/hooks';
 import {
@@ -136,6 +137,7 @@ const Shell: React.FC = () => {
 
 export const App: React.FC = () => (
   <ThemeProvider>
+    <IntroOverlay />
     <BrowserRouter>
       <Shell />
     </BrowserRouter>
