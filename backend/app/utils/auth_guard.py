@@ -85,6 +85,7 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
                             algorithms=[alg],
                             audience="authenticated",
                             issuer=expected_issuer,
+                            leeway=10,
                             options={"verify_exp": True, "verify_aud": True, "verify_iss": True}
                         )
                         return payload

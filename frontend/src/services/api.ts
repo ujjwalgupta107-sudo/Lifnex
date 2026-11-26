@@ -129,6 +129,11 @@ export const api = {
     return safeJson(res);
   },
 
+  async getDemoCredentials() {
+    const res = await fetch(`${API_BASE}/auth/demo-credentials`);
+    return safeJson(res);
+  },
+
   async register(data: Record<string, any>) {
     const res = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',

@@ -1291,6 +1291,30 @@ def get_current_user():
     }), 200
 
 
+@auth_bp.route("/demo-credentials", methods=["GET"])
+def get_demo_credentials():
+    """
+    GET /api/v1/auth/demo-credentials
+    Returns public demo email addresses and passwords configured in the environment
+    so the demo selectors can automatically populate the login fields.
+    """
+    import os
+    roles = ["patient", "donor", "hospital", "admin"]
+    creds = {}
+    for r in roles:
+        pwd = os.getenv(f"DEMO_PASSWORD_{r.upper()}")
+        if pwd:
+            creds[r] = {
+                "email": f"{r}@lifnex.org",
+                "password": pwd
+            }
+    return jsonify({
+        "success": True,
+        "data": creds,
+        "message": "Demo credentials retrieved."
+    }), 200
+
+
 _DEMO_RATE_LIMIT: dict = {}
 
 
@@ -1365,10 +1389,12 @@ def demo_login():
             }), 401
 
         log_audit_event(
-            user_id=user_row["id"],
             action="DEMO_LOGIN",
-            resource_type="auth",
-            details={"role": role, "is_demo": True, "ip": client_ip}
+            entity_type="users",
+            entity_id=user_row["id"],
+            actor_id=user_row["id"],
+            client_ip=client_ip,
+            new_values={"role": role, "is_demo": True}
         )
 
         return jsonify({

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import RubberSegment from '../../components/reactbits/RubberSegment';
@@ -7,6 +7,8 @@ import { useGo } from '../../lib/routes';
 import { Lock, Mail, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
+  const [selectedRole, setSelectedRole] = useState<string>('patient');
+  const [demoCreds, setDemoCreds] = useState<Record<string, { email: string; password: string }>>({});
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +17,24 @@ export const LoginPage: React.FC = () => {
   const [isUnverified, setIsUnverified] = useState(false);
   const [success, setSuccess] = useState('');
   const navigate = useGo();
+
+  useEffect(() => {
+    let isMounted = true;
+    api.getDemoCredentials().then((res) => {
+      if (!isMounted) return;
+      if (res.success && res.data) {
+        setDemoCreds(res.data);
+        const pCred = res.data['patient'];
+        if (pCred) {
+          setEmail(pCred.email);
+          setPassword(pCred.password);
+        }
+      }
+    }).catch(() => {
+      // Fallback if network issue occurs
+    });
+    return () => { isMounted = false; };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,39 +80,28 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const setDemoRole = async (role: string) => {
+  const handleRoleSelect = (role: string) => {
+    setSelectedRole(role);
     setError('');
     setIsUnverified(false);
     setSuccess('');
-    setLoading(true);
-    try {
-      const res = await api.demoLogin(role);
-      const token = res.data?.session?.access_token || res.token || res.access_token;
-      const refreshToken = res.data?.session?.refresh_token;
-      const user = res.data?.user || res.user;
 
-      if (res.success && token && user) {
-        localStorage.setItem('lifnex_token', token);
-        if (refreshToken) {
-          localStorage.setItem('lifnex_refresh_token', refreshToken);
+    const cred = demoCreds[role];
+    if (cred) {
+      setEmail(cred.email);
+      setPassword(cred.password);
+    } else {
+      setEmail(`${role}@lifnex.org`);
+      // If demoCreds haven't loaded yet, fetch them
+      api.getDemoCredentials().then((res) => {
+        if (res.success && res.data) {
+          setDemoCreds(res.data);
+          if (res.data[role]) {
+            setEmail(res.data[role].email);
+            setPassword(res.data[role].password);
+          }
         }
-        localStorage.setItem('lifnex_user', JSON.stringify(user));
-        setSuccess('Demo session verified! Redirecting to portal...');
-
-        const userRole = (user.role || role || 'patient').toLowerCase();
-        setTimeout(() => {
-          if (userRole === 'donor') navigate('/dashboard/donor');
-          else if (userRole === 'hospital') navigate('/dashboard/hospital');
-          else if (userRole === 'admin') navigate('/dashboard/admin');
-          else navigate('/dashboard/patient');
-        }, 500);
-      } else {
-        setError(res.error?.message || res.message || 'Demo login failed.');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Network error communicating with authentication service.');
-    } finally {
-      setLoading(false);
+      });
     }
   };
 
@@ -210,8 +219,8 @@ export const LoginPage: React.FC = () => {
             { value: 'hospital', label: 'Hospital' },
             { value: 'admin', label: 'Admin' },
           ]}
-          value={email.endsWith('@lifnex.org') ? email.split('@')[0] : undefined}
-          onChange={(v) => setDemoRole(v)}
+          value={selectedRole}
+          onChange={(v) => handleRoleSelect(v)}
           size="lg"
           radius={15}
           inset={4}
