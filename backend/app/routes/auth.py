@@ -1012,14 +1012,23 @@ def login():
                 }
             }), 403
 
-        logger.error(f"Login error: {e}")
+        if "invalid login credentials" in err_msg or "invalid_grant" in err_msg:
+            return jsonify({
+                "success": False,
+                "error": {
+                    "code": "INVALID_CREDENTIALS",
+                    "message": "Invalid email or password."
+                }
+            }), 401
+
+        logger.error(f"Login error for {norm_email}: {e}")
         return jsonify({
             "success": False,
             "error": {
-                "code": "INVALID_CREDENTIALS",
-                "message": "Invalid email or password."
+                "code": "AUTH_ERROR",
+                "message": "Authentication failed. Please verify your credentials or try again later."
             }
-        }), 401
+        }), 400
 
 
 @auth_bp.route("/refresh", methods=["POST"])
